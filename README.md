@@ -338,7 +338,7 @@ Please open an issue on GitHub with:
 ### Security Issues?
 ⚠️ **Do NOT open a public issue for security vulnerabilities!**
 
-Email: a62152253@gmail.com with subject `[SECURITY] XCOM Bug Report`
+Contact: Discord `frostbyte_frostbyte1` or Email: a62152253@gmail.com with subject `[SECURITY] XCOM Bug Report`
 
 ---
 
@@ -346,6 +346,7 @@ Email: a62152253@gmail.com with subject `[SECURITY] XCOM Bug Report`
 
 - **Documentation**: See docs/ folder
 - **Issues**: GitHub Issues
+- **Discord**: frostbyte_frostbyte1
 - **Email**: a62152253@gmail.com
 
 ---
