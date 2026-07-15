@@ -148,9 +148,9 @@ CREATE TABLE IF NOT EXISTS `settings` (
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Insert a default admin/owner user (password: admin123)
-INSERT INTO `users` (`email`, `password_hash`, `full_name`, `role`, `status`) VALUES
-('admin@taskmanager.com', '$2y$10$tZ2R4G36dD6f0mC0h5k4eeJ.Jc.G6tUjVdKk3s7r18cE6.N0vQzWq', 'Administrator Główny', 'Owner', 'Active');
-
-INSERT INTO `settings` (`user_id`, `theme`, `language`, `email_notifications`) VALUES
-(1, 'dark', 'pl', 1);
+-- WARNING: Do NOT commit database passwords or hashes to version control
+-- ⚠️  Always generate new admin password on first deployment using:
+-- php -r "echo password_hash('your_secure_password_here', PASSWORD_ARGON2ID, ['memory_cost' => 65536, 'time_cost' => 4, 'threads' => 3]);"
+-- Then run this manually:
+-- INSERT INTO `users` (`email`, `password_hash`, `full_name`, `role`, `status`) VALUES ('admin@example.com', 'GENERATED_HASH_HERE', 'Admin', 'Owner', 'Active');
+-- INSERT INTO `settings` (`user_id`, `theme`, `language`, `email_notifications`) VALUES (1, 'dark', 'pl', 1);

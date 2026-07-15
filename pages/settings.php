@@ -12,8 +12,9 @@ $user_data = $stmt->fetch();
 $success = isset($_GET['success']);
 $error   = $_GET['error'] ?? '';
 
-// Tab from URL
-$tab = in_array($_GET['tab'] ?? '', ['profile','security','notifications','appearance']) ? $_GET['tab'] : 'profile';
+// Tab from URL - whitelist validation
+$allowed_tabs = ['profile', 'security', 'notifications', 'appearance'];
+$tab = in_array($_GET['tab'] ?? '', $allowed_tabs, true) ? $_GET['tab'] : 'profile';
 ?>
 
 <div class="page-header">
@@ -29,10 +30,10 @@ $tab = in_array($_GET['tab'] ?? '', ['profile','security','notifications','appea
 <div class="settings-layout">
     <!-- Sidebar tabs -->
     <nav class="settings-nav">
-        <a href="?tab=profile"       class="settings-nav-item <?= $tab==='profile'       ? 'active' : '' ?>"><i class="fa-solid fa-user"></i> Profil</a>
-        <a href="?tab=security"      class="settings-nav-item <?= $tab==='security'      ? 'active' : '' ?>"><i class="fa-solid fa-lock"></i> Bezpieczeństwo</a>
-        <a href="?tab=notifications" class="settings-nav-item <?= $tab==='notifications' ? 'active' : '' ?>"><i class="fa-solid fa-bell"></i> Powiadomienia</a>
-        <a href="?tab=appearance"    class="settings-nav-item <?= $tab==='appearance'    ? 'active' : '' ?>"><i class="fa-solid fa-palette"></i> Wygląd</a>
+        <a href="?tab=profile"       class="settings-nav-item <?= $tab === 'profile'       ? 'active' : '' ?>"><i class="fa-solid fa-user"></i> Profil</a>
+        <a href="?tab=security"      class="settings-nav-item <?= $tab === 'security'      ? 'active' : '' ?>"><i class="fa-solid fa-lock"></i> Bezpieczeństwo</a>
+        <a href="?tab=notifications" class="settings-nav-item <?= $tab === 'notifications' ? 'active' : '' ?>"><i class="fa-solid fa-bell"></i> Powiadomienia</a>
+        <a href="?tab=appearance"    class="settings-nav-item <?= $tab === 'appearance'    ? 'active' : '' ?>"><i class="fa-solid fa-palette"></i> Wygląd</a>
     </nav>
 
     <!-- Tab content -->
@@ -47,7 +48,7 @@ $tab = in_array($_GET['tab'] ?? '', ['profile','security','notifications','appea
                     <?php if (!empty($user_data['avatar'])): ?>
                         <img src="<?= sanitize($user_data['avatar']) ?>" class="settings-avatar">
                     <?php else: ?>
-                        <div class="settings-avatar settings-avatar-placeholder"><?= strtoupper(substr($user_data['full_name'], 0, 1)) ?></div>
+                        <div class="settings-avatar settings-avatar-placeholder"><?= htmlspecialchars(strtoupper(substr($user_data['full_name'], 0, 1)), ENT_QUOTES, 'UTF-8') ?></div>
                     <?php endif; ?>
                     <div>
                         <label class="btn btn-secondary" style="cursor:pointer;width:auto">
@@ -63,7 +64,7 @@ $tab = in_array($_GET['tab'] ?? '', ['profile','security','notifications','appea
                 <h2 class="settings-section-title">Dane osobowe</h2>
                 <div class="form-group">
                     <label class="form-label">Imię i nazwisko</label>
-                    <input class="form-control" type="text" name="full_name" value="<?= sanitize($user_data['full_name']) ?>" required>
+                    <input class="form-control" type="text" name="full_name" value="<?= sanitize($user_data['full_name']) ?>" required maxlength="255">
                 </div>
                 <div class="form-group">
                     <label class="form-label">E-mail <span style="color:var(--text-muted);font-size:.8rem">(tylko do odczytu)</span></label>
@@ -75,8 +76,8 @@ $tab = in_array($_GET['tab'] ?? '', ['profile','security','notifications','appea
                 <h2 class="settings-section-title">Język aplikacji</h2>
                 <div class="form-group">
                     <select class="form-control" name="language" style="max-width:240px">
-                        <option value="pl" <?= ($user_data['language']??'pl') === 'pl' ? 'selected' : '' ?>>🇵🇱 Polski</option>
-                        <option value="en" <?= ($user_data['language']??'pl') === 'en' ? 'selected' : '' ?>>🇬🇧 English</option>
+                        <option value="pl" <?= ($user_data['language'] ?? 'pl') === 'pl' ? 'selected' : '' ?>>🇵🇱 Polski</option>
+                        <option value="en" <?= ($user_data['language'] ?? 'pl') === 'en' ? 'selected' : '' ?>>🇬🇧 English</option>
                     </select>
                 </div>
             </div>
@@ -97,7 +98,7 @@ $tab = in_array($_GET['tab'] ?? '', ['profile','security','notifications','appea
                 <div class="form-group">
                     <label class="form-label">Nowe hasło</label>
                     <div class="pwd-toggle-wrap">
-                        <input class="form-control" type="password" name="password" id="password" placeholder="Minimum 6 znaków" style="padding-right:2.5rem">
+                        <input class="form-control" type="password" name="password" id="password" placeholder="Minimum 8 znaków" style="padding-right:2.5rem" maxlength="255">
                         <button type="button" class="pwd-toggle-btn" tabindex="-1">
                             <i class="fa-solid fa-eye"></i>
                         </button>
@@ -113,7 +114,7 @@ $tab = in_array($_GET['tab'] ?? '', ['profile','security','notifications','appea
                 <div class="form-group">
                     <label class="form-label">Potwierdź nowe hasło</label>
                     <div class="pwd-toggle-wrap">
-                        <input class="form-control" type="password" name="confirm_password" id="confirm_password" placeholder="Powtórz hasło">
+                        <input class="form-control" type="password" name="confirm_password" id="confirm_password" placeholder="Powtórz hasło" maxlength="255">
                         <button type="button" class="pwd-toggle-btn" tabindex="-1">
                             <i class="fa-solid fa-eye"></i>
                         </button>
@@ -127,7 +128,7 @@ $tab = in_array($_GET['tab'] ?? '', ['profile','security','notifications','appea
                     <i class="fa-solid fa-globe"></i>
                     <div>
                         <div style="font-weight:600;font-size:.875rem">Aktualna sesja</div>
-                        <div style="color:var(--text-muted);font-size:.8rem">IP: <?= $_SERVER['REMOTE_ADDR'] ?? '—' ?> · <?= date('d.m.Y H:i') ?></div>
+                        <div style="color:var(--text-muted);font-size:.8rem">IP: <?= htmlspecialchars($_SERVER['REMOTE_ADDR'] ?? '—', ENT_QUOTES, 'UTF-8') ?> · <?= date('d.m.Y H:i') ?></div>
                     </div>
                     <span class="badge-pill badge-active">Aktywna</span>
                 </div>
@@ -177,7 +178,7 @@ $tab = in_array($_GET['tab'] ?? '', ['profile','security','notifications','appea
         <div class="settings-section">
             <h2 class="settings-section-title">Motyw kolorystyczny</h2>
             <div class="theme-picker-grid">
-                <div class="theme-option <?= ($user_data['theme']??'dark')==='dark' ? 'theme-option--active' : '' ?>"
+                <div class="theme-option <?= ($user_data['theme'] ?? 'dark') === 'dark' ? 'theme-option--active' : '' ?>"
                      onclick="setTheme('dark')" id="theme-dark">
                     <div class="theme-preview theme-preview--dark">
                         <div class="theme-preview-sidebar"></div>
@@ -185,7 +186,7 @@ $tab = in_array($_GET['tab'] ?? '', ['profile','security','notifications','appea
                     </div>
                     <div class="theme-option-label"><i class="fa-solid fa-moon"></i> Ciemny</div>
                 </div>
-                <div class="theme-option <?= ($user_data['theme']??'dark')==='light' ? 'theme-option--active' : '' ?>"
+                <div class="theme-option <?= ($user_data['theme'] ?? 'dark') === 'light' ? 'theme-option--active' : '' ?>"
                      onclick="setTheme('light')" id="theme-light">
                     <div class="theme-preview theme-preview--light">
                         <div class="theme-preview-sidebar"></div>
@@ -220,6 +221,8 @@ function previewAvatar(input) {
 
 // Live theme switcher
 async function setTheme(theme) {
+    if (!['light', 'dark'].includes(theme)) return;
+    
     document.documentElement.setAttribute('data-theme', theme);
     document.querySelectorAll('.theme-option').forEach(el => el.classList.remove('theme-option--active'));
     document.getElementById('theme-' + theme)?.classList.add('theme-option--active');

@@ -1,52 +1,109 @@
 <?php
-// auth/forgot-password.php
+// auth/forgot-password.php - Secure password reset flow
 require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../config/database.php';
 
 start_secure_session();
 
+if (is_logged_in()) {
+    header("Location: /pages/dashboard.php");
+    exit;
+}
+
 $error = '';
 $success = '';
-$reset_link_debug = ''; // For debugging purposes since SMTP might not be set up
+$step = $_GET['step'] ?? 'request'; // request | reset
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email'] ?? '');
     $csrf_token = $_POST['csrf_token'] ?? '';
     
     if (!validate_csrf($csrf_token)) {
         $error = 'Błąd weryfikacji tokenu CSRF.';
-    } else if (empty($email)) {
-        $error = 'Wprowadź adres e-mail.';
-    } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Niepoprawny format adresu e-mail.';
-    } else {
-        $db = Database::getInstance()->getConnection();
+    } else if ($step === 'request') {
+        $email = trim($_POST['email'] ?? '');
         
-        $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch();
-        
-        if ($user) {
-            // Generate token
-            $token = bin2hex(random_bytes(32));
-            $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
-            
-            // Save to DB
-            $stmt_reset = $db->prepare("INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)");
-            $stmt_reset->execute([$email, $token, $expires]);
-            
-            $success = 'Wysłaliśmy link resetujący hasło na Twój e-mail.';
-            
-            // Direct link generation for local development/testing without mailer
-            $reset_link_debug = "/auth/reset-password.php?email=" . urlencode($email) . "&token=" . $token;
-            
-            log_activity($user['id'], 'password_reset_request', 'Requested password reset link');
+        if (empty($email)) {
+            $error = 'Podaj adres e-mail.';
+        } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = 'Niepoprawny format adresu e-mail.';
         } else {
-            // Do not reveal if the user exists for security reasons, but log it
-            $success = 'Wysłaliśmy link resetujący hasło na Twój e-mail.';
-            log_activity(null, 'password_reset_failed', 'Requested password reset for non-existent: ' . sanitize($email));
+            try {
+                $db = Database::getInstance()->getConnection();
+                
+                $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
+                $stmt->execute([$email]);
+                $user = $stmt->fetch();
+                
+                if ($user) {
+                    // Generate secure token
+                    $reset_token = bin2hex(random_bytes(32));
+                    $expires_at = date('Y-m-d H:i:s', time() + 3600); // 1 hour
+                    
+                    // Store token
+                    $stmt_update = $db->prepare("UPDATE users SET password_reset_token = ?, password_reset_expires = ? WHERE id = ?");
+                    $stmt_update->execute([$reset_token, $expires_at, $user['id']]);
+                    
+                    // TODO: Send email with reset link
+                    // send_email($email, 'Reset hasła', "Kliknij: /auth/forgot-password.php?step=reset&token=$reset_token");
+                    
+                    log_activity($user['id'], 'password_reset_request', 'Password reset requested');
+                    $success = 'Jeśli konto istnieje, wyślemy Ci link do resetowania hasła.';
+                } else {
+                    $success = 'Jeśli konto istnieje, wyślemy Ci link do resetowania hasła.';
+                }
+            } catch (Exception $e) {
+                error_log("Password reset request error: " . $e->getMessage());
+                $error = 'Błąd podczas przetwarzania żądania.';
+            }
+        }
+    } else if ($step === 'reset') {
+        $token = trim($_POST['token'] ?? '');
+        $password = trim($_POST['password'] ?? '');
+        $confirm_password = trim($_POST['confirm_password'] ?? '');
+        
+        if (empty($token) || strlen($token) > 255) {
+            $error = 'Niepoprawny token.';
+        } else if (empty($password) || empty($confirm_password)) {
+            $error = 'Wszystkie pola są wymagane.';
+        } else if (strlen($password) < 8) {
+            $error = 'Hasło musi mieć co najmniej 8 znaków.';
+        } else if ($password !== $confirm_password) {
+            $error = 'Hasła nie pasują do siebie.';
+        } else {
+            try {
+                $db = Database::getInstance()->getConnection();
+                
+                // Verify token
+                $stmt = $db->prepare("SELECT id FROM users WHERE password_reset_token = ? AND password_reset_expires > NOW()");
+                $stmt->execute([$token]);
+                $user = $stmt->fetch();
+                
+                if (!$user) {
+                    $error = 'Link jest nieważny lub wygasł.';
+                } else {
+                    // Update password
+                    $password_hash = password_hash($password, PASSWORD_ARGON2ID, ['memory_cost' => 65536, 'time_cost' => 4, 'threads' => 3]);
+                    
+                    $stmt_update = $db->prepare("UPDATE users SET password_hash = ?, password_reset_token = NULL, password_reset_expires = NULL WHERE id = ?");
+                    $stmt_update->execute([$password_hash, $user['id']]);
+                    
+                    log_activity($user['id'], 'password_reset_success', 'Password successfully reset');
+                    $success = 'Hasło zostało zmienione. Możesz się teraz zalogować.';
+                    $step = 'request';
+                }
+            } catch (Exception $e) {
+                error_log("Password reset error: " . $e->getMessage());
+                $error = 'Błąd podczas resetowania hasła.';
+            }
         }
     }
+}
+
+// For reset step, verify token exists
+$reset_token = trim($_GET['token'] ?? '');
+if ($step === 'reset' && empty($reset_token)) {
+    $error = 'Brakuje tokenu resetowania.';
 }
 ?>
 <!DOCTYPE html>
@@ -54,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zapomniałem hasła | TaskManager Pro</title>
+    <title>Resetowanie hasła | TaskManager Pro</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/auth.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -68,8 +125,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fa-solid fa-square-check"></i>
                     <span>TaskManager Pro</span>
                 </div>
-                <h2 class="auth-title">Odzyskaj hasło</h2>
-                <p class="auth-subtitle">Wprowadź swój e-mail, aby zresetować hasło</p>
+                <h2 class="auth-title">
+                    <?php echo $step === 'reset' ? 'Ustaw nowe hasło' : 'Resetuj hasło'; ?>
+                </h2>
+                <p class="auth-subtitle">
+                    <?php echo $step === 'reset' ? 'Wpisz nowe hasło poniżej.' : 'Wpisz adres e-mail, aby otrzymać link do resetowania hasła.'; ?>
+                </p>
             </div>
 
             <?php if (!empty($error)): ?>
@@ -84,27 +145,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <?php if (!empty($reset_link_debug)): ?>
-                <div class="alert alert-success" style="border: 2px dashed var(--success); font-family: monospace; font-size: 0.8rem; word-break: break-all;">
-                    <strong>[MOCK MAIL / DEV MODE]</strong><br>
-                    Reset link:<br>
-                    <a href="<?php echo $reset_link_debug; ?>" style="color: var(--primary); text-decoration: underline;"><?php echo $reset_link_debug; ?></a>
-                </div>
-            <?php endif; ?>
-
-            <form method="POST" action="forgot-password.php">
-                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+            <?php if ($step === 'request'): ?>
+            <form method="POST" action="forgot-password.php?step=request">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                 
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label class="form-label" for="email">E-mail</label>
-                    <input class="form-control" type="email" id="email" name="email" placeholder="twoj@email.com" required value="<?php echo isset($_POST['email']) ? sanitize($_POST['email']) : ''; ?>">
+                <div class="form-group">
+                    <label class="form-label" for="email">Adres e-mail</label>
+                    <input class="form-control" type="email" id="email" name="email" placeholder="twoj@email.com" required maxlength="255" value="<?php echo isset($_POST['email']) ? sanitize($_POST['email']) : ''; ?>">
                 </div>
 
-                <button class="btn btn-primary" type="submit" style="width: 100%;">Wyślij link</button>
+                <button class="btn btn-primary" type="submit" style="width: 100%;">
+                    <i class="fa-solid fa-paper-plane"></i> Wyślij link resetowania
+                </button>
             </form>
 
-            <div class="auth-footer">
-                Przypomniałeś sobie? <a class="auth-link" href="login.php">Zaloguj się</a>
+            <?php elseif ($step === 'reset' && !empty($reset_token)): ?>
+            <form method="POST" action="<?php echo htmlspecialchars('forgot-password.php?step=reset&token=' . $reset_token, ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" name="token" value="<?php echo htmlspecialchars($reset_token, ENT_QUOTES, 'UTF-8'); ?>">
+                
+                <div class="form-group">
+                    <label class="form-label" for="password">Nowe hasło (minimum 8 znaków)</label>
+                    <div class="pwd-toggle-wrap">
+                        <input class="form-control" type="password" id="password" name="password" placeholder="Min. 8 znaków" required maxlength="255">
+                        <button type="button" class="pwd-toggle-btn" tabindex="-1">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label" for="confirm_password">Potwierdź hasło</label>
+                    <div class="pwd-toggle-wrap">
+                        <input class="form-control" type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required maxlength="255">
+                        <button type="button" class="pwd-toggle-btn" tabindex="-1">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" type="submit" style="width: 100%;">
+                    <i class="fa-solid fa-lock"></i> Ustaw nowe hasło
+                </button>
+            </form>
+            <?php else: ?>
+            <div class="alert alert-danger">
+                <i class="fa-solid fa-exclamation-circle"></i> Link resetowania jest nieważny lub wygasł. Spróbuj ponownie.
+            </div>
+            <a href="forgot-password.php" class="btn btn-primary" style="width: 100%; text-align: center;">
+                Wróć do formularza resetowania
+            </a>
+            <?php endif; ?>
+
+            <div class="auth-footer" style="margin-top: 2rem;">
+                Pamiętasz hasło? <a class="auth-link" href="login.php">Zaloguj się</a>
             </div>
         </div>
     </div>

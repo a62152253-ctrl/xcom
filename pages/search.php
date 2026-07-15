@@ -5,12 +5,17 @@ require_once __DIR__ . '/../includes/header.php';
 $db = Database::getInstance()->getConnection();
 $user_id = $_SESSION['user_id'];
 $q = trim($_GET['q'] ?? '');
-$type_filter = $_GET['type'] ?? 'all'; // all | task | project | note
+
+// Whitelist validation for type filter
+$type_filter = $_GET['type'] ?? 'all';
+if (!in_array($type_filter, ['all', 'task', 'project', 'note'], true)) {
+    $type_filter = 'all';
+}
 
 $results = [];
 $total = 0;
 
-if (strlen($q) >= 2) {
+if (strlen($q) >= 2 && strlen($q) <= 255) {
     $like = '%' . $q . '%';
 
     if ($type_filter === 'all' || $type_filter === 'task') {
@@ -48,10 +53,11 @@ if (strlen($q) >= 2) {
     $total = count($results);
 }
 
-// Highlight search terms in text
+// Highlight search terms in text - sanitize properly
 function highlight($text, $q) {
     if (empty($q)) return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
-    return preg_replace('/(' . preg_quote(htmlspecialchars($q, ENT_QUOTES, 'UTF-8'), '/') . ')/i', '<mark>$1</mark>', htmlspecialchars($text, ENT_QUOTES, 'UTF-8'));
+    $q_escaped = htmlspecialchars($q, ENT_QUOTES, 'UTF-8');
+    return preg_replace('/(' . preg_quote($q_escaped, '/') . ')/i', '<mark>$1</mark>', htmlspecialchars($text, ENT_QUOTES, 'UTF-8'));
 }
 ?>
 
@@ -60,7 +66,7 @@ function highlight($text, $q) {
         <h1 class="page-title"><i class="fa-solid fa-magnifying-glass"></i> Wyniki wyszukiwania</h1>
         <p class="page-subtitle">
             <?php if ($q): ?>
-                <?= $total ?> wyniki dla <strong>"<?= sanitize($q) ?>"</strong>
+                <?= $total ?> wyniki dla <strong><?= sanitize($q) ?></strong>
             <?php else: ?>
                 Wpisz frazę w pasku wyszukiwania powyżej.
             <?php endif; ?>
@@ -74,7 +80,7 @@ function highlight($text, $q) {
     <form method="GET" style="display:flex;gap:.75rem">
         <div style="position:relative;flex:1">
             <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted)"></i>
-            <input name="q" value="<?= sanitize($q) ?>" class="form-control" style="padding-left:2.5rem" placeholder="Szukaj...">
+            <input name="q" value="<?= sanitize($q) ?>" class="form-control" style="padding-left:2.5rem" placeholder="Szukaj..." maxlength="255">
         </div>
         <button class="btn btn-primary" type="submit" style="width:auto">Szukaj</button>
     </form>
@@ -82,10 +88,10 @@ function highlight($text, $q) {
 
 <!-- Type filter -->
 <div class="filter-tabs" style="margin-bottom:1.5rem">
-    <a href="?q=<?= urlencode($q) ?>&type=all"     class="filter-tab <?= $type_filter==='all'     ?'active':'' ?>">Wszystko (<?= $total ?>)</a>
-    <a href="?q=<?= urlencode($q) ?>&type=task"    class="filter-tab <?= $type_filter==='task'    ?'active':'' ?>"><i class="fa-solid fa-list-check"></i> Zadania</a>
-    <a href="?q=<?= urlencode($q) ?>&type=project" class="filter-tab <?= $type_filter==='project' ?'active':'' ?>"><i class="fa-solid fa-folder"></i> Projekty</a>
-    <a href="?q=<?= urlencode($q) ?>&type=note"    class="filter-tab <?= $type_filter==='note'    ?'active':'' ?>"><i class="fa-solid fa-note-sticky"></i> Notatki</a>
+    <a href="?q=<?= htmlspecialchars(urlencode($q), ENT_QUOTES, 'UTF-8') ?>&type=all"     class="filter-tab <?= $type_filter === 'all'     ? 'active' : '' ?>">Wszystko (<?= $total ?>)</a>
+    <a href="?q=<?= htmlspecialchars(urlencode($q), ENT_QUOTES, 'UTF-8') ?>&type=task"    class="filter-tab <?= $type_filter === 'task'    ? 'active' : '' ?>"><i class="fa-solid fa-list-check"></i> Zadania</a>
+    <a href="?q=<?= htmlspecialchars(urlencode($q), ENT_QUOTES, 'UTF-8') ?>&type=project" class="filter-tab <?= $type_filter === 'project' ? 'active' : '' ?>"><i class="fa-solid fa-folder"></i> Projekty</a>
+    <a href="?q=<?= htmlspecialchars(urlencode($q), ENT_QUOTES, 'UTF-8') ?>&type=note"    class="filter-tab <?= $type_filter === 'note'    ? 'active' : '' ?>"><i class="fa-solid fa-note-sticky"></i> Notatki</a>
 </div>
 
 <?php if (empty($results)): ?>
@@ -98,7 +104,7 @@ function highlight($text, $q) {
 <div class="search-results-list">
     <?php foreach ($results as $r): ?>
     <?php if ($r['_type'] === 'task'): ?>
-    <a href="/pages/tasks.php?task_id=<?= $r['id'] ?>" class="search-result-card">
+    <a href="/pages/tasks.php?task_id=<?= (int)$r['id'] ?>" class="search-result-card">
         <div class="src-icon src-icon--task"><i class="fa-solid fa-list-check"></i></div>
         <div class="src-body">
             <div class="src-title"><?= highlight($r['title'], $q) ?></div>
@@ -106,11 +112,11 @@ function highlight($text, $q) {
             <div class="src-desc"><?= highlight(mb_substr(strip_tags($r['description']), 0, 120), $q) ?>...</div>
             <?php endif; ?>
             <div class="src-meta">
-                <span class="src-badge" style="background:<?= $r['project_color'] ?>20;color:<?= $r['project_color'] ?>">
+                <span class="src-badge" style="background:<?= htmlspecialchars($r['project_color'], ENT_QUOTES, 'UTF-8') ?>20;color:<?= htmlspecialchars($r['project_color'], ENT_QUOTES, 'UTF-8') ?>">
                     <i class="fa-solid fa-folder"></i> <?= sanitize($r['project_name']) ?>
                 </span>
-                <span class="kanban-card-tag tag-<?= strtolower($r['priority']) ?>"><?= $r['priority'] ?></span>
-                <span class="src-status"><?= $r['status'] ?></span>
+                <span class="kanban-card-tag tag-<?= strtolower($r['priority']) ?>"><?= sanitize($r['priority']) ?></span>
+                <span class="src-status"><?= sanitize($r['status']) ?></span>
                 <?php if ($r['deadline']): ?>
                 <span class="src-deadline"><i class="fa-regular fa-clock"></i> <?= date('d.m.Y', strtotime($r['deadline'])) ?></span>
                 <?php endif; ?>
@@ -120,8 +126,8 @@ function highlight($text, $q) {
     </a>
 
     <?php elseif ($r['_type'] === 'project'): ?>
-    <a href="/pages/tasks.php?project_id=<?= $r['id'] ?>" class="search-result-card">
-        <div class="src-icon src-icon--project" style="background:<?= $r['project_color'] ?>20;color:<?= $r['project_color'] ?>">
+    <a href="/pages/tasks.php?project_id=<?= (int)$r['id'] ?>" class="search-result-card">
+        <div class="src-icon src-icon--project" style="background:<?= htmlspecialchars($r['project_color'], ENT_QUOTES, 'UTF-8') ?>20;color:<?= htmlspecialchars($r['project_color'], ENT_QUOTES, 'UTF-8') ?>">
             <i class="fa-solid fa-folder-open"></i>
         </div>
         <div class="src-body">
@@ -141,7 +147,7 @@ function highlight($text, $q) {
 
     <?php elseif ($r['_type'] === 'note'): ?>
     <a href="/pages/notes.php" class="search-result-card">
-        <div class="src-icon" style="background:<?= $r['color'] ?>20;color:<?= $r['color'] ?>">
+        <div class="src-icon" style="background:<?= htmlspecialchars($r['color'] ?? '#3b82f6', ENT_QUOTES, 'UTF-8') ?>20;color:<?= htmlspecialchars($r['color'] ?? '#3b82f6', ENT_QUOTES, 'UTF-8') ?>">
             <i class="fa-solid fa-note-sticky"></i>
         </div>
         <div class="src-body">
