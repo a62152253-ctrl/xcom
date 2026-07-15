@@ -1,101 +1,116 @@
 <?php
-// api/team.php
-require_once __DIR__ . '/../includes/session.php';
-require_once __DIR__ . '/../includes/functions.php';
+// api/team.php - Team management API
 require_once __DIR__ . '/../includes/middleware.php';
-require_login();
+require_once __DIR__ . '/../includes/functions.php';
 
-header('Content-Type: application/json');
+require_auth_api();
 
 $db = Database::getInstance()->getConnection();
 $user_id = $_SESSION['user_id'];
 $user_role = $_SESSION['user_role'];
+
+header('Content-Type: application/json; charset=utf-8');
+
 $action = $_GET['action'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true) ?? [];
 
-    // === Invite user to workspace ===
+    // INVITE USER
     if ($action === 'invite') {
-        if (!in_array($user_role, ['Owner', 'Administrator'])) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Brak uprawnień do zapraszania użytkowników.']);
-            exit;
-        }
-
-        $email = strtolower(trim($input['email'] ?? ''));
-        $role  = in_array($input['role'] ?? '', ['Administrator', 'Member']) ? $input['role'] : 'Member';
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Nieprawidłowy adres e-mail.']);
-            exit;
-        }
-
-        // Check if user already exists
-        $exists = $db->prepare("SELECT id FROM users WHERE email = ?");
-        $exists->execute([$email]);
-        if ($exists->fetch()) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Użytkownik z tym adresem e-mail już istnieje w systemie.']);
-            exit;
-        }
-
-        // Check pending invite
-        $pending = $db->prepare("SELECT id FROM workspace_invites WHERE email = ? AND status = 'pending' AND expires_at > NOW()");
-        $pending->execute([$email]);
-        if ($pending->fetch()) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Zaproszenie dla tego e-maila już oczekuje.']);
-            exit;
-        }
-
-        // Generate unique token
-        $token = bin2hex(random_bytes(32));
-        $expires = date('Y-m-d H:i:s', strtotime('+72 hours'));
-
-        $stmt = $db->prepare("INSERT INTO workspace_invites (invited_by, email, token, role, expires_at) VALUES (?,?,?,?,?)");
-        $stmt->execute([$user_id, $email, $token, $role, $expires]);
-
-        // Build invite link (for display/copy — email sending requires SMTP setup)
-        $invite_link = 'https://' . ($_SERVER['HTTP_HOST'] ?? 'xcom.com.pl') . '/auth/register.php?invite=' . $token;
-
-        log_activity($user_id, 'workspace_invite', "Sent workspace invite to $email (role: $role)");
-
-        // Try to send email if mail() is available
-        $subject = 'Zaproszenie do workspace TaskManager';
-        $body = "Zostałeś zaproszony do workspace TaskManager.\n\nRola: $role\n\nKliknij link, aby dołączyć (ważny 72h):\n$invite_link\n\nJeśli nie zamawiałeś tego zaproszenia, zignoruj tę wiadomość.";
-        @mail($email, $subject, $body, 'From: noreply@' . ($_SERVER['HTTP_HOST'] ?? 'xcom.com.pl'));
-
-        echo json_encode([
-            'success' => true,
-            'invite_link' => $invite_link,
-            'message' => "Zaproszenie wysłane. Link zaproszenia: $invite_link"
-        ]);
-        exit;
-    }
-
-    // === Cancel invite ===
-    if ($action === 'cancel_invite') {
-        if (!in_array($user_role, ['Owner', 'Administrator'])) {
+        if ($user_role !== 'Owner' && $user_role !== 'Administrator') {
             http_response_code(403);
             echo json_encode(['error' => 'Brak uprawnień.']);
             exit;
         }
-        $id = (int)($input['id'] ?? 0);
-        $stmt = $db->prepare("UPDATE workspace_invites SET status = 'expired' WHERE id = ? AND invited_by = ?");
-        $stmt->execute([$id, $user_id]);
-        echo json_encode(['success' => true]);
-        exit;
+
+        $email = trim($input['email'] ?? '');
+        $role = $input['role'] ?? 'Member';
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Podaj prawidłowy e-mail.']);
+            exit;
+        }
+
+        if (!in_array($role, ['Member', 'Administrator'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Nieprawidłowa rola.']);
+            exit;
+        }
+
+        try {
+            $token = bin2hex(random_bytes(32));
+            $stmt = $db->prepare("INSERT INTO workspace_invites (token, email, role, invited_by, expires_at) VALUES (?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY))");
+            $stmt->execute([$token, $email, $role, $user_id]);
+
+            log_activity($user_id, 'user_invited', "Invited $email as $role");
+            echo json_encode(['success' => true, 'token' => $token]);
+            exit;
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Błąd serwera: ' . $e->getMessage()]);
+            exit;
+        }
+    }
+
+    // PROMOTE USER
+    if ($action === 'promote') {
+        if ($user_role !== 'Owner') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Tylko właściciel może promować.']);
+            exit;
+        }
+
+        $target_id = (int)($input['user_id'] ?? 0);
+        if (!$target_id) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Brak ID użytkownika.']);
+            exit;
+        }
+
+        try {
+            $stmt = $db->prepare("UPDATE users SET role = 'Administrator' WHERE id = ? AND id != ?");
+            $stmt->execute([$target_id, $user_id]);
+
+            log_activity($user_id, 'user_promoted', "Promoted user ID $target_id to Administrator");
+            echo json_encode(['success' => true]);
+            exit;
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Błąd serwera.']);
+            exit;
+        }
+    }
+
+    // REMOVE USER
+    if ($action === 'remove') {
+        if ($user_role !== 'Owner') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Tylko właściciel może usuwać użytkowników.']);
+            exit;
+        }
+
+        $target_id = (int)($input['user_id'] ?? 0);
+        if (!$target_id || $target_id === $user_id) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Nie możesz usunąć siebie.']);
+            exit;
+        }
+
+        try {
+            $db->prepare("UPDATE users SET status = 'Blocked' WHERE id = ?")->execute([$target_id]);
+            log_activity($user_id, 'user_removed', "Removed user ID $target_id");
+            echo json_encode(['success' => true]);
+            exit;
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Błąd serwera.']);
+            exit;
+        }
     }
 }
 
-// === GET: return team members JSON ===
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'members') {
-    $stmt = $db->query("SELECT id, full_name, email, role, status FROM users ORDER BY full_name ASC");
-    echo json_encode($stmt->fetchAll());
-    exit;
-}
-
 http_response_code(400);
-echo json_encode(['error' => 'Invalid request']);
+echo json_encode(['error' => 'Błędne żądanie.']);
+exit;
