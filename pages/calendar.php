@@ -90,7 +90,7 @@ foreach ($events as $e) {
 
 .calendar-main {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr;
     gap: 2rem;
 }
 
@@ -98,8 +98,9 @@ foreach ($events as $e) {
     background: var(--bg-primary);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 1.5rem;
+    padding: 2rem;
     box-shadow: var(--shadow-sm);
+    grid-column: 1;
 }
 
 .calendar-table {
@@ -109,18 +110,18 @@ foreach ($events as $e) {
 
 .calendar-weekday-header {
     background: var(--bg-tertiary);
-    padding: 1rem;
+    padding: 1.25rem;
     font-weight: 700;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: var(--text-secondary);
     border-bottom: 2px solid var(--border-color);
 }
 
 .calendar-day-cell {
-    aspect-ratio: 1;
+    min-height: 120px;
     border: 1px solid var(--border-color);
-    padding: 0.75rem;
+    padding: 1rem;
     vertical-align: top;
     position: relative;
     cursor: pointer;
@@ -150,15 +151,16 @@ foreach ($events as $e) {
 }
 
 .day-number {
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-bottom: 0.4rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
 }
 
 .day-events {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.5rem;
 }
 
 .day-event-dot {
@@ -176,6 +178,7 @@ foreach ($events as $e) {
     border-radius: 12px;
     padding: 1.5rem;
     box-shadow: var(--shadow-sm);
+    grid-column: 1;
 }
 
 .events-sidebar h2 {
@@ -232,6 +235,9 @@ foreach ($events as $e) {
 @media (max-width: 1024px) {
     .calendar-main {
         grid-template-columns: 1fr;
+    }
+    .calendar-day-cell {
+        min-height: 100px;
     }
 }
 </style>
@@ -388,12 +394,13 @@ foreach ($events as $e) {
 let editingEventId = null;
 
 function goToMonth(m, y) {
-    window.location.href = `/pages/calendar.php?month=${m}&year=${y}`;
+    if (!m || !y || isNaN(m) || isNaN(y)) return;
+    window.location.href = `/pages/calendar.php?month=${parseInt(m)}&year=${parseInt(y)}`;
 }
 
 function goToToday() {
     const today = new Date();
-    goToMonth(today.getMonth() + 1, today.getFullYear());
+    window.location.href = `/pages/calendar.php?month=${today.getMonth() + 1}&year=${today.getFullYear()}`;
 }
 
 function openAddEventModal(date = null) {
@@ -413,7 +420,7 @@ function showDayEvents(date) {
 }
 
 async function editEvent(id) {
-    const json = await apiGet(`/api/calendar.php?action=detail&id=${id}`);
+    const json = await apiGet(`/api/calendar_detail.php?id=${parseInt(id)}`);
     if (!json?.event) {
         Toast.error('Nie udało się załadować wydarzenia.');
         return;
