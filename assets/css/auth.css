@@ -1,0 +1,128 @@
+/* Auth Specific Styles */
+
+/* Password Toggle */
+.pwd-toggle-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.pwd-toggle-wrap .form-control {
+    padding-right: 2.5rem;
+}
+.pwd-toggle-btn {
+    position: absolute;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pwd-toggle-btn:hover {
+    color: var(--primary);
+}
+
+/* Password Strength Meter */
+.pwd-strength-meter {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+}
+.pwd-strength-bar {
+    height: 4px;
+    flex: 1;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    transition: background 0.3s;
+}
+.pwd-strength-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+    text-align: right;
+    font-weight: 600;
+}
+
+/* Strength Colors */
+.strength-1 .pwd-strength-bar:nth-child(1) { background: var(--danger); }
+.strength-2 .pwd-strength-bar:nth-child(1),
+.strength-2 .pwd-strength-bar:nth-child(2) { background: var(--warning); }
+.strength-3 .pwd-strength-bar:nth-child(1),
+.strength-3 .pwd-strength-bar:nth-child(2),
+.strength-3 .pwd-strength-bar:nth-child(3) { background: var(--info); }
+.strength-4 .pwd-strength-bar { background: var(--success); }
+
+/* Social Login */
+.social-login-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.social-login-divider::before,
+.social-login-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+}
+.social-login-divider:not(:empty)::before { margin-right: .5em; }
+.social-login-divider:not(:empty)::after { margin-left: .5em; }
+
+.social-login-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.btn-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition);
+}
+.btn-social:hover {
+    background: var(--bg-tertiary);
+}
+.btn-social i {
+    font-size: 1.1rem;
+}
+
+/* Loading State for Buttons */
+.btn.loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
