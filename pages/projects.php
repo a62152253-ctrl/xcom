@@ -4,8 +4,16 @@ require_once __DIR__ . '/../includes/header.php';
 $db = Database::getInstance()->getConnection();
 $user_id = $_SESSION['user_id'];
 
-$sort = $_GET['sort'] ?? 'name';   // name | deadline | progress
-$filter = $_GET['filter'] ?? 'all'; // all | mine | shared
+// Whitelist validation for sort and filter
+$sort = $_GET['sort'] ?? 'name';
+if (!in_array($sort, ['name', 'deadline', 'created'])) {
+    $sort = 'name';
+}
+
+$filter = $_GET['filter'] ?? 'all';
+if (!in_array($filter, ['all', 'mine', 'shared'])) {
+    $filter = 'all';
+}
 
 $sort_sql = match($sort) {
     'deadline' => 'p.deadline ASC NULLS LAST',
@@ -31,8 +39,8 @@ $all_projects = $stmt->fetchAll();
 
 // Filter
 $projects = match($filter) {
-    'mine'   => array_filter($all_projects, fn($p) => $p['created_by'] == $user_id),
-    'shared' => array_filter($all_projects, fn($p) => $p['created_by'] != $user_id),
+    'mine'   => array_filter($all_projects, fn($p) => (int)$p['created_by'] === $user_id),
+    'shared' => array_filter($all_projects, fn($p) => (int)$p['created_by'] !== $user_id),
     default  => $all_projects
 };
 $projects = array_values($projects);
@@ -55,15 +63,15 @@ $projects = array_values($projects);
         <input type="text" id="project-search" class="form-control" placeholder="Szukaj projektu..." oninput="filterProjects(this.value)">
     </div>
     <div class="filter-tabs">
-        <a href="?filter=all&sort=<?= $sort ?>"    class="filter-tab <?= $filter==='all'    ? 'active' : '' ?>">Wszystkie (<?= count($all_projects) ?>)</a>
-        <a href="?filter=mine&sort=<?= $sort ?>"   class="filter-tab <?= $filter==='mine'   ? 'active' : '' ?>">Moje</a>
-        <a href="?filter=shared&sort=<?= $sort ?>" class="filter-tab <?= $filter==='shared' ? 'active' : '' ?>">Udostępnione</a>
+        <a href="?filter=all&sort=<?= htmlspecialchars($sort, ENT_QUOTES, 'UTF-8') ?>"    class="filter-tab <?= $filter === 'all'    ? 'active' : '' ?>">Wszystkie (<?= count($all_projects) ?>)</a>
+        <a href="?filter=mine&sort=<?= htmlspecialchars($sort, ENT_QUOTES, 'UTF-8') ?>"   class="filter-tab <?= $filter === 'mine'   ? 'active' : '' ?>">Moje</a>
+        <a href="?filter=shared&sort=<?= htmlspecialchars($sort, ENT_QUOTES, 'UTF-8') ?>" class="filter-tab <?= $filter === 'shared' ? 'active' : '' ?>">Udostępnione</a>
     </div>
     <div class="filter-tabs">
         <span style="font-size:.75rem;color:var(--text-muted);align-self:center">Sortuj:</span>
-        <a href="?filter=<?= $filter ?>&sort=name"     class="filter-tab <?= $sort==='name'     ? 'active' : '' ?>"><i class="fa-solid fa-arrow-down-a-z"></i> Nazwa</a>
-        <a href="?filter=<?= $filter ?>&sort=deadline" class="filter-tab <?= $sort==='deadline' ? 'active' : '' ?>"><i class="fa-regular fa-calendar"></i> Termin</a>
-        <a href="?filter=<?= $filter ?>&sort=created"  class="filter-tab <?= $sort==='created'  ? 'active' : '' ?>"><i class="fa-solid fa-clock-rotate-left"></i> Najnowsze</a>
+        <a href="?filter=<?= htmlspecialchars($filter, ENT_QUOTES, 'UTF-8') ?>&sort=name"     class="filter-tab <?= $sort === 'name'     ? 'active' : '' ?>"><i class="fa-solid fa-arrow-down-a-z"></i> Nazwa</a>
+        <a href="?filter=<?= htmlspecialchars($filter, ENT_QUOTES, 'UTF-8') ?>&sort=deadline" class="filter-tab <?= $sort === 'deadline' ? 'active' : '' ?>"><i class="fa-regular fa-calendar"></i> Termin</a>
+        <a href="?filter=<?= htmlspecialchars($filter, ENT_QUOTES, 'UTF-8') ?>&sort=created"  class="filter-tab <?= $sort === 'created'  ? 'active' : '' ?>"><i class="fa-solid fa-clock-rotate-left"></i> Najnowsze</a>
     </div>
 </div>
 
@@ -78,31 +86,31 @@ $projects = array_values($projects);
     </div>
     <?php else: ?>
     <?php foreach ($projects as $p):
-        $pct = $p['total_tasks'] > 0 ? round($p['done_tasks'] / $p['total_tasks'] * 100) : 0;
-        $is_owner = $p['created_by'] == $user_id;
+        $pct = $p['total_tasks'] > 0 ? round((int)$p['done_tasks'] / (int)$p['total_tasks'] * 100) : 0;
+        $is_owner = (int)$p['created_by'] === $user_id;
     ?>
-    <div class="project-card" data-search="<?= strtolower(sanitize($p['name']) . ' ' . sanitize($p['description'] ?? '')) ?>">
+    <div class="project-card" data-search="<?= htmlspecialchars(strtolower(sanitize($p['name']) . ' ' . sanitize($p['description'] ?? '')), ENT_QUOTES, 'UTF-8') ?>">
         <!-- Color stripe -->
-        <div class="project-card-stripe" style="background:<?= $p['color'] ?>"></div>
+        <div class="project-card-stripe" style="background:<?= htmlspecialchars($p['color'], ENT_QUOTES, 'UTF-8') ?>"></div>
 
         <div class="project-card-body">
             <div class="project-card-header">
-                <h3 class="project-card-title" onclick="window.location.href='/pages/tasks.php?project_id=<?= $p['id'] ?>'">
+                <h3 class="project-card-title" onclick="window.location.href='/pages/tasks.php?project_id=<?= (int)$p['id'] ?>'">
                     <?= sanitize($p['name']) ?>
                 </h3>
                 <div class="project-card-menu-wrap">
-                    <button class="btn-icon btn-ghost" onclick="toggleProjectMenu(<?= $p['id'] ?>)" title="Opcje">
+                    <button class="btn-icon btn-ghost" onclick="toggleProjectMenu(<?= (int)$p['id'] ?>)" title="Opcje">
                         <i class="fa-solid fa-ellipsis-vertical"></i>
                     </button>
-                    <div id="project-menu-<?= $p['id'] ?>" class="project-dropdown">
-                        <a class="project-dropdown-item" href="/pages/tasks.php?project_id=<?= $p['id'] ?>">
+                    <div id="project-menu-<?= (int)$p['id'] ?>" class="project-dropdown">
+                        <a class="project-dropdown-item" href="/pages/tasks.php?project_id=<?= (int)$p['id'] ?>">
                             <i class="fa-solid fa-list-check"></i> Zadania
                         </a>
-                        <div class="project-dropdown-item" onclick="openAddMemberModal(<?= $p['id'] ?>)">
+                        <div class="project-dropdown-item" onclick="openAddMemberModal(<?= (int)$p['id'] ?>)">
                             <i class="fa-solid fa-user-plus"></i> Członkowie
                         </div>
                         <?php if ($is_owner): ?>
-                        <div class="project-dropdown-item project-dropdown-item--danger" onclick="archiveProject(<?= $p['id'] ?>)">
+                        <div class="project-dropdown-item project-dropdown-item--danger" onclick="archiveProject(<?= (int)$p['id'] ?>)">
                             <i class="fa-solid fa-box-archive"></i> Archiwizuj
                         </div>
                         <?php endif; ?>
@@ -116,17 +124,17 @@ $projects = array_values($projects);
             <div class="project-card-progress">
                 <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--text-muted);margin-bottom:.3rem">
                     <span>Postęp zadań</span>
-                    <span><?= $p['done_tasks'] ?>/<?= $p['total_tasks'] ?> (<?= $pct ?>%)</span>
+                    <span><?= (int)$p['done_tasks'] ?>/<?= (int)$p['total_tasks'] ?> (<?= $pct ?>%)</span>
                 </div>
                 <div class="progress-bar-track">
-                    <div class="progress-bar-fill" style="width:<?= $pct ?>%;background:<?= $p['color'] ?>"></div>
+                    <div class="progress-bar-fill" style="width:<?= $pct ?>%;background:<?= htmlspecialchars($p['color'], ENT_QUOTES, 'UTF-8') ?>"></div>
                 </div>
             </div>
         </div>
 
         <div class="project-card-footer">
             <div style="display:flex;align-items:center;gap:.35rem;font-size:.78rem;color:var(--text-muted)">
-                <i class="fa-solid fa-users"></i> <?= $p['member_count'] ?> członków
+                <i class="fa-solid fa-users"></i> <?= (int)$p['member_count'] ?> członków
             </div>
             <div style="font-size:.78rem;color:<?= $p['deadline'] && strtotime($p['deadline']) < time() ? 'var(--danger)' : 'var(--text-muted)' ?>">
                 <?php if ($p['deadline']): ?>
@@ -151,11 +159,11 @@ $projects = array_values($projects);
         <div class="modal-body">
             <div class="form-group">
                 <label class="form-label">Nazwa projektu *</label>
-                <input class="form-control" type="text" id="project-name" placeholder="np. Redesign strony www">
+                <input class="form-control" type="text" id="project-name" placeholder="np. Redesign strony www" maxlength="255">
             </div>
             <div class="form-group">
                 <label class="form-label">Opis projektu</label>
-                <textarea class="form-control" id="project-desc" rows="3" placeholder="Krótki opis celów projektu..."></textarea>
+                <textarea class="form-control" id="project-desc" rows="3" placeholder="Krótki opis celów projektu..." maxlength="1000"></textarea>
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -188,7 +196,7 @@ $projects = array_values($projects);
             <input type="hidden" id="member-project-id">
             <div class="form-group">
                 <label class="form-label">Adres e-mail użytkownika</label>
-                <input class="form-control" type="email" id="member-email" placeholder="np. kolega@firma.pl">
+                <input class="form-control" type="email" id="member-email" placeholder="np. kolega@firma.pl" maxlength="255">
             </div>
             <div class="form-group">
                 <label class="form-label">Rola w projekcie</label>
@@ -216,7 +224,7 @@ function filterProjects(q) {
 
 // Dropdown menus
 function toggleProjectMenu(id) {
-    const menu = document.getElementById('project-menu-' + id);
+    const menu = document.getElementById('project-menu-' + parseInt(id));
     const isOpen = menu.classList.contains('active');
     document.querySelectorAll('.project-dropdown').forEach(m => m.classList.remove('active'));
     if (!isOpen) menu.classList.add('active');
@@ -259,13 +267,13 @@ async function submitCreateProject() {
 
 // Add Member
 function openAddMemberModal(id) {
-    document.getElementById('member-project-id').value = id;
+    document.getElementById('member-project-id').value = parseInt(id);
     document.getElementById('add-member-modal').classList.add('active');
 }
 function closeAddMemberModal() { document.getElementById('add-member-modal').classList.remove('active'); }
 
 async function submitAddMember() {
-    const project_id = document.getElementById('member-project-id').value;
+    const project_id = parseInt(document.getElementById('member-project-id').value);
     const email = document.getElementById('member-email').value.trim();
     const role = document.getElementById('member-role').value;
     if (!email) { Toast.error('Podaj adres e-mail.'); return; }
@@ -282,7 +290,7 @@ async function submitAddMember() {
 // Archive
 function archiveProject(id) {
     confirmDialog('Zarchiwizować projekt?', async () => {
-        const json = await apiPost('/api/projects.php?action=archive', { id });
+        const json = await apiPost('/api/projects.php?action=archive', { id: parseInt(id) });
         if (json.success) { Toast.success('Projekt zarchiwizowany.'); setTimeout(() => location.reload(), 800); }
         else Toast.error(json.error || 'Błąd archiwizacji');
     });
