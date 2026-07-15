@@ -2,6 +2,8 @@
 // auth/login.php
 require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/ratelimit.php';
+require_once __DIR__ . '/../config/env.php';
 
 start_secure_session();
 
@@ -19,44 +21,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password'] ?? '');
     $csrf_token = $_POST['csrf_token'] ?? '';
     
-    if (!validate_csrf($csrf_token)) {
+    // Rate limiting by IP
+    $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+    $ratelimit = new RateLimit(Database::getInstance()->getConnection());
+    if (!$ratelimit->check($ip, 'login', 5, 300)) {
+        $error = 'Zbyt wiele prób logowania. Spróbuj ponownie za 5 minut.';
+    }
+    
+    if (!$error && !validate_csrf($csrf_token)) {
         $error = 'Błąd weryfikacji tokenu CSRF.';
-    } else if (empty($email) || empty($password)) {
+    } else if (!$error && empty($email) || empty($password)) {
         $error = 'Wypełnij wszystkie pola.';
-    } else {
-        $db = Database::getInstance()->getConnection();
-        
-        // Find user
-        $stmt = $db->prepare("SELECT u.*, s.theme, s.language FROM users u LEFT JOIN settings s ON u.id = s.user_id WHERE u.email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch();
-        
-        if ($user && password_verify($password, $user['password_hash'])) {
-            if ($user['status'] === 'Blocked') {
-                $error = 'Twoje konto zostało zablokowane. Skontaktuj się z administratorem.';
-            } else if ($user['status'] === 'Pending') {
-                $error = 'Konto nieaktywne. Proszę zweryfikować adres e-mail.';
-            } else {
-                // Successful login
-                session_regenerate_id(true);
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_email'] = $user['email'];
-                $_SESSION['user_name'] = $user['full_name'];
-                $_SESSION['user_role'] = $user['role'];
-                $_SESSION['user_status'] = $user['status'];
-                $_SESSION['user_avatar'] = $user['avatar'];
-                $_SESSION['user_theme'] = $user['theme'] ?? 'light';
-                $_SESSION['user_language'] = $user['language'] ?? 'pl';
-                
-                log_activity($user['id'], 'login', 'User logged in successfully');
-                
-                header("Location: /pages/dashboard.php");
-                exit;
-            }
+    } else if (!$error) {
+        // Validate email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = 'Niepoprawny format adresu e-mail.';
         } else {
-            $error = 'Błędny e-mail lub hasło.';
-            // Log security event (anonymously or using the entered email in details)
-            log_activity(null, 'failed_login', 'Failed login attempt for: ' . sanitize($email));
+            $db = Database::getInstance()->getConnection();
+            
+            // Find user
+            $stmt = $db->prepare("SELECT u.*, s.theme, s.language FROM users u LEFT JOIN settings s ON u.id = s.user_id WHERE u.email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
+            
+            if ($user && password_verify($password, $user['password_hash'])) {
+                if ($user['status'] === 'Blocked') {
+                    $error = 'Twoje konto zostało zablokowane. Skontaktuj się z administratorem.';
+                } else if ($user['status'] === 'Pending') {
+                    $error = 'Konto nieaktywne. Proszę zweryfikować adres e-mail.';
+                } else {
+                    // Successful login - regenerate session and update last login
+                    session_regenerate_id(true);
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['user_email'] = $user['email'];
+                    $_SESSION['user_name'] = $user['full_name'];
+                    $_SESSION['user_role'] = $user['role'];
+                    $_SESSION['user_status'] = $user['status'];
+                    $_SESSION['user_avatar'] = $user['avatar'] ?? '';
+                    $_SESSION['user_theme'] = $user['theme'] ?? 'light';
+                    $_SESSION['user_language'] = $user['language'] ?? 'pl';
+                    
+                    // Update last login timestamp
+                    $db->prepare("UPDATE users SET last_login = NOW() WHERE id = ?")->execute([$user['id']]);
+                    
+                    log_activity($user['id'], 'login', 'User logged in successfully');
+                    
+                    header("Location: /pages/dashboard.php");
+                    exit;
+                }
+            } else {
+                $error = 'Błędny e-mail lub hasło.';
+                log_activity(null, 'failed_login', 'Failed login attempt for: ' . sanitize($email) . ' from ' . $ip);
+            }
         }
     }
 }
@@ -96,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div class="form-group">
                     <label class="form-label" for="email">E-mail</label>
-                    <input class="form-control" type="email" id="email" name="email" placeholder="twoj@email.com" required value="<?php echo isset($_POST['email']) ? sanitize($_POST['email']) : ''; ?>">
+                    <input class="form-control" type="email" id="email" name="email" placeholder="twoj@email.com" required value="<?php echo isset($_POST['email']) ? sanitize($_POST['email']) : ''; ?>" autocomplete="email">
                 </div>
 
                 <div class="form-group">
@@ -105,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a class="auth-link" style="font-size: 0.8rem;" href="forgot-password.php">Zapomniałeś hasła?</a>
                     </div>
                     <div class="pwd-toggle-wrap">
-                        <input class="form-control" type="password" id="password" name="password" placeholder="••••••••" required>
+                        <input class="form-control" type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
                         <button type="button" class="pwd-toggle-btn" tabindex="-1">
                             <i class="fa-solid fa-eye"></i>
                         </button>

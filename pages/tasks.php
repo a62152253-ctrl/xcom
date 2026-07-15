@@ -4,10 +4,6 @@ require_once __DIR__ . '/../includes/header.php';
 $db = Database::getInstance()->getConnection();
 $user_id = $_SESSION['user_id'];
 
-// Open task_id from URL
-$open_task_id = isset($_GET['task_id']) ? (int)$_GET['task_id'] : 0;
-$filter_project = isset($_GET['project_id']) ? (int)$_GET['project_id'] : 0;
-
 // Get user's projects for filter
 $stmt_projs = $db->prepare("
     SELECT DISTINCT p.id, p.name, p.color FROM projects p
@@ -22,19 +18,32 @@ $user_projects = $stmt_projs->fetchAll();
 $stmt_users = $db->query("SELECT id, full_name, email FROM users WHERE status='Active' ORDER BY full_name ASC");
 $all_users = $stmt_users->fetchAll();
 
-// Get tasks (kanban)
-$proj_where = $filter_project ? "AND t.project_id = $filter_project" : '';
-$stmt_tasks = $db->prepare("
+// Open task_id from URL - type cast to int for safety
+$open_task_id = (int)($_GET['task_id'] ?? 0);
+$filter_project = (int)($_GET['project_id'] ?? 0);
+
+// Get tasks (kanban) - FIX: use prepared statement instead of string interpolation
+$base_query = "
     SELECT t.*, p.name as project_name, p.color as project_color,
            u.full_name as assigned_name
     FROM tasks t
     INNER JOIN projects p ON t.project_id = p.id
     LEFT JOIN project_members pm ON p.id = pm.project_id
     LEFT JOIN users u ON t.assigned_to = u.id
-    WHERE (p.created_by = ? OR pm.user_id = ?) AND p.is_archived = 0 $proj_where
-    ORDER BY FIELD(t.priority,'Critical','High','Medium','Low'), t.deadline ASC
-");
-$stmt_tasks->execute([$user_id, $user_id]);
+    WHERE (p.created_by = ? OR pm.user_id = ?) AND p.is_archived = 0
+";
+
+$params = [$user_id, $user_id];
+
+if ($filter_project) {
+    $base_query .= " AND t.project_id = ?";
+    $params[] = $filter_project;
+}
+
+$base_query .= " ORDER BY FIELD(t.priority,'Critical','High','Medium','Low'), t.deadline ASC";
+
+$stmt_tasks = $db->prepare($base_query);
+$stmt_tasks->execute($params);
 $all_tasks = $stmt_tasks->fetchAll();
 
 // If specific task opened via URL, load it
@@ -84,10 +93,10 @@ foreach ($all_tasks as $t) {
     <?php endif; ?>
 
     <?php if (!empty($user_projects)): ?>
-    <select class="form-control" style="width:auto;padding:.4rem .875rem;font-size:.825rem" onchange="if(this.value) window.location.href='/pages/tasks.php?project_id='+this.value; else window.location.href='/pages/tasks.php'">
+    <select class="form-control" style="width:auto;padding:.4rem .875rem;font-size:.825rem" onchange="if(this.value) window.location.href='/pages/tasks.php?project_id='+parseInt(this.value); else window.location.href='/pages/tasks.php'">
         <option value="">Wszystkie projekty</option>
         <?php foreach ($user_projects as $p): ?>
-        <option value="<?= $p['id'] ?>" <?= $filter_project == $p['id'] ? 'selected' : '' ?>>
+        <option value="<?= (int)$p['id'] ?>" <?= $filter_project == $p['id'] ? 'selected' : '' ?>>
             <?= sanitize($p['name']) ?>
         </option>
         <?php endforeach; ?>
@@ -103,7 +112,7 @@ foreach ($all_tasks as $t) {
     foreach ($columns as $status => $cards):
     ?>
     <div class="kanban-column" id="col-<?= str_replace(' ', '-', strtolower($status)) ?>"
-         ondrop="drop(event,'<?= $status ?>')" ondragover="dragOver(event)" ondragleave="dragLeave(event)">
+         ondrop="drop(event,'<?= sanitize($status) ?>')" ondragover="dragOver(event)" ondragleave="dragLeave(event)">
         <div class="kanban-column-header">
             <span class="kanban-column-title" style="color:<?= $col_colors[$status] ?>">
                 <i class="fa-solid <?= $col_icons[$status] ?>" style="margin-right:.4rem;font-size:.8rem"></i>
@@ -113,14 +122,14 @@ foreach ($all_tasks as $t) {
         </div>
 
         <?php foreach ($cards as $c): ?>
-        <div class="kanban-card" draggable="true" id="task-<?= $c['id'] ?>"
-             data-id="<?= $c['id'] ?>" data-status="<?= $c['status'] ?>"
-             data-priority="<?= $c['priority'] ?>" data-name="<?= strtolower(sanitize($c['name'])) ?>"
-             ondragstart="dragStart(event)" onclick="openTaskDetail(<?= $c['id'] ?>)">
+        <div class="kanban-card" draggable="true" id="task-<?= (int)$c['id'] ?>"
+             data-id="<?= (int)$c['id'] ?>" data-status="<?= sanitize($c['status']) ?>"
+             data-priority="<?= sanitize($c['priority']) ?>" data-name="<?= htmlspecialchars(strtolower($c['name']), ENT_QUOTES, 'UTF-8') ?>"
+             ondragstart="dragStart(event)" onclick="openTaskDetail(<?= (int)$c['id'] ?>)">
 
-            <span class="kanban-card-tag tag-<?= strtolower($c['priority']) ?>"><?= $c['priority'] ?></span>
+            <span class="kanban-card-tag tag-<?= strtolower($c['priority']) ?>"><?= sanitize($c['priority']) ?></span>
             <?php if (!empty($c['project_color']) && !$filter_project): ?>
-            <span style="float:right;width:10px;height:10px;border-radius:50%;background:<?= $c['project_color'] ?>;margin-top:2px" title="<?= sanitize($c['project_name']) ?>"></span>
+            <span style="float:right;width:10px;height:10px;border-radius:50%;background:<?= sanitize($c['project_color']) ?>;margin-top:2px" title="<?= sanitize($c['project_name']) ?>"></span>
             <?php endif; ?>
 
             <div class="kanban-card-title"><?= sanitize($c['name']) ?></div>
@@ -139,7 +148,7 @@ foreach ($all_tasks as $t) {
         <?php endforeach; ?>
 
         <!-- Add task to column shortcut -->
-        <button class="kanban-add-btn" onclick="openAddTaskModal('<?= $status ?>')">
+        <button class="kanban-add-btn" onclick="openAddTaskModal('<?= sanitize($status) ?>')">
             <i class="fa-solid fa-plus"></i> Dodaj
         </button>
     </div>
@@ -157,11 +166,11 @@ foreach ($all_tasks as $t) {
             <input type="hidden" id="task-id">
             <div class="form-group">
                 <label class="form-label">Tytuł zadania *</label>
-                <input class="form-control" type="text" id="task-name" placeholder="Co trzeba zrobić?">
+                <input class="form-control" type="text" id="task-name" placeholder="Co trzeba zrobić?" maxlength="255">
             </div>
             <div class="form-group">
                 <label class="form-label">Opis</label>
-                <textarea class="form-control" id="task-desc" rows="3" placeholder="Szczegóły, wymagania..."></textarea>
+                <textarea class="form-control" id="task-desc" rows="3" placeholder="Szczegóły, wymagania..." maxlength="5000"></textarea>
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -169,7 +178,7 @@ foreach ($all_tasks as $t) {
                     <select class="form-control" id="task-project">
                         <option value="">-- Wybierz projekt --</option>
                         <?php foreach ($user_projects as $p): ?>
-                        <option value="<?= $p['id'] ?>" <?= $filter_project == $p['id'] ? 'selected' : '' ?>><?= sanitize($p['name']) ?></option>
+                        <option value="<?= (int)$p['id'] ?>" <?= $filter_project == $p['id'] ? 'selected' : '' ?>><?= sanitize($p['name']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -178,7 +187,7 @@ foreach ($all_tasks as $t) {
                     <select class="form-control" id="task-assign">
                         <option value="">-- Nieprzypisany --</option>
                         <?php foreach ($all_users as $u): ?>
-                        <option value="<?= $u['id'] ?>"><?= sanitize($u['full_name']) ?></option>
+                        <option value="<?= (int)$u['id'] ?>"><?= sanitize($u['full_name']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -219,7 +228,6 @@ foreach ($all_tasks as $t) {
 </div>
 
 <script>
-// ── Drag & Drop ──────────────────────────────────────────
 let draggedId = null;
 
 function dragStart(e) {
@@ -241,13 +249,12 @@ async function drop(e, newStatus) {
     const oldStatus = card?.dataset.status;
     if (oldStatus === newStatus) { if (card) card.style.opacity = '1'; return; }
 
-    // Optimistic UI: move card
     const col = document.getElementById('col-' + newStatus.replace(/ /g, '-').toLowerCase());
     const addBtn = col?.querySelector('.kanban-add-btn');
     if (card && col) { col.insertBefore(card, addBtn); card.dataset.status = newStatus; card.style.opacity = '1'; }
     updateColumnCounts();
 
-    const json = await apiPost('/api/tasks.php?action=update_status', { id: draggedId, status: newStatus });
+    const json = await apiPost('/api/tasks.php?action=update_status', { id: parseInt(draggedId), status: newStatus });
     if (!json.success) {
         Toast.error(json.error || 'Błąd zapisu statusu');
         location.reload();
@@ -264,7 +271,6 @@ function updateColumnCounts() {
     });
 }
 
-// ── Search & Priority Filter ──────────────────────────────
 let currentPriorityFilter = 'all';
 
 function filterTasks(q) {
@@ -283,7 +289,6 @@ function setPriorityFilter(priority, btn) {
     filterTasks(document.getElementById('task-search')?.value || '');
 }
 
-// ── Task Modal ────────────────────────────────────────────
 let editingTaskId = null;
 
 function openAddTaskModal(status = 'To Do') {
@@ -301,7 +306,7 @@ function openAddTaskModal(status = 'To Do') {
 }
 
 async function openTaskDetail(id) {
-    const json = await apiGet('/api/tasks.php?action=get&id=' + id);
+    const json = await apiGet('/api/tasks.php?action=get&id=' + parseInt(id));
     if (!json?.task) { Toast.error('Nie udało się załadować zadania.'); return; }
     const t = json.task;
 
@@ -337,8 +342,8 @@ async function saveTask() {
         id: editingTaskId,
         name,
         description: document.getElementById('task-desc').value,
-        project_id,
-        assigned_to: document.getElementById('task-assign').value || null,
+        project_id: parseInt(project_id),
+        assigned_to: parseInt(document.getElementById('task-assign').value) || null,
         priority: document.getElementById('task-priority').value,
         status: document.getElementById('task-status').value,
         deadline: document.getElementById('task-deadline').value || null
@@ -360,7 +365,7 @@ async function saveTask() {
 async function deleteCurrentTask() {
     if (!editingTaskId) return;
     confirmDialog('Trwale usunąć to zadanie?', async () => {
-        const json = await apiPost('/api/tasks.php?action=delete', { id: editingTaskId });
+        const json = await apiPost('/api/tasks.php?action=delete', { id: parseInt(editingTaskId) });
         if (json.success) {
             Toast.success('Zadanie usunięte.');
             closeTaskModal();
@@ -372,7 +377,6 @@ async function deleteCurrentTask() {
     }, true);
 }
 
-// Auto-open task from URL
 <?php if ($open_task_id): ?>
 document.addEventListener('DOMContentLoaded', () => openTaskDetail(<?= $open_task_id ?>));
 <?php endif; ?>

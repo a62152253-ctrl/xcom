@@ -2,7 +2,7 @@
 // includes/functions.php
 require_once __DIR__ . '/../config/database.php';
 
-// Prevent XSS
+// Prevent XSS - enhanced
 function sanitize($data) {
     if (is_array($data)) {
         return array_map('sanitize', $data);
@@ -10,20 +10,36 @@ function sanitize($data) {
     return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
 }
 
-// CSRF check
-function validate_csrf($token) {
-    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+// Input validation
+function validate_input($input, $type = 'string', $max_length = 255) {
+    switch ($type) {
+        case 'email':
+            return filter_var($input, FILTER_VALIDATE_EMAIL) ? $input : null;
+        case 'integer':
+            return filter_var($input, FILTER_VALIDATE_INT) !== false ? (int)$input : null;
+        case 'url':
+            return filter_var($input, FILTER_VALIDATE_URL) ? $input : null;
+        case 'string':
+        default:
+            $clean = trim($input);
+            return strlen($clean) <= $max_length ? $clean : null;
+    }
 }
 
-// Log activity to database
+// CSRF check
+function validate_csrf($token) {
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token ?? '');
+}
+
+// Log activity to database with security context
 function log_activity($user_id, $action, $details = null) {
     try {
         $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("INSERT INTO activity_logs (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)");
+        $stmt = $db->prepare("INSERT INTO activity_logs (user_id, action, details, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)");
         $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-        $stmt->execute([$user_id, $action, $details, $ip]);
+        $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 255);
+        $stmt->execute([$user_id, $action, $details, $ip, $ua]);
     } catch (PDOException $e) {
-        // Fail silently or write to local system log
         error_log("Activity log failed: " . $e->getMessage());
     }
 }
@@ -37,6 +53,15 @@ function create_notification($user_id, $title, $message, $type = 'info') {
     } catch (PDOException $e) {
         error_log("Notification creation failed: " . $e->getMessage());
     }
+}
+
+// Send email (simple wrapper, requires SMTP setup)
+function send_email($to, $subject, $message, $headers = null) {
+    if (!$headers) {
+        $headers = "MIME-Version: 1.0\r\nContent-type: text/html; charset=UTF-8\r\n";
+        $headers .= "From: " . (getenv('MAIL_FROM') ?: 'noreply@example.com') . "\r\n";
+    }
+    return mail($to, $subject, $message, $headers);
 }
 
 // Global translations dictionary
