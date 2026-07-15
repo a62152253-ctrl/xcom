@@ -26,7 +26,7 @@ function start_secure_session() {
     // Periodic session ID regeneration (every 15 minutes)
     if (!isset($_SESSION['created_at'])) {
         $_SESSION['created_at'] = time();
-    } else if (time() - $_SESSION['created_at'] > 900) {
+    } elseif (time() - $_SESSION['created_at'] > 900) {
         session_regenerate_id(true);
         $_SESSION['created_at'] = time();
     }
@@ -50,20 +50,18 @@ function is_logged_in() {
         $stmt->execute([$selector]);
         $token = $stmt->fetch();
 
-        if ($token && hash_equals($token['validator_hash'], hash('sha256', $validator))) {
-            if ($token['status'] === 'Active') {
-                session_regenerate_id(true);
-                $_SESSION['user_id'] = $token['id'];
-                $_SESSION['user_email'] = $token['email'];
-                $_SESSION['user_name'] = $token['full_name'];
-                $_SESSION['user_role'] = $token['role'];
-                $_SESSION['user_status'] = $token['status'];
-                $_SESSION['user_avatar'] = $token['avatar'];
-                $_SESSION['user_theme'] = $token['theme'] ?? 'light';
-                $_SESSION['user_language'] = $token['language'] ?? 'pl';
+        if ($token && hash_equals($token['validator_hash'], hash('sha256', $validator)) && $token['status'] === 'Active') {
+            session_regenerate_id(true);
+            $_SESSION['user_id'] = $token['id'];
+            $_SESSION['user_email'] = $token['email'];
+            $_SESSION['user_name'] = $token['full_name'];
+            $_SESSION['user_role'] = $token['role'];
+            $_SESSION['user_status'] = $token['status'];
+            $_SESSION['user_avatar'] = $token['avatar'];
+            $_SESSION['user_theme'] = $token['theme'] ?? 'light';
+            $_SESSION['user_language'] = $token['language'] ?? 'pl';
 
-                return true;
-            }
+            return true;
         }
     }
 

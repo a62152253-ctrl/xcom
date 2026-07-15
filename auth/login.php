@@ -19,9 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password'] ?? '');
     $csrf_token = $_POST['csrf_token'] ?? '';
     
-    if (!validate_csrf($csrf_token)) {
+    if (!isset($_SESSION['csrf_token']) || !validate_csrf($csrf_token)) {
         $error = 'Błąd weryfikacji tokenu CSRF.';
-    } else if (empty($email) || empty($password)) {
+    } elseif (empty($email) || empty($password)) {
         $error = 'Wypełnij wszystkie pola.';
     } else {
         $db = Database::getInstance()->getConnection();
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user && password_verify($password, $user['password_hash'])) {
             if ($user['status'] === 'Blocked') {
                 $error = 'Twoje konto zostało zablokowane. Skontaktuj się z administratorem.';
-            } else if ($user['status'] === 'Pending') {
+            } elseif ($user['status'] === 'Pending') {
                 $error = 'Konto nieaktywne. Proszę zweryfikować adres e-mail.';
             } else {
                 // Successful login
@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div class="form-group">
                     <label class="form-label" for="email">E-mail</label>
-                    <input class="form-control" type="email" id="email" name="email" placeholder="twoj@email.com" required value="<?php echo isset($_POST['email']) ? sanitize($_POST['email']) : ''; ?>">
+                    <input class="form-control" type="email" id="email" name="email" placeholder="twoj@email.com" required value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                 </div>
 
                 <div class="form-group">
