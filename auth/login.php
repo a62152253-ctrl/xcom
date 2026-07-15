@@ -68,8 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logowanie | TaskManager Pro</title>
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/auth.css">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/assets/js/auth.js" defer></script>
 </head>
 <body>
     <div class="auth-container">
@@ -102,7 +104,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label class="form-label" style="margin-bottom: 0;" for="password">Hasło</label>
                         <a class="auth-link" style="font-size: 0.8rem;" href="forgot-password.php">Zapomniałeś hasła?</a>
                     </div>
-                    <input class="form-control" type="password" id="password" name="password" placeholder="••••••••" required>
+                    <div class="pwd-toggle-wrap">
+                        <input class="form-control" type="password" id="password" name="password" placeholder="••••••••" required>
+                        <button type="button" class="pwd-toggle-btn" tabindex="-1">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 1.5rem;">
@@ -112,8 +119,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <button class="btn btn-primary" type="submit">Zaloguj się</button>
+                <button class="btn btn-primary" type="submit" style="width: 100%;">Zaloguj się</button>
             </form>
+
+            <div class="social-login-divider">LUB ZALOGUJ PRZEZ</div>
+
+            <div class="social-login-grid">
+                <button type="button" class="btn-social" onclick="window.location.href='#'">
+                    <i class="fa-brands fa-google" style="color: #DB4437;"></i> Google
+                </button>
+                <button type="button" class="btn-social" onclick="window.location.href='#'">
+                    <i class="fa-brands fa-github"></i> GitHub
+                </button>
+            </div>
 
             <div class="auth-footer">
                 Nie masz konta? <a class="auth-link" href="register.php">Zarejestruj się</a>

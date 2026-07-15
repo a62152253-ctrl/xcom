@@ -74,7 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($error)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resetowanie hasła | TaskManager Pro</title>
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/auth.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/assets/js/auth.js" defer></script>
 </head>
 <body>
     <div class="auth-container">
@@ -106,15 +108,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($error)) {
                     
                     <div class="form-group">
                         <label class="form-label" for="password">Nowe hasło</label>
-                        <input class="form-control" type="password" id="password" name="password" placeholder="Min. 6 znaków" required>
+                        <div class="pwd-toggle-wrap">
+                            <input class="form-control" type="password" id="password" name="password" placeholder="Min. 6 znaków" required>
+                            <button type="button" class="pwd-toggle-btn" tabindex="-1">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <div id="pwd-strength-container" class="pwd-strength-meter">
+                            <div class="pwd-strength-bar"></div>
+                            <div class="pwd-strength-bar"></div>
+                            <div class="pwd-strength-bar"></div>
+                            <div class="pwd-strength-bar"></div>
+                        </div>
+                        <div id="pwd-strength-text" class="pwd-strength-text"></div>
                     </div>
 
                     <div class="form-group" style="margin-bottom: 1.5rem;">
                         <label class="form-label" for="confirm_password">Powtórz nowe hasło</label>
-                        <input class="form-control" type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+                        <div class="pwd-toggle-wrap">
+                            <input class="form-control" type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+                            <button type="button" class="pwd-toggle-btn" tabindex="-1">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <button class="btn btn-primary" type="submit">Zapisz nowe hasło</button>
+                    <button class="btn btn-primary" type="submit" style="width: 100%;">Zapisz nowe hasło</button>
                 </form>
             <?php endif; ?>
 

@@ -98,7 +98,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rejestracja | TaskManager Pro</title>
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/auth.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/assets/js/auth.js" defer></script>
 </head>
 <body>
     <div class="auth-container">
@@ -141,16 +143,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-group">
                     <label class="form-label" for="password">Hasło</label>
-                    <input class="form-control" type="password" id="password" name="password" placeholder="Min. 6 znaków" required>
+                    <div class="pwd-toggle-wrap">
+                        <input class="form-control" type="password" id="password" name="password" placeholder="Min. 6 znaków" required>
+                        <button type="button" class="pwd-toggle-btn" tabindex="-1">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div id="pwd-strength-container" class="pwd-strength-meter">
+                        <div class="pwd-strength-bar"></div>
+                        <div class="pwd-strength-bar"></div>
+                        <div class="pwd-strength-bar"></div>
+                        <div class="pwd-strength-bar"></div>
+                    </div>
+                    <div id="pwd-strength-text" class="pwd-strength-text"></div>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 1.5rem;">
                     <label class="form-label" for="confirm_password">Powtórz hasło</label>
-                    <input class="form-control" type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+                    <div class="pwd-toggle-wrap">
+                        <input class="form-control" type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+                        <button type="button" class="pwd-toggle-btn" tabindex="-1">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <button class="btn btn-primary" type="submit">Zarejestruj się</button>
+                <button class="btn btn-primary" type="submit" style="width: 100%;">Zarejestruj się</button>
             </form>
+
+            <div class="social-login-divider">LUB ZAREJESTRUJ PRZEZ</div>
+
+            <div class="social-login-grid">
+                <button type="button" class="btn-social" onclick="window.location.href='#'">
+                    <i class="fa-brands fa-google" style="color: #DB4437;"></i> Google
+                </button>
+                <button type="button" class="btn-social" onclick="window.location.href='#'">
+                    <i class="fa-brands fa-github"></i> GitHub
+                </button>
+            </div>
 
             <div class="auth-footer">
                 Masz już konto? <a class="auth-link" href="login.php">Zaloguj się</a>

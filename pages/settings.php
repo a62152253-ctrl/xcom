@@ -90,28 +90,34 @@ $tab = in_array($_GET['tab'] ?? '', ['profile','security','notifications','appea
             <div class="settings-section">
                 <h2 class="settings-section-title">Zmiana hasła</h2>
                 <p style="color:var(--text-secondary);font-size:.875rem;margin-bottom:1.25rem">Zostaw puste jeśli nie chcesz zmieniać hasła.</p>
+
+                <link rel="stylesheet" href="/assets/css/auth.css">
+                <script src="/assets/js/auth.js" defer></script>
+
                 <div class="form-group">
                     <label class="form-label">Nowe hasło</label>
-                    <div style="position:relative">
-                        <input class="form-control" type="password" name="password" id="new-password" placeholder="Minimum 6 znaków" style="padding-right:2.5rem">
-                        <button type="button" class="btn-ghost" style="position:absolute;right:.5rem;top:50%;transform:translateY(-50%);padding:.25rem" onclick="togglePwd('new-password',this)">
-                            <i class="fa-regular fa-eye"></i>
+                    <div class="pwd-toggle-wrap">
+                        <input class="form-control" type="password" name="password" id="password" placeholder="Minimum 6 znaków" style="padding-right:2.5rem">
+                        <button type="button" class="pwd-toggle-btn" tabindex="-1">
+                            <i class="fa-solid fa-eye"></i>
                         </button>
                     </div>
+                    <div id="pwd-strength-container" class="pwd-strength-meter">
+                        <div class="pwd-strength-bar"></div>
+                        <div class="pwd-strength-bar"></div>
+                        <div class="pwd-strength-bar"></div>
+                        <div class="pwd-strength-bar"></div>
+                    </div>
+                    <div id="pwd-strength-text" class="pwd-strength-text"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Potwierdź nowe hasło</label>
-                    <input class="form-control" type="password" name="confirm_password" id="confirm-password" placeholder="Powtórz hasło">
-                </div>
-                <!-- Password strength meter -->
-                <div id="pwd-strength" style="display:none;margin-top:.75rem">
-                    <div style="display:flex;gap:.3rem;margin-bottom:.3rem">
-                        <div class="pwd-bar" id="bar1"></div>
-                        <div class="pwd-bar" id="bar2"></div>
-                        <div class="pwd-bar" id="bar3"></div>
-                        <div class="pwd-bar" id="bar4"></div>
+                    <div class="pwd-toggle-wrap">
+                        <input class="form-control" type="password" name="confirm_password" id="confirm_password" placeholder="Powtórz hasło">
+                        <button type="button" class="pwd-toggle-btn" tabindex="-1">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
                     </div>
-                    <p id="pwd-strength-label" style="font-size:.75rem;color:var(--text-muted)"></p>
                 </div>
             </div>
 
@@ -200,36 +206,6 @@ $tab = in_array($_GET['tab'] ?? '', ['profile','security','notifications','appea
 </div>
 
 <script>
-function togglePwd(inputId, btn) {
-    const inp = document.getElementById(inputId);
-    const show = inp.type === 'password';
-    inp.type = show ? 'text' : 'password';
-    btn.innerHTML = `<i class="fa-regular fa-eye${show ? '-slash' : ''}"></i>`;
-}
-
-// Password strength
-document.getElementById('new-password')?.addEventListener('input', function() {
-    const val = this.value;
-    const wrap = document.getElementById('pwd-strength');
-    if (!val) { wrap.style.display = 'none'; return; }
-    wrap.style.display = 'block';
-
-    let strength = 0;
-    if (val.length >= 6) strength++;
-    if (val.length >= 10) strength++;
-    if (/[A-Z]/.test(val) && /[0-9]/.test(val)) strength++;
-    if (/[^a-zA-Z0-9]/.test(val)) strength++;
-
-    const colors = ['#ef4444','#f59e0b','#3b82f6','#10b981'];
-    const labels = ['Słabe','Średnie','Mocne','Bardzo mocne'];
-    for (let i = 1; i <= 4; i++) {
-        const bar = document.getElementById('bar' + i);
-        bar.style.background = i <= strength ? colors[strength - 1] : 'var(--border-color)';
-    }
-    document.getElementById('pwd-strength-label').textContent = labels[strength - 1] || '';
-    document.getElementById('pwd-strength-label').style.color = colors[strength - 1] || 'var(--text-muted)';
-});
-
 // Avatar preview
 function previewAvatar(input) {
     const file = input.files[0];
