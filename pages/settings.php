@@ -1,0 +1,278 @@
+<?php
+require_once __DIR__ . '/../includes/header.php';
+
+$db = Database::getInstance()->getConnection();
+$user_id = $_SESSION['user_id'];
+
+// Settings with defaults
+$stmt = $db->prepare("SELECT u.*, s.language, s.email_notifications, s.theme FROM users u LEFT JOIN settings s ON u.id = s.user_id WHERE u.id = ?");
+$stmt->execute([$user_id]);
+$user_data = $stmt->fetch();
+
+$success = isset($_GET['success']);
+$error   = $_GET['error'] ?? '';
+
+// Tab from URL
+$tab = in_array($_GET['tab'] ?? '', ['profile','security','notifications','appearance']) ? $_GET['tab'] : 'profile';
+?>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="fa-solid fa-sliders"></i> Ustawienia konta</h1>
+        <p class="page-subtitle">Zarządzaj profilem, hasłem, powiadomieniami i wyglądem.</p>
+    </div>
+</div>
+
+<?php if ($success): ?><div class="alert alert-success"><i class="fa-solid fa-circle-check"></i> Ustawienia zostały zapisane!</div><?php endif; ?>
+<?php if ($error): ?><div class="alert alert-danger"><i class="fa-solid fa-triangle-exclamation"></i> <?= sanitize(urldecode($error)) ?></div><?php endif; ?>
+
+<div class="settings-layout">
+    <!-- Sidebar tabs -->
+    <nav class="settings-nav">
+        <a href="?tab=profile"       class="settings-nav-item <?= $tab==='profile'       ? 'active' : '' ?>"><i class="fa-solid fa-user"></i> Profil</a>
+        <a href="?tab=security"      class="settings-nav-item <?= $tab==='security'      ? 'active' : '' ?>"><i class="fa-solid fa-lock"></i> Bezpieczeństwo</a>
+        <a href="?tab=notifications" class="settings-nav-item <?= $tab==='notifications' ? 'active' : '' ?>"><i class="fa-solid fa-bell"></i> Powiadomienia</a>
+        <a href="?tab=appearance"    class="settings-nav-item <?= $tab==='appearance'    ? 'active' : '' ?>"><i class="fa-solid fa-palette"></i> Wygląd</a>
+    </nav>
+
+    <!-- Tab content -->
+    <div class="settings-content">
+
+        <!-- ── PROFILE TAB ── -->
+        <?php if ($tab === 'profile'): ?>
+        <form method="POST" action="/api/profile.php?action=settings" enctype="multipart/form-data">
+            <div class="settings-section">
+                <h2 class="settings-section-title">Zdjęcie profilowe</h2>
+                <div class="avatar-upload-row">
+                    <?php if (!empty($user_data['avatar'])): ?>
+                        <img src="<?= sanitize($user_data['avatar']) ?>" class="settings-avatar">
+                    <?php else: ?>
+                        <div class="settings-avatar settings-avatar-placeholder"><?= strtoupper(substr($user_data['full_name'], 0, 1)) ?></div>
+                    <?php endif; ?>
+                    <div>
+                        <label class="btn btn-secondary" style="cursor:pointer;width:auto">
+                            <i class="fa-solid fa-camera"></i> Zmień zdjęcie
+                            <input type="file" name="avatar" accept="image/*" style="display:none" onchange="previewAvatar(this)">
+                        </label>
+                        <p style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem">JPG, PNG, max 2MB</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h2 class="settings-section-title">Dane osobowe</h2>
+                <div class="form-group">
+                    <label class="form-label">Imię i nazwisko</label>
+                    <input class="form-control" type="text" name="full_name" value="<?= sanitize($user_data['full_name']) ?>" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">E-mail <span style="color:var(--text-muted);font-size:.8rem">(tylko do odczytu)</span></label>
+                    <input class="form-control" type="email" value="<?= sanitize($user_data['email']) ?>" disabled>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h2 class="settings-section-title">Język aplikacji</h2>
+                <div class="form-group">
+                    <select class="form-control" name="language" style="max-width:240px">
+                        <option value="pl" <?= ($user_data['language']??'pl') === 'pl' ? 'selected' : '' ?>>🇵🇱 Polski</option>
+                        <option value="en" <?= ($user_data['language']??'pl') === 'en' ? 'selected' : '' ?>>🇬🇧 English</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" type="submit" style="width:auto"><i class="fa-solid fa-floppy-disk"></i> Zapisz zmiany</button>
+        </form>
+
+        <!-- ── SECURITY TAB ── -->
+        <?php elseif ($tab === 'security'): ?>
+        <form method="POST" action="/api/profile.php?action=settings">
+            <div class="settings-section">
+                <h2 class="settings-section-title">Zmiana hasła</h2>
+                <p style="color:var(--text-secondary);font-size:.875rem;margin-bottom:1.25rem">Zostaw puste jeśli nie chcesz zmieniać hasła.</p>
+                <div class="form-group">
+                    <label class="form-label">Nowe hasło</label>
+                    <div style="position:relative">
+                        <input class="form-control" type="password" name="password" id="new-password" placeholder="Minimum 6 znaków" style="padding-right:2.5rem">
+                        <button type="button" class="btn-ghost" style="position:absolute;right:.5rem;top:50%;transform:translateY(-50%);padding:.25rem" onclick="togglePwd('new-password',this)">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Potwierdź nowe hasło</label>
+                    <input class="form-control" type="password" name="confirm_password" id="confirm-password" placeholder="Powtórz hasło">
+                </div>
+                <!-- Password strength meter -->
+                <div id="pwd-strength" style="display:none;margin-top:.75rem">
+                    <div style="display:flex;gap:.3rem;margin-bottom:.3rem">
+                        <div class="pwd-bar" id="bar1"></div>
+                        <div class="pwd-bar" id="bar2"></div>
+                        <div class="pwd-bar" id="bar3"></div>
+                        <div class="pwd-bar" id="bar4"></div>
+                    </div>
+                    <p id="pwd-strength-label" style="font-size:.75rem;color:var(--text-muted)"></p>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h2 class="settings-section-title">Informacje o sesji</h2>
+                <div class="session-info-card">
+                    <i class="fa-solid fa-globe"></i>
+                    <div>
+                        <div style="font-weight:600;font-size:.875rem">Aktualna sesja</div>
+                        <div style="color:var(--text-muted);font-size:.8rem">IP: <?= $_SERVER['REMOTE_ADDR'] ?? '—' ?> · <?= date('d.m.Y H:i') ?></div>
+                    </div>
+                    <span class="badge-pill badge-active">Aktywna</span>
+                </div>
+                <a href="/auth/logout.php" class="btn btn-secondary" style="width:auto;margin-top:1rem;color:var(--danger)">
+                    <i class="fa-solid fa-right-from-bracket"></i> Wyloguj się ze wszystkich urządzeń
+                </a>
+            </div>
+
+            <button class="btn btn-primary" type="submit" style="width:auto"><i class="fa-solid fa-lock"></i> Zmień hasło</button>
+        </form>
+
+        <!-- ── NOTIFICATIONS TAB ── -->
+        <?php elseif ($tab === 'notifications'): ?>
+        <form method="POST" action="/api/profile.php?action=settings">
+            <div class="settings-section">
+                <h2 class="settings-section-title">Powiadomienia email</h2>
+                <div class="settings-toggle-row">
+                    <div>
+                        <div style="font-weight:600;font-size:.875rem">Powiadomienia e-mail</div>
+                        <div style="color:var(--text-muted);font-size:.8rem">Otrzymuj powiadomienia o przypisanych zadaniach i komentarzach</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="email_notifications" <?= ($user_data['email_notifications'] ?? 1) ? 'checked' : '' ?>>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h2 class="settings-section-title">Powiadomienia push</h2>
+                <div class="settings-toggle-row">
+                    <div>
+                        <div style="font-weight:600;font-size:.875rem">Powiadomienia w przeglądarce</div>
+                        <div style="color:var(--text-muted);font-size:.8rem">Natychmiastowe alerty o nowych zadaniach</div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="requestPushPermission()" style="width:auto;font-size:.8rem" id="push-btn">
+                        <i class="fa-solid fa-bell"></i> Włącz
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" type="submit" style="width:auto"><i class="fa-solid fa-floppy-disk"></i> Zapisz</button>
+        </form>
+
+        <!-- ── APPEARANCE TAB ── -->
+        <?php elseif ($tab === 'appearance'): ?>
+        <div class="settings-section">
+            <h2 class="settings-section-title">Motyw kolorystyczny</h2>
+            <div class="theme-picker-grid">
+                <div class="theme-option <?= ($user_data['theme']??'dark')==='dark' ? 'theme-option--active' : '' ?>"
+                     onclick="setTheme('dark')" id="theme-dark">
+                    <div class="theme-preview theme-preview--dark">
+                        <div class="theme-preview-sidebar"></div>
+                        <div class="theme-preview-content"></div>
+                    </div>
+                    <div class="theme-option-label"><i class="fa-solid fa-moon"></i> Ciemny</div>
+                </div>
+                <div class="theme-option <?= ($user_data['theme']??'dark')==='light' ? 'theme-option--active' : '' ?>"
+                     onclick="setTheme('light')" id="theme-light">
+                    <div class="theme-preview theme-preview--light">
+                        <div class="theme-preview-sidebar"></div>
+                        <div class="theme-preview-content"></div>
+                    </div>
+                    <div class="theme-option-label"><i class="fa-solid fa-sun"></i> Jasny</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2 class="settings-section-title">Podgląd na żywo</h2>
+            <p style="color:var(--text-secondary);font-size:.875rem">Zmiany motywu są stosowane natychmiast. Nie musisz zapisywać.</p>
+        </div>
+        <?php endif; ?>
+
+    </div>
+</div>
+
+<script>
+function togglePwd(inputId, btn) {
+    const inp = document.getElementById(inputId);
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    btn.innerHTML = `<i class="fa-regular fa-eye${show ? '-slash' : ''}"></i>`;
+}
+
+// Password strength
+document.getElementById('new-password')?.addEventListener('input', function() {
+    const val = this.value;
+    const wrap = document.getElementById('pwd-strength');
+    if (!val) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+
+    let strength = 0;
+    if (val.length >= 6) strength++;
+    if (val.length >= 10) strength++;
+    if (/[A-Z]/.test(val) && /[0-9]/.test(val)) strength++;
+    if (/[^a-zA-Z0-9]/.test(val)) strength++;
+
+    const colors = ['#ef4444','#f59e0b','#3b82f6','#10b981'];
+    const labels = ['Słabe','Średnie','Mocne','Bardzo mocne'];
+    for (let i = 1; i <= 4; i++) {
+        const bar = document.getElementById('bar' + i);
+        bar.style.background = i <= strength ? colors[strength - 1] : 'var(--border-color)';
+    }
+    document.getElementById('pwd-strength-label').textContent = labels[strength - 1] || '';
+    document.getElementById('pwd-strength-label').style.color = colors[strength - 1] || 'var(--text-muted)';
+});
+
+// Avatar preview
+function previewAvatar(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const existing = document.querySelector('.settings-avatar');
+        if (existing) existing.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+// Live theme switcher
+async function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.querySelectorAll('.theme-option').forEach(el => el.classList.remove('theme-option--active'));
+    document.getElementById('theme-' + theme)?.classList.add('theme-option--active');
+
+    const icon = document.getElementById('theme-toggle-btn');
+    if (icon) icon.innerHTML = `<i class="fa-solid ${theme === 'dark' ? 'fa-sun' : 'fa-moon'}"></i>`;
+
+    const json = await apiPost('/api/profile.php?action=theme', { theme });
+    if (json?.success) Toast.success('Motyw ' + (theme === 'dark' ? 'ciemny' : 'jasny') + ' aktywowany!');
+}
+
+// Push notifications
+function requestPushPermission() {
+    if (!('Notification' in window)) { Toast.warning('Twoja przeglądarka nie wspiera powiadomień push.'); return; }
+    Notification.requestPermission().then(p => {
+        if (p === 'granted') {
+            Toast.success('Powiadomienia push włączone!');
+            document.getElementById('push-btn').innerHTML = '<i class="fa-solid fa-check"></i> Włączone';
+        } else {
+            Toast.error('Brak zgody na powiadomienia.');
+        }
+    });
+}
+
+// Check existing push permission
+if (window.Notification?.permission === 'granted') {
+    const btn = document.getElementById('push-btn');
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-check"></i> Włączone';
+}
+</script>
+
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>
