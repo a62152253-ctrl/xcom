@@ -48,6 +48,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_theme'] = $user['theme'] ?? 'light';
                 $_SESSION['user_language'] = $user['language'] ?? 'pl';
                 
+                // Remember Me
+                if (isset($_POST['remember']) && $_POST['remember'] === 'on') {
+                    $selector = bin2hex(random_bytes(16));
+                    $validator = bin2hex(random_bytes(32));
+                    $expires = time() + 86400 * 30; // 30 days
+
+                    $validator_hash = hash('sha256', $validator);
+
+                    // Insert into DB
+                    $stmt = $db->prepare("INSERT INTO user_tokens (user_id, selector, validator_hash, expires_at) VALUES (?, ?, ?, ?)");
+                    $stmt->execute([$user['id'], $selector, $validator_hash, date('Y-m-d H:i:s', $expires)]);
+
+                    // Set cookie
+                    setcookie(
+                        'remember_me',
+                        $selector . ':' . $validator,
+                        $expires,
+                        '/',
+                        '',
+                        isset($_SERVER['HTTPS']), // Secure if HTTPS
+                        true // HttpOnly
+                    );
+                }
+
                 log_activity($user['id'], 'login', 'User logged in successfully');
                 
                 header("Location: /pages/dashboard.php");
@@ -102,7 +126,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label class="form-label" style="margin-bottom: 0;" for="password">Hasło</label>
                         <a class="auth-link" style="font-size: 0.8rem;" href="forgot-password.php">Zapomniałeś hasła?</a>
                     </div>
-                    <input class="form-control" type="password" id="password" name="password" placeholder="••••••••" required>
+                    <div style="position: relative;">
+                        <input class="form-control" style="padding-right: 40px;" type="password" id="password" name="password" placeholder="••••••••" required>
+                        <button type="button" id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 1.5rem;">
@@ -120,5 +149,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function (e) {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    </script>
 </body>
 </html>

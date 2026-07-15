@@ -35,7 +35,39 @@ function start_secure_session() {
 }
 
 function is_logged_in() {
-    return isset($_SESSION['user_id']) && $_SESSION['user_status'] === 'Active';
+    if (isset($_SESSION['user_id']) && $_SESSION['user_status'] === 'Active') {
+        return true;
+    }
+
+    // Check remember me cookie
+    if (isset($_COOKIE['remember_me']) && strpos($_COOKIE['remember_me'], ':') !== false) {
+        list($selector, $validator) = explode(':', $_COOKIE['remember_me'], 2);
+
+        require_once __DIR__ . '/../config/database.php';
+        $db = Database::getInstance()->getConnection();
+
+        $stmt = $db->prepare("SELECT ut.*, u.*, s.theme, s.language FROM user_tokens ut INNER JOIN users u ON ut.user_id = u.id LEFT JOIN settings s ON u.id = s.user_id WHERE ut.selector = ? AND ut.expires_at >= NOW()");
+        $stmt->execute([$selector]);
+        $token = $stmt->fetch();
+
+        if ($token && hash_equals($token['validator_hash'], hash('sha256', $validator))) {
+            if ($token['status'] === 'Active') {
+                session_regenerate_id(true);
+                $_SESSION['user_id'] = $token['id'];
+                $_SESSION['user_email'] = $token['email'];
+                $_SESSION['user_name'] = $token['full_name'];
+                $_SESSION['user_role'] = $token['role'];
+                $_SESSION['user_status'] = $token['status'];
+                $_SESSION['user_avatar'] = $token['avatar'];
+                $_SESSION['user_theme'] = $token['theme'] ?? 'light';
+                $_SESSION['user_language'] = $token['language'] ?? 'pl';
+
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 function require_login() {

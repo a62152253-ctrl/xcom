@@ -74,28 +74,28 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
 
 <!-- KPI Cards -->
 <div class="dashboard-grid">
-    <div class="stat-card stat-card--blue" onclick="window.location.href='/pages/projects.php'" style="cursor:pointer">
+    <div class="stat-card stat-card--blue dashboard-interactive-card" onclick="window.location.href='/pages/projects.php'" style="cursor:pointer">
         <div class="stat-info">
             <h3 data-counter="<?= $projects_count ?>"><?= $projects_count ?></h3>
             <p>Aktywne Projekty</p>
         </div>
         <div class="stat-icon"><i class="fa-solid fa-folder-open"></i></div>
     </div>
-    <div class="stat-card stat-card--cyan" onclick="window.location.href='/pages/tasks.php'" style="cursor:pointer">
+    <div class="stat-card stat-card--cyan dashboard-interactive-card" onclick="window.location.href='/pages/tasks.php'" style="cursor:pointer">
         <div class="stat-info">
             <h3 data-counter="<?= $active_tasks_count ?>"><?= $active_tasks_count ?></h3>
             <p>Aktywne Zadania</p>
         </div>
         <div class="stat-icon" style="background:rgba(6,182,212,.12);color:#06b6d4"><i class="fa-solid fa-list-check"></i></div>
     </div>
-    <div class="stat-card stat-card--green">
+    <div class="stat-card stat-card--green dashboard-interactive-card">
         <div class="stat-info">
             <h3 data-counter="<?= $done_count ?>"><?= $done_count ?></h3>
             <p>Ukończone</p>
         </div>
         <div class="stat-icon" style="background:rgba(16,185,129,.12);color:#10b981"><i class="fa-solid fa-circle-check"></i></div>
     </div>
-    <div class="stat-card <?= $overdue_count > 0 ? 'stat-card--danger' : '' ?>">
+    <div class="stat-card <?= $overdue_count > 0 ? 'stat-card--danger' : '' ?> dashboard-interactive-card">
         <div class="stat-info" <?= $overdue_count > 0 ? 'style="color:var(--danger)"' : '' ?>>
             <h3 data-counter="<?= $overdue_count ?>"><?= $overdue_count ?></h3>
             <p>Po terminie</p>

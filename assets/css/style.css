@@ -249,6 +249,14 @@ img{max-width:100%;display:block}
 .dashboard-welcome-actions .btn-secondary{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)}
 .text-danger{color:#fca5a5}
 
+.dashboard-interactive-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.dashboard-interactive-card:hover {
+    transform: scale(1.03);
+    box-shadow: var(--shadow-lg);
+}
+
 /* ─── Tables ─────────────────────────────────────────────── */
 .custom-table-container{overflow-x:auto;border-radius:var(--radius-md);border:1px solid var(--border-color)}
 .custom-table{width:100%;border-collapse:collapse;font-size:.825rem}

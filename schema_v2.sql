@@ -26,3 +26,13 @@ CREATE TABLE IF NOT EXISTS `workspace_invites` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`invited_by`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 15. User Tokens (Remember Me)
+CREATE TABLE IF NOT EXISTS `user_tokens` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `selector` VARCHAR(255) NOT NULL UNIQUE,
+  `validator_hash` VARCHAR(255) NOT NULL,
+  `expires_at` DATETIME NOT NULL,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
