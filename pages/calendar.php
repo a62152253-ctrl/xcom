@@ -1,245 +1,487 @@
 <?php
 require_once __DIR__ . '/../includes/header.php';
-$userLang=$_SESSION['user_language']??'pl';
+
+$db = Database::getInstance()->getConnection();
+$user_id = $_SESSION['user_id'];
+
+$month = (int)($_GET['month'] ?? date('m'));
+$year = (int)($_GET['year'] ?? date('Y'));
+
+if ($month < 1 || $month > 12) $month = date('m');
+if ($year < 2000 || $year > 2100) $year = date('Y');
+
+$start = "$year-" . str_pad($month, 2, '0', STR_PAD_LEFT) . "-01";
+$end = date('Y-m-t', strtotime($start));
+
+$stmt = $db->prepare("SELECT * FROM calendar_events WHERE user_id = ? AND event_date BETWEEN ? AND ? ORDER BY event_date ASC");
+$stmt->execute([$user_id, $start, $end]);
+$events = $stmt->fetchAll();
+
+$prev_month = $month - 1;
+$prev_year = $year;
+if ($prev_month < 1) {
+    $prev_month = 12;
+    $prev_year--;
+}
+
+$next_month = $month + 1;
+$next_year = $year;
+if ($next_month > 12) {
+    $next_month = 1;
+    $next_year++;
+}
+
+$months = ['', 'Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+$weekdays = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela'];
+
+$first_day = new \DateTime("$year-" . str_pad($month, 2, '0', STR_PAD_LEFT) . "-01");
+$last_day = new \DateTime($end);
+$days_in_month = $last_day->format('d');
+$first_weekday = (int)$first_day->format('N') - 1;
+
+$events_by_date = [];
+foreach ($events as $e) {
+    $events_by_date[$e['event_date']][] = $e;
+}
 ?>
 
-<div class="page-header calendar-header">
-<div>
-<h1 class="page-title"><i class="fa-solid fa-calendar-days"></i> Kalendarz</h1>
-<p class="page-description">Zarządzaj terminami zadań, spotkaniami i wydarzeniami.</p>
+<style>
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.calendar-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.calendar-nav-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.calendar-nav-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.calendar-month-year {
+    font-size: 1.1rem;
+    font-weight: 700;
+    min-width: 180px;
+    text-align: center;
+}
+
+.calendar-main {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+.calendar-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calendar-weekday-header {
+    background: var(--bg-tertiary);
+    padding: 1rem;
+    font-weight: 700;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.calendar-day-cell {
+    aspect-ratio: 1;
+    border: 1px solid var(--border-color);
+    padding: 0.75rem;
+    vertical-align: top;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--bg-primary);
+}
+
+.calendar-day-cell:hover {
+    background: var(--bg-secondary);
+    border-color: var(--primary);
+}
+
+.calendar-day-cell.other-month {
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.calendar-day-cell.today {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--primary);
+}
+
+.calendar-day-cell.today .day-number {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.day-number {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+}
+
+.day-events {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.day-event-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--primary);
+    display: inline-block;
+    margin-right: 0.3rem;
+}
+
+.events-sidebar {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.events-sidebar h2 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.event-item {
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background: var(--bg-secondary);
+    border-left: 4px solid var(--primary);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.event-item:hover {
+    transform: translateX(4px);
+    background: var(--bg-tertiary);
+}
+
+.event-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.event-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.event-time {
+    font-size: 0.8rem;
+    color: var(--primary);
+}
+
+.empty-events {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 2rem 1rem;
+}
+
+.empty-events i {
+    font-size: 2.5rem;
+    opacity: 0.3;
+    margin-bottom: 0.75rem;
+}
+
+@media (max-width: 1024px) {
+    .calendar-main {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<!-- Page Header -->
+<div class="calendar-header animate-fade">
+    <div>
+        <h1><i class="fa-solid fa-calendar-days"></i> Kalendarz</h1>
+        <p style="margin: 0.5rem 0 0 0; color: var(--text-muted);">Zarządzaj swoimi wydarzeniami i terminami.</p>
+    </div>
+    <button class="btn btn-primary" onclick="openAddEventModal()">
+        <i class="fa-solid fa-plus"></i> Nowe wydarzenie
+    </button>
 </div>
 
-<button class="btn btn-primary" onclick="openEventModal()">
-<i class="fa-solid fa-plus"></i> Nowe wydarzenie
-</button>
+<!-- Calendar Navigation -->
+<div style="display: flex; justify-content: center; margin-bottom: 2rem; gap: 1rem;">
+    <button class="calendar-nav-btn" onclick="goToMonth(<?= $prev_month ?>, <?= $prev_year ?>)">
+        <i class="fa-solid fa-chevron-left"></i> Poprzedni
+    </button>
+    <div class="calendar-month-year">
+        <?= $months[$month] ?> <?= $year ?>
+    </div>
+    <button class="calendar-nav-btn" onclick="goToMonth(<?= $next_month ?>, <?= $next_year ?>)">
+        Następny <i class="fa-solid fa-chevron-right"></i>
+    </button>
+    <button class="calendar-nav-btn" onclick="goToToday()" style="background: var(--success);">
+        <i class="fa-solid fa-calendar-today"></i> Dziś
+    </button>
 </div>
 
-<div class="card calendar-card">
-<div id="calendar"></div>
+<!-- Main Calendar Grid -->
+<div class="calendar-main animate-slide-up">
+    <!-- Calendar -->
+    <div class="calendar-card">
+        <table class="calendar-table">
+            <thead>
+                <tr>
+                    <?php foreach ($weekdays as $wd): ?>
+                    <th class="calendar-weekday-header"><?= substr($wd, 0, 3) ?></th>
+                    <?php endforeach; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $day = 1;
+                for ($week = 0; $week < 6; $week++) {
+                    echo '<tr>';
+                    for ($weekday = 0; $weekday < 7; $weekday++) {
+                        if (($week == 0 && $weekday < $first_weekday) || $day > $days_in_month) {
+                            echo '<td class="calendar-day-cell other-month"></td>';
+                        } else {
+                            $date = "$year-" . str_pad($month, 2, '0', STR_PAD_LEFT) . "-" . str_pad($day, 2, '0', STR_PAD_LEFT);
+                            $is_today = $date === date('Y-m-d');
+                            $has_events = isset($events_by_date[$date]);
+                            echo '<td class="calendar-day-cell' . ($is_today ? ' today' : '') . '" onclick="showDayEvents(\'' . $date . '\')">';
+                            echo '<div class="day-number">' . $day . '</div>';
+                            if ($has_events) {
+                                echo '<div class="day-events">';
+                                foreach (array_slice($events_by_date[$date], 0, 2) as $e) {
+                                    echo '<div style="font-size: 0.7rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">';
+                                    echo '<span class="day-event-dot"></span>' . htmlspecialchars($e['title'], ENT_QUOTES, 'UTF-8');
+                                    echo '</div>';
+                                }
+                                if (count($events_by_date[$date]) > 2) {
+                                    echo '<div style="font-size: 0.7rem; color: var(--primary); font-weight: 600;">+' . (count($events_by_date[$date]) - 2) . ' więcej</div>';
+                                }
+                                echo '</div>';
+                            }
+                            echo '</td>';
+                            $day++;
+                        }
+                    }
+                    echo '</tr>';
+                    if ($day > $days_in_month) break;
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Upcoming Events Sidebar -->
+    <div class="events-sidebar">
+        <h2><i class="fa-solid fa-list"></i> Nadchodzące wydarzenia</h2>
+        <?php
+        $upcoming = [];
+        foreach ($events as $e) {
+            if (strtotime($e['event_date']) >= strtotime('today')) {
+                $upcoming[] = $e;
+            }
+        }
+        usort($upcoming, function($a, $b) { return strtotime($a['event_date']) - strtotime($b['event_date']); });
+
+        if (empty($upcoming)): ?>
+            <div class="empty-events">
+                <i class="fa-regular fa-calendar"></i>
+                <p>Brak zaplanowanych wydarzeń.</p>
+            </div>
+        <?php else: ?>
+            <?php foreach (array_slice($upcoming, 0, 10) as $e): ?>
+            <div class="event-item" onclick="editEvent(<?= (int)$e['id'] ?>)">
+                <div class="event-date"><?= date('d M Y', strtotime($e['event_date'])) ?></div>
+                <div class="event-title"><?= sanitize($e['title']) ?></div>
+                <?php if ($e['event_time']): ?>
+                <div class="event-time"><i class="fa-regular fa-clock"></i> <?= substr($e['event_time'], 0, 5) ?></div>
+                <?php endif; ?>
+            </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
 </div>
 
+<!-- Event Modal -->
 <div class="modal-overlay" id="event-modal">
-<div class="modal-window">
-
-<div class="modal-header">
-<h2 class="modal-title">Dodaj wydarzenie</h2>
-<button class="modal-close" onclick="closeEventModal()">&times;</button>
+    <div class="modal-window" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2 class="modal-title" id="event-modal-title">Nowe wydarzenie</h2>
+            <button class="modal-close" onclick="closeEventModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="event-id">
+            <div class="form-group">
+                <label class="form-label">Tytuł *</label>
+                <input class="form-control" type="text" id="event-title" placeholder="Co się będzie dziać?" maxlength="255">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Data *</label>
+                    <input class="form-control" type="date" id="event-date">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Czas</label>
+                    <input class="form-control" type="time" id="event-time">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Opis</label>
+                <textarea class="form-control" id="event-description" rows="3" placeholder="Szczegóły..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-danger" id="event-delete-btn" onclick="deleteEvent()" style="display: none;">
+                <i class="fa-solid fa-trash"></i> Usuń
+            </button>
+            <button class="btn btn-secondary" onclick="closeEventModal()">Anuluj</button>
+            <button class="btn btn-primary" onclick="saveEvent()">
+                <i class="fa-solid fa-floppy-disk"></i> Zapisz
+            </button>
+        </div>
+    </div>
 </div>
-
-<div class="modal-body">
-
-<div class="form-group">
-<label>Tytuł</label>
-<input id="event-title" class="form-control">
-</div>
-
-<div class="form-group">
-<label>Opis</label>
-<textarea id="event-description" class="form-control"></textarea>
-</div>
-
-<div class="form-row">
-<div class="form-group">
-<label>Start</label>
-<input id="event-start" type="datetime-local" class="form-control">
-</div>
-
-<div class="form-group">
-<label>Koniec</label>
-<input id="event-end" type="datetime-local" class="form-control">
-</div>
-</div>
-
-<div class="form-group">
-<label>Kolor</label>
-<input id="event-color" type="color" value="#06b6d4" class="form-control">
-</div>
-
-</div>
-
-<div class="modal-footer">
-
-<button id="delete-event" class="btn btn-danger" onclick="deleteEvent()">Usuń</button>
-
-<button class="btn btn-secondary" onclick="closeEventModal()">Anuluj</button>
-
-<button class="btn btn-primary" onclick="saveEvent()">Zapisz</button>
-
-</div>
-
-</div>
-</div>
-
 
 <script>
-let calendar,editingEventId=null;
-const $=id=>document.getElementById(id);
+let editingEventId = null;
 
-document.addEventListener('DOMContentLoaded',()=>{
-
-calendar=new FullCalendar.Calendar($('calendar'),{
-initialView:'dayGridMonth',
-locale:<?=json_encode($userLang)?>,
-timeZone:'Europe/Warsaw',
-height:'auto',
-editable:true,
-selectable:true,
-dayMaxEvents:true,
-
-headerToolbar:{
-left:'prev,next today',
-center:'title',
-right:'dayGridMonth,timeGridWeek,timeGridDay'
-},
-
-events:'/api/calendar.php',
-
-dateClick(info){
-openEventModal();
-$('event-start').value=info.dateStr+'T09:00';
-},
-
-select(info){
-openEventModal();
-$('event-start').value=info.startStr.substring(0,16);
-$('event-end').value=info.endStr.substring(0,16);
-},
-
-eventClick(info){
-openEventModal(info.event);
-},
-
-eventDrop:updateEventDate,
-eventResize:updateEventDate
-
-});
-
-calendar.render();
-
-});
-
-
-function openEventModal(event=null){
-
-editingEventId=event?.id??null;
-
-$('.modal-title').textContent=event?'Edytuj wydarzenie':'Dodaj wydarzenie';
-
-$('delete-event').style.display=event?'block':'none';
-
-if(event){
-
-$('event-title').value=event.title;
-$('event-description').value=event.extendedProps.description??'';
-$('event-color').value=event.backgroundColor??'#06b6d4';
-$('event-start').value=formatDate(event.start);
-$('event-end').value=event.end?formatDate(event.end):'';
-
-}else clearForm();
-
-$('event-modal').classList.add('active');
-
+function goToMonth(m, y) {
+    window.location.href = `/pages/calendar.php?month=${m}&year=${y}`;
 }
 
-
-function closeEventModal(){
-$('event-modal').classList.remove('active');
+function goToToday() {
+    const today = new Date();
+    goToMonth(today.getMonth() + 1, today.getFullYear());
 }
 
-
-function clearForm(){
-
-$('event-title').value='';
-$('event-description').value='';
-$('event-start').value='';
-$('event-end').value='';
-$('event-color').value='#06b6d4';
-
+function openAddEventModal(date = null) {
+    editingEventId = null;
+    document.getElementById('event-id').value = '';
+    document.getElementById('event-title').value = '';
+    document.getElementById('event-date').value = date || new Date().toISOString().split('T')[0];
+    document.getElementById('event-time').value = '';
+    document.getElementById('event-description').value = '';
+    document.getElementById('event-modal-title').textContent = 'Nowe wydarzenie';
+    document.getElementById('event-delete-btn').style.display = 'none';
+    document.getElementById('event-modal').classList.add('active');
 }
 
-
-function formatDate(date){
-return new Date(date).toISOString().slice(0,16);
+function showDayEvents(date) {
+    openAddEventModal(date);
 }
 
+async function editEvent(id) {
+    const json = await apiGet(`/api/calendar.php?action=detail&id=${id}`);
+    if (!json?.event) {
+        Toast.error('Nie udało się załadować wydarzenia.');
+        return;
+    }
+    const e = json.event;
 
-async function saveEvent(){
-
-let data={
-id:editingEventId,
-title:$('event-title').value.trim(),
-description:$('event-description').value,
-start_time:$('event-start').value,
-end_time:$('event-end').value,
-color:$('event-color').value
-};
-
-if(!data.title||!data.start_time)
-return alert('Podaj tytuł oraz datę');
-
-if(data.end_time&&data.end_time<data.start_time)
-return alert('Błędny zakres dat');
-
-let action=editingEventId?'update':'create';
-
-let res=await fetch('/api/calendar.php?action='+action,{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify(data)
-});
-
-let json=await res.json();
-
-if(json.success){
-closeEventModal();
-calendar.refetchEvents();
-}else alert(json.error??'Błąd');
-
+    editingEventId = id;
+    document.getElementById('event-id').value = id;
+    document.getElementById('event-title').value = e.title;
+    document.getElementById('event-date').value = e.event_date;
+    document.getElementById('event-time').value = e.event_time || '';
+    document.getElementById('event-description').value = e.description || '';
+    document.getElementById('event-modal-title').textContent = 'Edytuj wydarzenie';
+    document.getElementById('event-delete-btn').style.display = 'block';
+    document.getElementById('event-modal').classList.add('active');
 }
 
-
-async function deleteEvent(){
-
-if(!editingEventId)return;
-
-if(!confirm('Usunąć wydarzenie?'))return;
-
-await fetch('/api/calendar.php?action=delete',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({id:editingEventId})
-});
-
-closeEventModal();
-calendar.refetchEvents();
-
+function closeEventModal() {
+    document.getElementById('event-modal').classList.remove('active');
+    editingEventId = null;
 }
 
+async function saveEvent() {
+    const title = document.getElementById('event-title').value.trim();
+    const date = document.getElementById('event-date').value;
 
-async function updateEventDate(info){
+    if (!title || !date) {
+        Toast.error('Podaj tytuł i datę.');
+        return;
+    }
 
-let res=await fetch('/api/calendar.php?action=update_date',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({
-id:info.event.id,
-start:info.event.start.toISOString(),
-end:info.event.end?.toISOString()
-})
-});
+    const btn = document.querySelector('#event-modal .btn-primary');
+    btn.disabled = true;
 
-let json=await res.json();
+    const payload = {
+        id: editingEventId,
+        title,
+        event_date: date,
+        event_time: document.getElementById('event-time').value || null,
+        description: document.getElementById('event-description').value
+    };
 
-if(!json.success)info.revert();
+    const action = editingEventId ? 'update' : 'create';
+    const json = await apiPost(`/api/calendar.php?action=${action}`, payload);
 
+    btn.disabled = false;
+    if (json.success) {
+        Toast.success(editingEventId ? 'Wydarzenie zaktualizowane!' : 'Wydarzenie utworzone!');
+        closeEventModal();
+        setTimeout(() => location.reload(), 800);
+    } else {
+        Toast.error(json.error || 'Błąd zapisu');
+    }
 }
 
-
-document.addEventListener('keydown',e=>{
-if(e.key==='Escape')closeEventModal();
-});
+async function deleteEvent() {
+    if (!editingEventId) return;
+    confirmDialog('Usunąć to wydarzenie?', async () => {
+        const json = await apiPost('/api/calendar.php?action=delete', { id: parseInt(editingEventId) });
+        if (json.success) {
+            Toast.success('Wydarzenie usunięte.');
+            closeEventModal();
+            setTimeout(() => location.reload(), 800);
+        } else {
+            Toast.error(json.error || 'Błąd usuwania');
+        }
+    }, true);
+}
 </script>
 
-<?php
-require_once __DIR__ . '/../includes/footer.php';
-?>
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>
