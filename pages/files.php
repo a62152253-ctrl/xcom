@@ -29,7 +29,7 @@ $stmt_files = $db->prepare("
     LEFT JOIN project_members pm ON p.id = pm.project_id
     INNER JOIN users u ON tf.uploaded_by = u.id
     WHERE (p.created_by = ? OR pm.user_id = ?) $where
-    ORDER BY tf.created_at DESC
+    ORDER BY tf.uploaded_at DESC
     LIMIT 100
 ");
 $stmt_files->execute([$user_id, $user_id]);

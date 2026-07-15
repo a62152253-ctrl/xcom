@@ -26,12 +26,12 @@ CREATE TABLE IF NOT EXISTS rate_limit (
     INDEX idx_attempt_time (attempt_time)
 );
 
--- Add Missing Columns to Users Table
-ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login TIMESTAMP NULL;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified TINYINT DEFAULT 0;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified_at TIMESTAMP NULL;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_token VARCHAR(255) NULL;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_expires TIMESTAMP NULL;
+-- Add Missing Columns to Users Table (skipped if already present)
+-- ALTER TABLE users ADD last_login TIMESTAMP NULL DEFAULT NULL;
+-- ALTER TABLE users ADD email_verified TINYINT DEFAULT 0;
+-- ALTER TABLE users ADD email_verified_at TIMESTAMP NULL DEFAULT NULL;
+-- ALTER TABLE users ADD password_reset_token VARCHAR(255) NULL DEFAULT NULL;
+-- ALTER TABLE users ADD password_reset_expires TIMESTAMP NULL DEFAULT NULL;
 
 -- Task Files Table (secure file uploads)
 CREATE TABLE IF NOT EXISTS task_files (
@@ -75,16 +75,16 @@ CREATE TABLE IF NOT EXISTS subtasks (
 );
 
 -- Optimize Existing Tables with Indexes
-CREATE INDEX IF NOT EXISTS idx_tasks_project_id ON tasks(project_id);
-CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
-CREATE INDEX IF NOT EXISTS idx_tasks_assigned_to ON tasks(assigned_to);
-CREATE INDEX IF NOT EXISTS idx_tasks_created_at ON tasks(created_at);
+CREATE INDEX idx_tasks_project_id ON tasks(project_id);
+CREATE INDEX idx_tasks_status ON tasks(status);
+CREATE INDEX idx_tasks_assigned_to ON tasks(assigned_to);
+CREATE INDEX idx_tasks_created_at ON tasks(created_at);
 
-CREATE INDEX IF NOT EXISTS idx_projects_created_by ON projects(created_by);
-CREATE INDEX IF NOT EXISTS idx_projects_is_archived ON projects(is_archived);
+CREATE INDEX idx_projects_created_by ON projects(created_by);
+CREATE INDEX idx_projects_is_archived ON projects(is_archived);
 
-CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
-CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON notifications(is_read);
+CREATE INDEX idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX idx_notifications_is_read ON notifications(is_read);
 
 -- Backup table for audit (optional)
 CREATE TABLE IF NOT EXISTS audit_log (
