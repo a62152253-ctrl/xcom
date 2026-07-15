@@ -25,7 +25,7 @@ $tab = in_array($_GET['tab'] ?? '', $allowed_tabs, true) ? $_GET['tab'] : 'profi
 </div>
 
 <?php if ($success): ?><div class="alert alert-success"><i class="fa-solid fa-circle-check"></i> Ustawienia zostały zapisane!</div><?php endif; ?>
-<?php if ($error): ?><div class="alert alert-danger"><i class="fa-solid fa-triangle-exclamation"></i> <?= sanitize(urldecode($error)) ?></div><?php endif; ?>
+<?php if ($error): ?><div class="alert alert-danger"><i class="fa-solid fa-triangle-exclamation"></i> <?= htmlspecialchars(urldecode($error), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></div><?php endif; ?>
 
 <div class="settings-layout">
     <!-- Sidebar tabs -->
@@ -46,9 +46,9 @@ $tab = in_array($_GET['tab'] ?? '', $allowed_tabs, true) ? $_GET['tab'] : 'profi
                 <h2 class="settings-section-title">Zdjęcie profilowe</h2>
                 <div class="avatar-upload-row">
                     <?php if (!empty($user_data['avatar'])): ?>
-                        <img src="<?= sanitize($user_data['avatar']) ?>" class="settings-avatar">
+                        <img src="<?= htmlspecialchars($user_data['avatar'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" class="settings-avatar">
                     <?php else: ?>
-                        <div class="settings-avatar settings-avatar-placeholder"><?= htmlspecialchars(strtoupper(substr($user_data['full_name'], 0, 1)), ENT_QUOTES, 'UTF-8') ?></div>
+                        <div class="settings-avatar settings-avatar-placeholder"><?= htmlspecialchars(strtoupper(substr($user_data['full_name'], 0, 1)), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></div>
                     <?php endif; ?>
                     <div>
                         <label class="btn btn-secondary" style="cursor:pointer;width:auto">
@@ -64,11 +64,11 @@ $tab = in_array($_GET['tab'] ?? '', $allowed_tabs, true) ? $_GET['tab'] : 'profi
                 <h2 class="settings-section-title">Dane osobowe</h2>
                 <div class="form-group">
                     <label class="form-label">Imię i nazwisko</label>
-                    <input class="form-control" type="text" name="full_name" value="<?= sanitize($user_data['full_name']) ?>" required maxlength="255">
+                    <input class="form-control" type="text" name="full_name" value="<?= htmlspecialchars($user_data['full_name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" required maxlength="255">
                 </div>
                 <div class="form-group">
                     <label class="form-label">E-mail <span style="color:var(--text-muted);font-size:.8rem">(tylko do odczytu)</span></label>
-                    <input class="form-control" type="email" value="<?= sanitize($user_data['email']) ?>" disabled>
+                    <input class="form-control" type="email" value="<?= htmlspecialchars($user_data['email'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" disabled>
                 </div>
             </div>
 

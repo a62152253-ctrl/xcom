@@ -135,13 +135,13 @@ if ($step === 'reset' && empty($reset_token)) {
 
             <?php if (!empty($error)): ?>
                 <div class="alert alert-danger">
-                    <i class="fa-solid fa-triangle-exclamation"></i> <?php echo sanitize($error); ?>
+                    <i class="fa-solid fa-triangle-exclamation"></i> <?= htmlspecialchars($error, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($success)): ?>
                 <div class="alert alert-success">
-                    <i class="fa-solid fa-circle-check"></i> <?php echo sanitize($success); ?>
+                    <i class="fa-solid fa-circle-check"></i> <?= htmlspecialchars($success, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>
                 </div>
             <?php endif; ?>
 
@@ -151,7 +151,7 @@ if ($step === 'reset' && empty($reset_token)) {
                 
                 <div class="form-group">
                     <label class="form-label" for="email">Adres e-mail</label>
-                    <input class="form-control" type="email" id="email" name="email" placeholder="twoj@email.com" required maxlength="255" value="<?php echo isset($_POST['email']) ? sanitize($_POST['email']) : ''; ?>">
+                    <input class="form-control" type="email" id="email" name="email" placeholder="twoj@email.com" required maxlength="255" value="<?= htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>">
                 </div>
 
                 <button class="btn btn-primary" type="submit" style="width: 100%;">
@@ -160,7 +160,7 @@ if ($step === 'reset' && empty($reset_token)) {
             </form>
 
             <?php elseif ($step === 'reset' && !empty($reset_token)): ?>
-            <form method="POST" action="<?php echo htmlspecialchars('forgot-password.php?step=reset&token=' . $reset_token, ENT_QUOTES, 'UTF-8'); ?>">
+            <form method="POST" action="<?php echo htmlspecialchars('forgot-password.php?step=reset&token=' . $reset_token, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                 <input type="hidden" name="token" value="<?php echo htmlspecialchars($reset_token, ENT_QUOTES, 'UTF-8'); ?>">
                 

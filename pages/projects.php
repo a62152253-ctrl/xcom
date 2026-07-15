@@ -89,14 +89,14 @@ $projects = array_values($projects);
         $pct = $p['total_tasks'] > 0 ? round((int)$p['done_tasks'] / (int)$p['total_tasks'] * 100) : 0;
         $is_owner = (int)$p['created_by'] === $user_id;
     ?>
-    <div class="project-card" data-search="<?= htmlspecialchars(strtolower(sanitize($p['name']) . ' ' . sanitize($p['description'] ?? '')), ENT_QUOTES, 'UTF-8') ?>">
+    <div class="project-card" data-search="<?= htmlspecialchars(strtolower(htmlspecialchars($p['name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . ' ' . htmlspecialchars($p['description'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')), ENT_QUOTES, 'UTF-8') ?>">
         <!-- Color stripe -->
         <div class="project-card-stripe" style="background:<?= htmlspecialchars($p['color'], ENT_QUOTES, 'UTF-8') ?>"></div>
 
         <div class="project-card-body">
             <div class="project-card-header">
                 <h3 class="project-card-title" onclick="window.location.href='/pages/tasks.php?project_id=<?= (int)$p['id'] ?>'">
-                    <?= sanitize($p['name']) ?>
+                    <?= htmlspecialchars($p['name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>
                 </h3>
                 <div class="project-card-menu-wrap">
                     <button class="btn-icon btn-ghost" onclick="toggleProjectMenu(<?= (int)$p['id'] ?>)" title="Opcje">
@@ -118,7 +118,7 @@ $projects = array_values($projects);
                 </div>
             </div>
 
-            <p class="project-card-desc"><?= sanitize(mb_substr($p['description'] ?? '', 0, 90)) ?><?= mb_strlen($p['description'] ?? '') > 90 ? '…' : '' ?></p>
+            <p class="project-card-desc"><?= htmlspecialchars(mb_substr($p['description'] ?? '', 0, 90), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?><?= mb_strlen($p['description'] ?? '') > 90 ? '…' : '' ?></p>
 
             <!-- Progress -->
             <div class="project-card-progress">

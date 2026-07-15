@@ -9,7 +9,7 @@ class RateLimit {
     }
     
     public function check($identifier, $action = 'login', $limit = 5, $window = 300) {
-        $key = md5($action . ':' . $identifier);
+        $key = hash_hmac('sha256', $action . ':' . $identifier, 'ratelimit_secret_key');
         $now = time();
         
         try {

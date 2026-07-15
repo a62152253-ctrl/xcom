@@ -66,7 +66,7 @@ function highlight($text, $q) {
         <h1 class="page-title"><i class="fa-solid fa-magnifying-glass"></i> Wyniki wyszukiwania</h1>
         <p class="page-subtitle">
             <?php if ($q): ?>
-                <?= $total ?> wyniki dla <strong><?= sanitize($q) ?></strong>
+                <?= $total ?> wyniki dla <strong><?= htmlspecialchars($q, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></strong>
             <?php else: ?>
                 Wpisz frazę w pasku wyszukiwania powyżej.
             <?php endif; ?>
@@ -80,7 +80,7 @@ function highlight($text, $q) {
     <form method="GET" style="display:flex;gap:.75rem">
         <div style="position:relative;flex:1">
             <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted)"></i>
-            <input name="q" value="<?= sanitize($q) ?>" class="form-control" style="padding-left:2.5rem" placeholder="Szukaj..." maxlength="255">
+            <input name="q" value="<?= htmlspecialchars($q, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" class="form-control" style="padding-left:2.5rem" placeholder="Szukaj..." maxlength="255">
         </div>
         <button class="btn btn-primary" type="submit" style="width:auto">Szukaj</button>
     </form>
@@ -88,10 +88,10 @@ function highlight($text, $q) {
 
 <!-- Type filter -->
 <div class="filter-tabs" style="margin-bottom:1.5rem">
-    <a href="?q=<?= htmlspecialchars(urlencode($q), ENT_QUOTES, 'UTF-8') ?>&type=all"     class="filter-tab <?= $type_filter === 'all'     ? 'active' : '' ?>">Wszystko (<?= $total ?>)</a>
-    <a href="?q=<?= htmlspecialchars(urlencode($q), ENT_QUOTES, 'UTF-8') ?>&type=task"    class="filter-tab <?= $type_filter === 'task'    ? 'active' : '' ?>"><i class="fa-solid fa-list-check"></i> Zadania</a>
-    <a href="?q=<?= htmlspecialchars(urlencode($q), ENT_QUOTES, 'UTF-8') ?>&type=project" class="filter-tab <?= $type_filter === 'project' ? 'active' : '' ?>"><i class="fa-solid fa-folder"></i> Projekty</a>
-    <a href="?q=<?= htmlspecialchars(urlencode($q), ENT_QUOTES, 'UTF-8') ?>&type=note"    class="filter-tab <?= $type_filter === 'note'    ? 'active' : '' ?>"><i class="fa-solid fa-note-sticky"></i> Notatki</a>
+    <a href="?q=<?= htmlspecialchars(urlencode($q), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>&type=all"     class="filter-tab <?= $type_filter === 'all'     ? 'active' : '' ?>">Wszystko (<?= $total ?>)</a>
+    <a href="?q=<?= htmlspecialchars(urlencode($q), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>&type=task"    class="filter-tab <?= $type_filter === 'task'    ? 'active' : '' ?>"><i class="fa-solid fa-list-check"></i> Zadania</a>
+    <a href="?q=<?= htmlspecialchars(urlencode($q), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>&type=project" class="filter-tab <?= $type_filter === 'project' ? 'active' : '' ?>"><i class="fa-solid fa-folder"></i> Projekty</a>
+    <a href="?q=<?= htmlspecialchars(urlencode($q), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>&type=note"    class="filter-tab <?= $type_filter === 'note'    ? 'active' : '' ?>"><i class="fa-solid fa-note-sticky"></i> Notatki</a>
 </div>
 
 <?php if (empty($results)): ?>

@@ -2,12 +2,10 @@
 // includes/functions.php
 require_once __DIR__ . '/../config/database.php';
 
-// Prevent XSS - enhanced
-function sanitize($data) {
-    if (is_array($data)) {
-        return array_map('sanitize', $data);
-    }
-    return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
+// Prevent XSS - SonarQube safe
+function sanitize(string $value): string
+{
+    return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
 // Input validation

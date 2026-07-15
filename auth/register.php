@@ -135,28 +135,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php if (!empty($error)): ?>
                 <div class="alert alert-danger">
-                    <i class="fa-solid fa-triangle-exclamation"></i> <?php echo sanitize($error); ?>
+                    <i class="fa-solid fa-triangle-exclamation"></i> <?= htmlspecialchars($error, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($success)): ?>
                 <div class="alert alert-success">
-                    <i class="fa-solid fa-circle-check"></i> <?php echo sanitize($success); ?>
+                    <i class="fa-solid fa-circle-check"></i> <?= htmlspecialchars($success, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>
                 </div>
             <?php endif; ?>
 
             <form method="POST" action="register.php">
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>">
                 
                 <div class="form-group">
                     <label class="form-label" for="full_name">Imię i nazwisko</label>
-                    <input class="form-control" type="text" id="full_name" name="full_name" placeholder="Jan Kowalski" required value="<?php echo isset($_POST['full_name']) ? sanitize($_POST['full_name']) : ''; ?>" maxlength="255">
+                    <input class="form-control" type="text" id="full_name" name="full_name" placeholder="Jan Kowalski" required value="<?= htmlspecialchars($_POST['full_name'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" maxlength="255">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="email">E-mail</label>
                     <input class="form-control" type="email" id="email" name="email" placeholder="twoj@email.com" required
-                    value="<?php echo isset($_POST['email']) ? sanitize($_POST['email']) : ($invite_data ? sanitize($invite_data['email']) : ''); ?>"
+                    value="<?= htmlspecialchars($_POST['email'] ?? ($invite_data['email'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"
                     <?php echo $invite_data ? 'readonly style="background:var(--bg-tertiary)"' : ''; ?>" maxlength="255">
                 </div>
 

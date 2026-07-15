@@ -30,7 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (!$error && !validate_csrf($csrf_token)) {
         $error = 'Błąd weryfikacji tokenu CSRF.';
-    } else if (!$error && empty($email) || empty($password)) {
+    } else if (
+        !$error &&
+        (empty($email) || empty($password))
+    ) {
         $error = 'Wypełnij wszystkie pola.';
     } else if (!$error) {
         // Validate email format
@@ -71,7 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             } else {
                 $error = 'Błędny e-mail lub hasło.';
-                log_activity(null, 'failed_login', 'Failed login attempt for: ' . sanitize($email) . ' from ' . $ip);
+                log_activity(
+                    null,
+                    'failed_login',
+                    'Failed login attempt'
+                );
             }
         }
     }
@@ -103,16 +110,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php if (!empty($error)): ?>
                 <div class="alert alert-danger">
-                    <i class="fa-solid fa-triangle-exclamation"></i> <?php echo sanitize($error); ?>
+                    <i class="fa-solid fa-triangle-exclamation"></i> <?= htmlspecialchars($error, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>
                 </div>
             <?php endif; ?>
 
             <form method="POST" action="login.php">
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>">
                 
                 <div class="form-group">
                     <label class="form-label" for="email">E-mail</label>
-                    <input class="form-control" type="email" id="email" name="email" placeholder="twoj@email.com" required value="<?php echo isset($_POST['email']) ? sanitize($_POST['email']) : ''; ?>" autocomplete="email">
+                    <input class="form-control" type="email" id="email" name="email" placeholder="twoj@email.com" required value="<?= htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" autocomplete="email">
                 </div>
 
                 <div class="form-group">
