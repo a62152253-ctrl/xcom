@@ -332,9 +332,11 @@ foreach ($events as $e) {
         usort($upcoming, function($a, $b) { return strtotime($a['event_date']) - strtotime($b['event_date']); });
 
         if (empty($upcoming)): ?>
-            <div class="empty-events">
-                <i class="fa-regular fa-calendar"></i>
-                <p>Brak zaplanowanych wydarzeń.</p>
+            <div class="empty-state-premium" style="padding:1.5rem">
+                <div class="es-icon" style="font-size:2rem">📅</div>
+                <div class="es-title" style="font-size:1.1rem">Brak wydarzeń</div>
+                <div class="es-sub" style="font-size:0.9rem">Masz czysty grafik.</div>
+                <button class="es-btn" style="padding:0.5rem 1rem;font-size:0.9rem" onclick="openAddEventModal()"><i class="fa-solid fa-plus"></i> Dodaj</button>
             </div>
         <?php else: ?>
             <?php foreach (array_slice($upcoming, 0, 10) as $e): ?>
@@ -350,45 +352,7 @@ foreach ($events as $e) {
     </div>
 </div>
 
-<!-- Event Modal -->
-<div class="modal-overlay" id="event-modal">
-    <div class="modal-window" style="max-width: 500px;">
-        <div class="modal-header">
-            <h2 class="modal-title" id="event-modal-title">Nowe wydarzenie</h2>
-            <button class="modal-close" onclick="closeEventModal()">&times;</button>
-        </div>
-        <div class="modal-body">
-            <input type="hidden" id="event-id">
-            <div class="form-group">
-                <label class="form-label">Tytuł *</label>
-                <input class="form-control" type="text" id="event-title" placeholder="Co się będzie dziać?" maxlength="255">
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group">
-                    <label class="form-label">Data *</label>
-                    <input class="form-control" type="date" id="event-date">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Czas</label>
-                    <input class="form-control" type="time" id="event-time">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Opis</label>
-                <textarea class="form-control" id="event-description" rows="3" placeholder="Szczegóły..."></textarea>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-danger" id="event-delete-btn" onclick="deleteEvent()" style="display: none;">
-                <i class="fa-solid fa-trash"></i> Usuń
-            </button>
-            <button class="btn btn-secondary" onclick="closeEventModal()">Anuluj</button>
-            <button class="btn btn-primary" onclick="saveEvent()">
-                <i class="fa-solid fa-floppy-disk"></i> Zapisz
-            </button>
-        </div>
-    </div>
-</div>
+<?php require_once __DIR__ . '/../includes/modals/event_modal.php'; ?>
 
 <script>
 let editingEventId = null;
