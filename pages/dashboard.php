@@ -38,7 +38,8 @@ $activity_logs = $stmt_logs->fetchAll();
 $stmt_top_proj = $db->prepare("
     SELECT DISTINCT p.id, p.name, p.color,
         (SELECT COUNT(*) FROM tasks WHERE project_id = p.id) as total,
-        (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status='Done') as done
+        (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status='Done') as done,
+        (SELECT COUNT(DISTINCT user_id) FROM project_members WHERE project_id = p.id) as member_count
     FROM projects p LEFT JOIN project_members pm ON p.id = pm.project_id
     WHERE (p.created_by = ? OR pm.user_id = ?) AND p.is_archived = 0
     LIMIT 5
@@ -492,7 +493,7 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
                     <div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?= sanitize($proj['name']) ?></div>
                     <div class="proj-card-meta">
                         <span><i class="fa-solid fa-list-check"></i> <?= $proj['done'] ?>/<?= $proj['total'] ?></span>
-                        <span><i class="fa-solid fa-users"></i> <?= $proj['member_count'] ?></span>
+                        <span><i class="fa-solid fa-users"></i> <?= $proj['member_count'] ?? 0 ?></span>
                     </div>
                 </div>
                 <span style="font-size:13px;font-weight:800;color:<?= $proj['color'] ?>"><?= $pct ?>%</span>
@@ -633,8 +634,7 @@ async function loadTrend() {
         });
     } catch(e) { console.error('Trend chart error:', e); }
 }
-document.addEventListener(" DOMContentLoaded\, () => { loadTrend();
-setInterval(loadTrend, 60000); });
+document.addEventListener("DOMContentLoaded", () => { loadTrend(); setInterval(loadTrend, 60000); });
 
 document.querySelectorAll('[data-counter]').forEach(el => {
     const target = parseInt(el.dataset.counter);
