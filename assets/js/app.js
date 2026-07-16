@@ -493,3 +493,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+
+// ─── Generic Modal Handler ────────────────────────────────────────────────
+document.addEventListener('click', (e) => {
+    // Close modal if overlay is clicked
+    if (e.target.classList.contains('modal-overlay')) {
+        e.target.classList.remove('active');
+    }
+});
+
+// Close modals on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+            modal.classList.remove('active');
+        });
+    }
+});
