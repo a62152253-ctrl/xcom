@@ -9,21 +9,21 @@
             <input type="hidden" id="event-id">
             <div class="form-group">
                 <label class="form-label">Tytuł *</label>
-                <input class="form-control" type="text" id="event-title" placeholder="Co się będzie dziać?" maxlength="255">
+                <input class="form-control" type="text" id="event-title" name="event-title" placeholder="Co się będzie dziać?" maxlength="255">
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
                     <label class="form-label">Data *</label>
-                    <input class="form-control" type="date" id="event-date">
+                    <input class="form-control" type="date" id="event-date" name="event-date">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Czas</label>
-                    <input class="form-control" type="time" id="event-time">
+                    <input class="form-control" type="time" id="event-time" name="event-time">
                 </div>
             </div>
             <div class="form-group">
                 <label class="form-label">Opis</label>
-                <textarea class="form-control" id="event-description" rows="3" placeholder="Szczegóły..."></textarea>
+                <textarea class="form-control" id="event-description" name="event-description" rows="3" placeholder="Szczegóły..."></textarea>
             </div>
         </div>
         <div class="modal-footer">
