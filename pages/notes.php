@@ -31,9 +31,11 @@ $note_colors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f9
 <!-- Notes grid -->
 <div class="notes-grid" id="notes-grid">
 <?php if (empty($notes)): ?>
-    <div class="notes-empty">
-        <i class="fa-regular fa-note-sticky"></i>
-        <p>Nie masz jeszcze żadnych notatek.<br>Kliknij „Nowa notatka", aby zacząć.</p>
+    <div class="empty-state-premium" style="grid-column:1/-1">
+        <div class="es-icon">📝</div>
+        <div class="es-title">Brak notatek</div>
+        <div class="es-sub">Twoje prywatne notatki są widoczne tylko dla Ciebie. Stwórz pierwszą teraz!</div>
+        <button class="es-btn" onclick="openNoteModal()"><i class="fa-solid fa-plus"></i> Nowa notatka</button>
     </div>
 <?php else: ?>
     <?php foreach ($notes as $n): ?>

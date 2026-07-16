@@ -59,33 +59,43 @@ $type_icons = [
 
 <!-- Notifications list -->
 <?php if (empty($notifs)): ?>
-<div class="empty-state">
-    <i class="fa-solid fa-bell-slash"></i>
-    <h3>Brak powiadomień</h3>
-    <p>Wszystko jest na bieżąco!</p>
+<div class="empty-state-premium" style="max-width:400px;margin:40px auto">
+    <div class="es-icon">🎉</div>
+    <div class="es-title">Brak powiadomień!</div>
+    <div class="es-sub">Wszystko pod kontrolą — jesteś na bieżąco ze wszystkim co dzieje się w workspace.</div>
+    <a href="/pages/dashboard.php" class="es-btn"><i class="fa-solid fa-house"></i> Wróć do dashboardu</a>
 </div>
 <?php else: ?>
-<div class="notif-full-list">
-    <?php foreach ($notifs as $n):
+<div style="max-width:680px">
+    <?php
+    $grouped = [];
+    foreach ($notifs as $n) {
+        $day = date('Y-m-d', strtotime($n['created_at']));
+        $grouped[$day][] = $n;
+    }
+    foreach ($grouped as $day => $items):
+        $label = $day === date('Y-m-d') ? 'Dziś' : ($day === date('Y-m-d', strtotime('-1 day')) ? 'Wczoraj' : date('d.m.Y', strtotime($day)));
+    ?>
+    <div class="notif-group-date"><?= $label ?></div>
+    <?php foreach ($items as $n):
         [$n_icon, $n_color] = $type_icons[$n['type']] ?? $type_icons['info'];
         $time_ago = time() - strtotime($n['created_at']);
         $time_str = $time_ago < 3600 ? round($time_ago/60).' min temu'
             : ($time_ago < 86400 ? round($time_ago/3600).' godz. temu'
-            : date('d.m.Y', strtotime($n['created_at'])));
+            : date('H:i', strtotime($n['created_at'])));
     ?>
-    <div class="notif-full-item <?= !$n['is_read'] ? 'notif-unread' : '' ?>">
-        <div class="notif-full-icon" style="background:<?= $n_color ?>20;color:<?= $n_color ?>">
+    <div class="notif-premium <?= !$n['is_read'] ? 'unread' : '' ?>" onclick="deleteNotif(<?= $n['id'] ?>, this)">
+        <div class="notif-p-icon" style="background:<?= $n_color ?>22;color:<?= $n_color ?>">
             <i class="fa-solid <?= $n_icon ?>"></i>
         </div>
-        <div class="notif-full-body">
-            <div class="notif-full-title"><?= sanitize($n['title']) ?></div>
-            <div class="notif-full-message"><?= sanitize($n['message']) ?></div>
+        <div class="notif-p-body">
+            <div class="notif-p-title"><?= sanitize($n['title']) ?></div>
+            <div class="notif-p-msg"><?= sanitize($n['message']) ?></div>
+            <div class="notif-p-time"><?= $time_str ?></div>
         </div>
-        <div class="notif-full-time"><?= $time_str ?></div>
-        <button class="notif-delete-btn" onclick="deleteNotif(<?= $n['id'] ?>, this)" title="Usuń">
-            <i class="fa-solid fa-times"></i>
-        </button>
+        <?php if (!$n['is_read']): ?><div class="notif-dot"></div><?php endif; ?>
     </div>
+    <?php endforeach; ?>
     <?php endforeach; ?>
 </div>
 <?php endif; ?>

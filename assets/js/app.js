@@ -388,6 +388,54 @@ document.addEventListener('click', (e) => {
     setTimeout(() => ripple.remove(), 600);
 });
 
+// ─── Command Palette ──────────────────────────────────────────────────────────
+let cmdSelectedIdx = -1;
+
+function openCommandPalette() {
+    const pal = document.getElementById('cmdPalette');
+    if (!pal) return;
+    pal.classList.add('open');
+    setTimeout(() => {
+        const inp = document.getElementById('cmdInput');
+        if (inp) { inp.value = ''; inp.focus(); }
+    }, 50);
+    cmdSelectedIdx = -1;
+    filterCmdItems('');
+}
+
+function closeCommandPalette() {
+    const pal = document.getElementById('cmdPalette');
+    if (pal) pal.classList.remove('open');
+}
+
+function filterCmdItems(q) {
+    q = q.trim().toLowerCase();
+    document.querySelectorAll('#cmdBody .cmd-item').forEach(item => {
+        const searchText = (item.dataset.search || '') + ' ' + (item.querySelector('.cmd-item-text')?.textContent || '');
+        item.style.display = (!q || searchText.toLowerCase().includes(q)) ? 'flex' : 'none';
+    });
+    // Hide empty sections
+    document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => {
+        let next = label.nextElementSibling;
+        let hasVisible = false;
+        while (next && !next.classList.contains('cmd-section-label')) {
+            if (next.style.display !== 'none') hasVisible = true;
+            next = next.nextElementSibling;
+        }
+        label.style.display = hasVisible ? '' : 'none';
+    });
+    cmdSelectedIdx = -1;
+}
+
+function setThemeDark() {
+    document.documentElement.setAttribute('data-theme','dark');
+    fetch('/api/profile.php?action=update_theme', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme:'dark'})}).catch(()=>{});
+}
+function setThemeLight() {
+    document.documentElement.setAttribute('data-theme','light');
+    fetch('/api/profile.php?action=update_theme', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme:'light'})}).catch(()=>{});
+}
+
 // ─── Initialize all on DOMContentLoaded ──────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     Toast.init();
@@ -402,10 +450,46 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isNaN(target)) animateCounter(el, target);
     });
 
-    // Close dropdowns on escape
+    // Command Palette keyboard shortcut
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+        // Ctrl+K or Cmd+K — open command palette
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            const pal = document.getElementById('cmdPalette');
+            if (pal && pal.classList.contains('open')) closeCommandPalette();
+            else openCommandPalette();
+            return;
+        }
+
+        const pal = document.getElementById('cmdPalette');
+        if (!pal || !pal.classList.contains('open')) {
+            // Global: Escape closes modals
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active,.modal-ov.open').forEach(m => {
+                    m.classList.remove('active','open');
+                });
+            }
+            return;
+        }
+
+        const items = [...document.querySelectorAll('#cmdBody .cmd-item')].filter(i => i.style.display !== 'none');
+        if (e.key === 'Escape') { e.preventDefault(); closeCommandPalette(); }
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            cmdSelectedIdx = Math.min(cmdSelectedIdx + 1, items.length - 1);
+            items.forEach((it,i) => it.classList.toggle('selected', i === cmdSelectedIdx));
+            items[cmdSelectedIdx]?.scrollIntoView({block:'nearest'});
+        }
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            cmdSelectedIdx = Math.max(cmdSelectedIdx - 1, 0);
+            items.forEach((it,i) => it.classList.toggle('selected', i === cmdSelectedIdx));
+            items[cmdSelectedIdx]?.scrollIntoView({block:'nearest'});
+        }
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (cmdSelectedIdx >= 0 && items[cmdSelectedIdx]) items[cmdSelectedIdx].click();
         }
     });
 });
+

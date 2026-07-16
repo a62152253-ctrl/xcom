@@ -44,14 +44,26 @@ for ($i = 34; $i >= 0; $i--) {
 $max_heat = max(max($heat_days), 1);
 ?>
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title"><i class="fa-solid fa-user-circle"></i> Mój profil</h1>
-        <p class="page-subtitle">Twoje statystyki, aktywność i historia.</p>
+<!-- Premium Profile Hero -->
+<div class="profile-hero">
+    <div class="profile-av-large"><?= strtoupper(substr($profile['full_name'], 0, 1)) ?></div>
+    <div class="profile-hero-info">
+        <div class="profile-hero-name"><?= sanitize($profile['full_name']) ?></div>
+        <div class="profile-hero-email"><?= sanitize($profile['email']) ?></div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span class="badge-pill badge-<?= strtolower($profile['role'] === 'Owner' ? 'owner' : ($profile['role'] === 'Administrator' ? 'admin' : 'member')) ?>"><?= $profile['role'] ?></span>
+            <a href="/pages/settings.php" class="hero-btn hero-btn-ghost" style="font-size:12px;padding:5px 12px">
+                <i class="fa-solid fa-pen-to-square"></i> Edytuj profil
+            </a>
+        </div>
+        <div class="profile-hero-stats" style="margin-top:12px">
+            <div class="profile-hero-stat"><div class="val"><?= $assigned_tasks ?></div><div class="lbl">Przypisane</div></div>
+            <div class="profile-hero-stat"><div class="val"><?= $completed_tasks ?></div><div class="lbl">Ukończone</div></div>
+            <div class="profile-hero-stat"><div class="val"><?= $in_progress_tasks ?></div><div class="lbl">W toku</div></div>
+            <div class="profile-hero-stat"><div class="val"><?= $projects_count ?></div><div class="lbl">Projekty</div></div>
+            <div class="profile-hero-stat"><div class="val"><?= $pct_done ?>%</div><div class="lbl">Efektywność</div></div>
+        </div>
     </div>
-    <a href="/pages/settings.php" class="btn btn-secondary" style="width:auto">
-        <i class="fa-solid fa-pen-to-square"></i> Edytuj profil
-    </a>
 </div>
 
 <div class="profile-grid">

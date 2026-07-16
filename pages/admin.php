@@ -21,12 +21,45 @@ $stmt_logs = $db->query("
 $all_logs = $stmt_logs->fetchAll();
 ?>
 
-<div style="margin-bottom: 2rem;">
-    <h1 style="font-size: 1.75rem; font-weight: 700;">Panel Administratora</h1>
-    <p style="color: var(--text-secondary);">Zarządzaj użytkownikami, rolami, kopiami zapasowymi bazy danych oraz przeglądaj logi bezpieczeństwa.</p>
+<?php
+$total_users    = count($users);
+$active_users   = count(array_filter($users, fn($u) => $u['status'] === 'Active'));
+$blocked_users  = count(array_filter($users, fn($u) => $u['status'] === 'Blocked'));
+$admin_users    = count(array_filter($users, fn($u) => in_array($u['role'], ['Owner','Administrator'])));
+?>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="fa-solid fa-user-shield"></i> Panel Administratora</h1>
+        <p class="page-subtitle">Zarządzaj użytkownikami, rolami, logami i kopiami zapasowymi.</p>
+    </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; margin-bottom: 2rem;">
+<!-- Premium Admin Stats -->
+<div class="admin-stat-row">
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon" style="background:rgba(99,102,241,.1);color:#6366f1"><i class="fa-solid fa-users"></i></div>
+        <div><div class="admin-stat-val"><?= $total_users ?></div><div class="admin-stat-lbl">Wszystkich userów</div></div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon" style="background:rgba(34,197,94,.1);color:#22c55e"><i class="fa-solid fa-circle-check"></i></div>
+        <div><div class="admin-stat-val"><?= $active_users ?></div><div class="admin-stat-lbl">Aktywnych</div></div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon" style="background:rgba(239,68,68,.1);color:#ef4444"><i class="fa-solid fa-ban"></i></div>
+        <div><div class="admin-stat-val"><?= $blocked_users ?></div><div class="admin-stat-lbl">Zablokowanych</div></div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon" style="background:rgba(245,158,11,.1);color:#f59e0b"><i class="fa-solid fa-user-shield"></i></div>
+        <div><div class="admin-stat-val"><?= $admin_users ?></div><div class="admin-stat-lbl">Adminów</div></div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon" style="background:rgba(6,182,212,.1);color:#06b6d4"><i class="fa-solid fa-clock-rotate-left"></i></div>
+        <div><div class="admin-stat-val"><?= count($all_logs) ?></div><div class="admin-stat-lbl">Ostatnich logów</div></div>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;align-items:start;margin-bottom:2rem">
     <!-- User Management Table -->
     <div class="card">
         <h2 class="card-title"><i class="fa-solid fa-users"></i> Zarządzanie użytkownikami</h2>

@@ -28,10 +28,11 @@ $archived = $stmt->fetchAll();
 </div>
 
 <?php if (empty($archived)): ?>
-<div class="empty-state">
-    <i class="fa-solid fa-box-archive"></i>
-    <h3>Brak zarchiwizowanych projektów</h3>
-    <p>Projekty, które zarchiwizujesz z poziomu zarządzania projektami, pojawią się tutaj.</p>
+<div class="empty-state-premium" style="max-width:420px;margin:40px auto">
+    <div class="es-icon">📦</div>
+    <div class="es-title">Brak zarchiwizowanych projektów</div>
+    <div class="es-sub">Projekty, które zarchiwizujesz z poziomu zarządzania projektami, pojawią się tutaj.</div>
+    <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-folder-open"></i> Idź do projektów</a>
 </div>
 <?php else: ?>
 <div class="archive-grid">
