@@ -62,7 +62,7 @@ $type_icons = [
 <div class="empty-state-premium" style="max-width:400px;margin:40px auto">
     <div class="es-icon">🎉</div>
     <div class="es-title">Brak powiadomień!</div>
-    <div class="es-sub">Wszystko pod kontrolą — jesteś na bieżąco ze wszystkim co dzieje się w workspace.</div>
+    <div class="es-sub">Nie masz nowych powiadomień. Jesteś na bieżąco!</div>
     <a href="/pages/dashboard.php" class="es-btn"><i class="fa-solid fa-house"></i> Wróć do dashboardu</a>
 </div>
 <?php else: ?>

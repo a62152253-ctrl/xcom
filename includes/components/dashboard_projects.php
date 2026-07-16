@@ -35,7 +35,7 @@
         <div class="empty-state-premium">
             <div class="es-icon">📁</div>
             <div class="es-title">Brak projektów</div>
-            <div class="es-sub">Stwórz pierwszy projekt i zaproś zespół do pracy.</div>
+            <div class="es-sub">Brak aktywnych projektów. Utwórz nowy, by zarządzać pracą!</div>
             <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Nowy projekt</a>
         </div>
         <?php endif; ?>

@@ -34,7 +34,7 @@ $note_colors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f9
     <div class="empty-state-premium" style="grid-column:1/-1">
         <div class="es-icon">📝</div>
         <div class="es-title">Brak notatek</div>
-        <div class="es-sub">Twoje prywatne notatki są widoczne tylko dla Ciebie. Stwórz pierwszą teraz!</div>
+        <div class="es-sub">Zacznij od stworzenia swojej pierwszej notatki. Są one widoczne tylko dla Ciebie.</div>
         <button class="es-btn" onclick="openNoteModal()"><i class="fa-solid fa-plus"></i> Nowa notatka</button>
     </div>
 <?php else: ?>

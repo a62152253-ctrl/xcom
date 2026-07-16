@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <span>TaskManager Pro</span>
                 </div>
                 <h2 class="auth-title">Załóż darmowe konto</h2>
-                <p class="auth-subtitle">Zacznij zarządzać zadaniami efektywnie</p>
+                <p class="auth-subtitle">Dołącz do nas i zarządzaj swoimi zadaniami z łatwością.</p>
             </div>
 
             <?php if (!empty($error)): ?>
@@ -188,6 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <button class="btn btn-primary" type="submit" style="width: 100%;">Zarejestruj się</button>
+                <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">Rejestracja oznacza akceptację regulaminu.</p>
             </form>
 
             <div class="social-login-divider">LUB ZAREJESTRUJ PRZEZ</div>

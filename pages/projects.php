@@ -81,7 +81,7 @@ $projects = array_values($projects);
     <div class="empty-state-premium" style="grid-column:1/-1">
         <div class="es-icon">📁</div>
         <div class="es-title">Brak projektów</div>
-        <div class="es-sub">Zacznij od stworzenia swojego pierwszego projektu i zaproś do niego team.</div>
+        <div class="es-sub">Nie masz jeszcze żadnych projektów. Utwórz pierwszy projekt, aby rozpocząć pracę z zespołem!</div>
         <button class="es-btn" onclick="openCreateProjectModal()"><i class="fa-solid fa-plus"></i> Stwórz projekt</button>
     </div>
     <?php else: ?>

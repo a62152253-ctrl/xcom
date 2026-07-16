@@ -32,7 +32,7 @@
             <div class="empty-state-premium">
                 <div class="es-icon">☀️</div>
                 <div class="es-title">Brak zadań na dziś!</div>
-                <div class="es-sub">Masz wolny dzień albo już wszystko ukończone. Świetna robota!</div>
+                <div class="es-sub">Nie masz przypisanych zadań na dziś. Odpocznij lub zaplanuj kolejne!</div>
                 <a href="/pages/tasks.php" class="es-btn"><i class="fa-solid fa-plus"></i> Utwórz zadanie</a>
             </div>
         <?php endif; ?>

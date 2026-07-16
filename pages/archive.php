@@ -31,7 +31,7 @@ $archived = $stmt->fetchAll();
 <div class="empty-state-premium" style="max-width:420px;margin:40px auto">
     <div class="es-icon">📦</div>
     <div class="es-title">Brak zarchiwizowanych projektów</div>
-    <div class="es-sub">Projekty, które zarchiwizujesz z poziomu zarządzania projektami, pojawią się tutaj.</div>
+    <div class="es-sub">Zarchiwizowane projekty pojawią się tutaj. Możesz je przywrócić w każdej chwili.</div>
     <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-folder-open"></i> Idź do projektów</a>
 </div>
 <?php else: ?>
