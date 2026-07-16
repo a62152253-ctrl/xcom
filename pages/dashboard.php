@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../includes/header.php';
 
 $db = Database::getInstance()->getConnection();
@@ -47,7 +47,7 @@ $stmt_top_proj->execute([$user_id, $user_id]);
 $top_projects = $stmt_top_proj->fetchAll();
 
 $hour = (int)date('H');
-$greeting = $hour < 12 ? 'DzieĹ„ dobry' : ($hour < 18 ? 'CzeĹ›Ä‡' : 'Dobry wieczĂłr');
+$greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wieczór');
 ?>
 
 <style>
@@ -324,17 +324,17 @@ $greeting = $hour < 12 ? 'DzieĹ„ dobry' : ($hour < 18 ? 'CzeĹ›Ä‡' : 'Do
 }
 </style>
 
-<!-- â•â•â• PREMIUM HERO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ═══ PREMIUM HERO ═══════════════════════════════════════════════════════════ -->
 <div class="premium-hero">
     <div class="hero-left">
-        <div class="hero-greeting"><?= $greeting ?>, đź‘‹</div>
+        <div class="hero-greeting"><?= $greeting ?>, 👋</div>
         <div class="hero-name"><?= sanitize($user_name) ?>!</div>
         <div class="hero-stats">
-            <span class="hero-stat"><i class="fa-solid fa-list-check"></i> <?= count($tasks_today) ?> zadaĹ„ na dziĹ›</span>
+            <span class="hero-stat"><i class="fa-solid fa-list-check"></i> <?= count($tasks_today) ?> zadań na dziś</span>
             <?php if ($overdue_count > 0): ?>
             <span class="hero-stat" style="background:rgba(239,68,68,.25)"><i class="fa-solid fa-clock"></i> <?= $overdue_count ?> po terminie</span>
             <?php endif; ?>
-            <span class="hero-stat"><i class="fa-solid fa-circle-check"></i> <?= $done_count ?> ukoĹ„czonych</span>
+            <span class="hero-stat"><i class="fa-solid fa-circle-check"></i> <?= $done_count ?> ukończonych</span>
         </div>
         <div class="hero-actions">
             <button class="hero-btn hero-btn-primary" onclick="window.location.href='/pages/tasks.php'">
@@ -354,19 +354,19 @@ $greeting = $hour < 12 ? 'DzieĹ„ dobry' : ($hour < 18 ? 'CzeĹ›Ä‡' : 'Do
     <div class="hero-workspace-card">
         <div class="hero-ws-label">Workspace</div>
         <div class="hero-ws-name"><?= sanitize($user_name) ?>'s Team</div>
-        <div class="hero-ws-row"><span><i class="fa-solid fa-users"></i> CzĹ‚onkowie</span><strong><?= $ws_members ?></strong></div>
+        <div class="hero-ws-row"><span><i class="fa-solid fa-users"></i> Członkowie</span><strong><?= $ws_members ?></strong></div>
         <div class="hero-ws-row"><span><i class="fa-solid fa-folder"></i> Projekty</span><strong><?= $ws_projects ?></strong></div>
         <?php
             $all_tasks_total = (int)$db->query("SELECT COUNT(*) FROM tasks")->fetchColumn();
             $all_tasks_done  = (int)$db->query("SELECT COUNT(*) FROM tasks WHERE status='Done'")->fetchColumn();
             $ws_pct = $all_tasks_total > 0 ? round($all_tasks_done / $all_tasks_total * 100) : 0;
         ?>
-        <div class="hero-ws-row"><span><i class="fa-solid fa-chart-pie"></i> UkoĹ„czenie</span><strong><?= $ws_pct ?>%</strong></div>
+        <div class="hero-ws-row"><span><i class="fa-solid fa-chart-pie"></i> Ukończenie</span><strong><?= $ws_pct ?>%</strong></div>
         <div class="hero-ws-bar"><div class="hero-ws-fill" style="width:<?= $ws_pct ?>%"></div></div>
     </div>
 </div>
 
-<!-- â•â•â• PREMIUM KPI CARDS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ═══ PREMIUM KPI CARDS ════════════════════════════════════════════════════════ -->
 <div class="pkpi-grid">
 
     <div class="pkpi-card" style="--pkpi-color:#6366f1;--pkpi-light:rgba(99,102,241,.1);--pkpi-grad:linear-gradient(90deg,#6366f1,#8b5cf6);--pkpi-glow:rgba(99,102,241,.1)"
@@ -377,7 +377,7 @@ $greeting = $hour < 12 ? 'DzieĹ„ dobry' : ($hour < 18 ? 'CzeĹ›Ä‡' : 'Do
         </div>
         <div class="pkpi-value" data-counter="<?= $projects_count ?>"><?= $projects_count ?></div>
         <div class="pkpi-label">Projekty</div>
-        <div class="pkpi-sub">Kliknij aby zobaczyÄ‡ wszystkie â†’</div>
+        <div class="pkpi-sub">Kliknij aby zobaczyć wszystkie →</div>
     </div>
 
     <div class="pkpi-card" style="--pkpi-color:#06b6d4;--pkpi-light:rgba(6,182,212,.1);--pkpi-grad:linear-gradient(90deg,#06b6d4,#0ea5e9);--pkpi-glow:rgba(6,182,212,.1)"
@@ -392,17 +392,17 @@ $greeting = $hour < 12 ? 'DzieĹ„ dobry' : ($hour < 18 ? 'CzeĹ›Ä‡' : 'Do
         </div>
         <div class="pkpi-value" data-counter="<?= $active_tasks_count ?>"><?= $active_tasks_count ?></div>
         <div class="pkpi-label">Aktywne zadania</div>
-        <div class="pkpi-sub"><?= $done_count ?> ukoĹ„czonych Ĺ‚Ä…cznie</div>
+        <div class="pkpi-sub"><?= $done_count ?> ukończonych łącznie</div>
     </div>
 
     <div class="pkpi-card" style="--pkpi-color:#22c55e;--pkpi-light:rgba(34,197,94,.1);--pkpi-grad:linear-gradient(90deg,#22c55e,#10b981);--pkpi-glow:rgba(34,197,94,.1)">
         <div class="pkpi-top">
             <div class="pkpi-icon"><i class="fa-solid fa-circle-check"></i></div>
-            <span class="pkpi-trend up"><i class="fa-solid fa-arrow-up"></i> ukoĹ„czone</span>
+            <span class="pkpi-trend up"><i class="fa-solid fa-arrow-up"></i> ukończone</span>
         </div>
         <div class="pkpi-value" data-counter="<?= $done_count ?>"><?= $done_count ?></div>
-        <div class="pkpi-label">UkoĹ„czone</div>
-        <div class="pkpi-sub"><?= $ws_pct ?>% wszystkich zadaĹ„</div>
+        <div class="pkpi-label">Ukończone</div>
+        <div class="pkpi-sub"><?= $ws_pct ?>% wszystkich zadań</div>
     </div>
 
     <div class="pkpi-card" style="--pkpi-color:<?= $overdue_count > 0 ? '#ef4444' : '#10b981' ?>;--pkpi-light:<?= $overdue_count > 0 ? 'rgba(239,68,68,.1)' : 'rgba(16,185,129,.1)' ?>;--pkpi-grad:<?= $overdue_count > 0 ? 'linear-gradient(90deg,#ef4444,#dc2626)' : 'linear-gradient(90deg,#22c55e,#10b981)' ?>;--pkpi-glow:rgba(239,68,68,.08)">
@@ -416,12 +416,12 @@ $greeting = $hour < 12 ? 'DzieĹ„ dobry' : ($hour < 18 ? 'CzeĹ›Ä‡' : 'Do
         </div>
         <div class="pkpi-value" data-counter="<?= $overdue_count ?>"><?= $overdue_count ?></div>
         <div class="pkpi-label">Po terminie</div>
-        <div class="pkpi-sub"><?= count($tasks_today) ?> zadaĹ„ na dziĹ›</div>
+        <div class="pkpi-sub"><?= count($tasks_today) ?> zadań na dziś</div>
     </div>
 
 </div>
 
-<!-- â•â•â• MAIN GRID â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ═══ MAIN GRID ═════════════════════════════════════════════════════════════════ -->
 <div class="tasks-grid">
 
     <!-- Today's tasks -->
@@ -429,11 +429,11 @@ $greeting = $hour < 12 ? 'DzieĹ„ dobry' : ($hour < 18 ? 'CzeĹ›Ä‡' : 'Do
         <div class="section-header">
             <h3 class="section-title-premium">
                 <i class="fa-solid fa-calendar-check" style="color:var(--primary)"></i>
-                Zadania na dziĹ›
+                Zadania na dziś
                 <span class="section-badge"><?= count($tasks_today) ?></span>
             </h3>
             <a href="/pages/tasks.php" style="font-size:12px;color:var(--primary);font-weight:600;text-decoration:none">
-                Wszystkie â†’
+                Wszystkie →
             </a>
         </div>
 
@@ -453,29 +453,29 @@ $greeting = $hour < 12 ? 'DzieĹ„ dobry' : ($hour < 18 ? 'CzeĹ›Ä‡' : 'Do
             <?php endforeach; ?>
         <?php else: ?>
             <div class="empty-state-premium">
-                <div class="es-icon">â€ď¸Ź</div>
-                <div class="es-title">Brak zadaĹ„ na dziĹ›!</div>
-                <div class="es-sub">Masz wolny dzieĹ„ albo juĹĽ wszystko ukoĹ„czone. Ĺšwietna robota!</div>
-                <a href="/pages/tasks.php" class="es-btn"><i class="fa-solid fa-plus"></i> UtwĂłrz zadanie</a>
+                <div class="es-icon">☀️</div>
+                <div class="es-title">Brak zadań na dziś!</div>
+                <div class="es-sub">Masz wolny dzień albo już wszystko ukończone. Świetna robota!</div>
+                <a href="/pages/tasks.php" class="es-btn"><i class="fa-solid fa-plus"></i> Utwórz zadanie</a>
             </div>
         <?php endif; ?>
     </div>
 
     <!-- Priority Chart -->
     <div class="chart-container">
-        <h3><i class="fa-solid fa-chart-pie"></i> RozkĹ‚ad PriorytetĂłw</h3>
+        <h3><i class="fa-solid fa-chart-pie"></i> Rozkład Priorytetów</h3>
         <canvas id="priorityChart" style="max-height:250px"></canvas>
     </div>
 </div>
 
-<!-- â•â•â• PROJECTS & ACTIVITY â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ═══ PROJECTS & ACTIVITY ═══════════════════════════════════════════════════════ -->
 <div class="projects-row">
 
     <!-- Projects Progress -->
     <div class="project-list">
         <div class="section-header">
             <h3 class="section-title-premium"><i class="fa-solid fa-chart-line" style="color:var(--primary)"></i> Projekty</h3>
-            <a href="/pages/projects.php" style="font-size:12px;color:var(--primary);font-weight:600;text-decoration:none">Wszystkie â†’</a>
+            <a href="/pages/projects.php" style="font-size:12px;color:var(--primary);font-weight:600;text-decoration:none">Wszystkie →</a>
         </div>
 
         <?php if (!empty($top_projects)):
@@ -503,9 +503,9 @@ $greeting = $hour < 12 ? 'DzieĹ„ dobry' : ($hour < 18 ? 'CzeĹ›Ä‡' : 'Do
         </div>
         <?php endforeach; else: ?>
         <div class="empty-state-premium">
-            <div class="es-icon">đź“</div>
-            <div class="es-title">Brak projektĂłw</div>
-            <div class="es-sub">StwĂłrz pierwszy projekt i zaproĹ› zespĂłĹ‚ do pracy.</div>
+            <div class="es-icon">📁</div>
+            <div class="es-title">Brak projektów</div>
+            <div class="es-sub">Stwórz pierwszy projekt i zaproś zespół do pracy.</div>
             <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Nowy projekt</a>
         </div>
         <?php endif; ?>
@@ -514,7 +514,7 @@ $greeting = $hour < 12 ? 'DzieĹ„ dobry' : ($hour < 18 ? 'CzeĹ›Ä‡' : 'Do
     <!-- Activity Feed -->
     <div class="project-list">
         <div class="section-header">
-            <h3 class="section-title-premium"><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary)"></i> AktywnoĹ›Ä‡</h3>
+            <h3 class="section-title-premium"><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary)"></i> Aktywność</h3>
         </div>
         <?php if (!empty($activity_logs)): ?>
         <div class="activity-feed">
@@ -533,8 +533,8 @@ $greeting = $hour < 12 ? 'DzieĹ„ dobry' : ($hour < 18 ? 'CzeĹ›Ä‡' : 'Do
         </div>
         <?php else: ?>
         <div class="empty-inline">
-            <div class="empty-inline-icon">đź””</div>
-            <span>Brak aktywnoĹ›ci w workspace</span>
+            <div class="empty-inline-icon">🔔</div>
+            <span>Brak aktywności w workspace</span>
         </div>
         <?php endif; ?>
     </div>
@@ -543,7 +543,7 @@ $greeting = $hour < 12 ? 'DzieĹ„ dobry' : ($hour < 18 ? 'CzeĹ›Ä‡' : 'Do
 <!-- Productivity Trend -->
 <div class="report-section">
     <div class="section-header">
-        <div class="report-title" style="margin:0"><i class="fa-solid fa-chart-line"></i> Trend ProduktywnoĹ›ci (7 dni)</div>
+        <div class="report-title" style="margin:0"><i class="fa-solid fa-chart-line"></i> Trend Produktywności (7 dni)</div>
         <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--success)">
             <span style="width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 2s infinite;display:inline-block"></span>
             Live
@@ -561,7 +561,7 @@ if (ctxPriority) {
     new Chart(ctxPriority, {
         type: 'doughnut',
         data: {
-            labels: ['Niski', 'Ĺšredni', 'Wysoki', 'Krytyczny'],
+            labels: ['Niski', 'Średni', 'Wysoki', 'Krytyczny'],
             datasets: [{
                 data: [<?= implode(',', array_values($priorities_json)) ?>],
                 backgroundColor: ['#10b981','#06b6d4','#f59e0b','#ef4444'],
@@ -609,7 +609,7 @@ async function loadTrend() {
             data: {
                 labels,
                 datasets: [{
-                    label: 'Zadania ukoĹ„czone',
+                    label: 'Zadania ukończone',
                     data: values,
                     borderColor: '#6366f1',
                     backgroundColor: grad,
@@ -633,8 +633,8 @@ async function loadTrend() {
         });
     } catch(e) { console.error('Trend chart error:', e); }
 }
-loadTrend();
-setInterval(loadTrend, 60000);
+document.addEventListener(" DOMContentLoaded\, () => { loadTrend();
+setInterval(loadTrend, 60000); });
 
 document.querySelectorAll('[data-counter]').forEach(el => {
     const target = parseInt(el.dataset.counter);
