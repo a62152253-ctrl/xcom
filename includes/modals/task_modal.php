@@ -25,9 +25,7 @@
                             <option value="<?= (int)$p['id'] ?>" <?= $filter_project == $p['id'] ? 'selected' : '' ?>><?= sanitize($p['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
-                        <button type="button" class="btn btn-secondary" onclick="openCreateProjectModal()" style="padding: 0.75rem 1rem; font-size: 0.9rem;">
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="openCreateProjectModal()" style="padding: 0.75rem 1rem; font-size: 0.9rem;" aria-label="Action"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
                 <div class="form-group">

@@ -1,7 +1,7 @@
 // Priority Chart
 const ctxPriority = document.getElementById('priorityChart')?.getContext('2d');
 if (ctxPriority) {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const isDark = document.documentElement?.getAttribute('data-theme') === 'dark';
     const tc = isDark ? '#9ca3af' : '#6b7280';
     new Chart(ctxPriority, {
         type: 'doughnut',
@@ -35,7 +35,7 @@ async function loadTrend() {
         if (!data?.trend) return;
         const labels = data.trend.map(d => d.day);
         const values = data.trend.map(d => d.count);
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const isDark = document.documentElement?.getAttribute('data-theme') === 'dark';
         const gridColor = isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.06)';
         const textColor = isDark ? '#9ca3af' : '#6b7280';
         const ctx = document.getElementById('trendChart')?.getContext('2d');

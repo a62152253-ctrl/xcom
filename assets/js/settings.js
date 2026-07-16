@@ -14,7 +14,7 @@ function previewAvatar(input) {
 async function setTheme(theme) {
     if (!['light', 'dark'].includes(theme)) return;
 
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement?.setAttribute('data-theme', theme);
     document.querySelectorAll('.theme-option').forEach(el => el.classList.remove('theme-option--active'));
     document.getElementById('theme-' + theme)?.classList.add('theme-option--active');
 

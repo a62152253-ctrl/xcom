@@ -11,9 +11,7 @@
                     <label class="form-label">Nowe hasło</label>
                     <div class="pwd-toggle-wrap">
                         <input class="form-control" type="password" name="password" id="password" placeholder="Minimum 8 znaków" style="padding-right:2.5rem" maxlength="255">
-                        <button type="button" class="pwd-toggle-btn" tabindex="-1">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
+                        <button type="button" class="pwd-toggle-btn" tabindex="-1" aria-label="Action"><i class="fa-solid fa-eye"></i></button>
                     </div>
                     <div id="pwd-strength-container" class="pwd-strength-meter">
                         <div class="pwd-strength-bar"></div>
@@ -27,9 +25,7 @@
                     <label class="form-label">Potwierdź nowe hasło</label>
                     <div class="pwd-toggle-wrap">
                         <input class="form-control" type="password" name="confirm_password" id="confirm_password" placeholder="Powtórz hasło" maxlength="255">
-                        <button type="button" class="pwd-toggle-btn" tabindex="-1">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
+                        <button type="button" class="pwd-toggle-btn" tabindex="-1" aria-label="Action"><i class="fa-solid fa-eye"></i></button>
                     </div>
                 </div>
             </div>

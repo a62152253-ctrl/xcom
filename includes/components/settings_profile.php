@@ -4,7 +4,7 @@
                 <h2 class="settings-section-title">Zdjęcie profilowe</h2>
                 <div class="avatar-upload-row">
                     <?php if (!empty($user_data['avatar'])): ?>
-                        <img src="<?= htmlspecialchars($user_data['avatar'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" class="settings-avatar">
+                        <img src="<?= htmlspecialchars($user_data['avatar'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ? alt="Image">" class="settings-avatar">
                     <?php else: ?>
                         <div class="settings-avatar settings-avatar-placeholder"><?= htmlspecialchars(strtoupper(substr($user_data['full_name'], 0, 1)), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></div>
                     <?php endif; ?>
