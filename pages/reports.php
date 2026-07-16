@@ -169,57 +169,16 @@ $pct_done = $total_tasks > 0 ? round($statuses['Done'] / $total_tasks * 100) : 0
 </div>
 <?php endif; ?>
 
+
 <script>
-const chartColor = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim();
-const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim();
-
-// Line chart
-new Chart(document.getElementById('lineChart').getContext('2d'), {
-    type: 'line',
-    data: {
-        labels: <?= json_encode($days_labels) ?>,
-        datasets: [{
-            label: 'Ukończone zadania',
-            data: <?= json_encode($days_values) ?>,
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59,130,246,.12)',
-            borderWidth: 2,
-            tension: .4,
-            fill: true,
-            pointBackgroundColor: '#3b82f6',
-            pointRadius: 4
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-            x: { grid: { color: gridColor }, ticks: { color: chartColor } },
-            y: { grid: { color: gridColor }, ticks: { color: chartColor, stepSize: 1, precision: 0 } }
-        }
-    }
-});
-
-// Doughnut chart
-new Chart(document.getElementById('donutChart').getContext('2d'), {
-    type: 'doughnut',
-    data: {
-        labels: ['Do zrobienia', 'W trakcie', 'Review', 'Ukończone'],
-        datasets: [{
-            data: [<?= $statuses['To Do'] ?>, <?= $statuses['In Progress'] ?>, <?= $statuses['Review'] ?>, <?= $statuses['Done'] ?>],
-            backgroundColor: ['#64748b','#f59e0b','#06b6d4','#10b981'],
-            borderWidth: 0
-        }]
-    },
-    options: {
-        responsive: true,
-        cutout: '65%',
-        plugins: {
-            legend: { position: 'bottom', labels: { color: chartColor, padding: 16 } }
-        }
-    }
-});
+window.reportsData = {
+    daysLabels: <?= json_encode($days_labels) ?>,
+    daysValues: <?= json_encode($days_values) ?>,
+    statuses: [<?= $statuses['To Do'] ?>, <?= $statuses['In Progress'] ?>, <?= $statuses['Review'] ?>, <?= $statuses['Done'] ?>]
+};
 </script>
+<script src="/assets/js/reports.js"></script>
+
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
 
