@@ -9,17 +9,11 @@ $page = (int)($_GET['page'] ?? 1);
 $per_page = 50;
 $offset = ($page - 1) * $per_page;
 
-$filter_user = (int)($_GET['user'] ?? 0);
 $filter_action = trim($_GET['action'] ?? '');
 $filter_date = trim($_GET['date'] ?? '');
 
 $where = "WHERE 1=1";
 $params = [];
-
-if ($filter_user) {
-    $where .= " AND l.user_id = ?";
-    $params[] = $filter_user;
-}
 
 if ($filter_action) {
     $where .= " AND l.action LIKE ?";
@@ -48,21 +42,6 @@ $stmt_logs = $db->prepare("
 ");
 $stmt_logs->execute(array_merge($params, [$per_page, $offset]));
 $logs = $stmt_logs->fetchAll();
-
-// Get unique users for filter
-$stmt_users = $db->prepare("SELECT DISTINCT u.id, u.full_name FROM activity_logs l LEFT JOIN users u ON l.user_id = u.id WHERE u.id IS NOT NULL ORDER BY u.full_name");
-$stmt_users->execute();
-$users = $stmt_users->fetchAll();
-
-// Get unique actions for filter
-$stmt_actions = $db->prepare("
-    SELECT DISTINCT 
-        SUBSTRING_INDEX(action, '_', 1) as action_type
-    FROM activity_logs
-    ORDER BY action_type
-");
-$stmt_actions->execute();
-$action_types = $stmt_actions->fetchAll();
 
 // Action icons and colors
 $action_icons = [
@@ -156,13 +135,8 @@ function get_action_icon_color($action) {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.filter-btn-group {
-    display: flex;
-    gap: 0.5rem;
-}
-
 .filter-btn {
-    flex: 1;
+    width: 100%;
     padding: 0.6rem;
     border: 1px solid var(--border-color);
     background: transparent;
@@ -171,6 +145,7 @@ function get_action_icon_color($action) {
     font-weight: 600;
     font-size: 0.85rem;
     transition: all 0.2s ease;
+    margin-bottom: 0.5rem;
 }
 
 .filter-btn:hover {
@@ -392,20 +367,6 @@ function get_action_icon_color($action) {
     <aside class="logs-sidebar">
         <h3><i class="fa-solid fa-filter"></i> Filtry</h3>
 
-        <!-- User Filter -->
-        <div class="filter-group">
-            <label class="filter-label">Użytkownik</label>
-            <select class="filter-control" onchange="applyFilter('user', this.value)">
-                <option value="">Wszyscy</option>
-                <option value="0">System</option>
-                <?php foreach ($users as $u): ?>
-                <option value="<?= $u['id'] ?>" <?= $filter_user == $u['id'] ? 'selected' : '' ?>>
-                    <?= sanitize($u['full_name']) ?>
-                </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
         <!-- Date Filter -->
         <div class="filter-group">
             <label class="filter-label">Data</label>
@@ -415,27 +376,25 @@ function get_action_icon_color($action) {
         <!-- Action Quick Filters -->
         <div class="filter-group">
             <label class="filter-label">Typ Akcji</label>
-            <div class="filter-btn-group" style="flex-direction: column; gap: 0.5rem;">
-                <button class="filter-btn <?= !$filter_action ? 'active' : '' ?>" onclick="applyFilter('action', '')">
-                    <i class="fa-solid fa-list"></i> Wszystkie
-                </button>
-                <button class="filter-btn <?= $filter_action === 'login' ? 'active' : '' ?>" onclick="applyFilter('action', 'login')">
-                    <i class="fa-solid fa-right-to-bracket"></i> Logowanie
-                </button>
-                <button class="filter-btn <?= $filter_action === 'task' ? 'active' : '' ?>" onclick="applyFilter('action', 'task')">
-                    <i class="fa-solid fa-list-check"></i> Zadania
-                </button>
-                <button class="filter-btn <?= $filter_action === 'project' ? 'active' : '' ?>" onclick="applyFilter('action', 'project')">
-                    <i class="fa-solid fa-folder"></i> Projekty
-                </button>
-                <button class="filter-btn <?= $filter_action === 'user' ? 'active' : '' ?>" onclick="applyFilter('action', 'user')">
-                    <i class="fa-solid fa-user"></i> Użytkownicy
-                </button>
-            </div>
+            <button class="filter-btn <?= !$filter_action ? 'active' : '' ?>" onclick="applyFilter('action', '')">
+                <i class="fa-solid fa-list"></i> Wszystkie
+            </button>
+            <button class="filter-btn <?= $filter_action === 'login' ? 'active' : '' ?>" onclick="applyFilter('action', 'login')">
+                <i class="fa-solid fa-right-to-bracket"></i> Logowanie
+            </button>
+            <button class="filter-btn <?= $filter_action === 'task' ? 'active' : '' ?>" onclick="applyFilter('action', 'task')">
+                <i class="fa-solid fa-list-check"></i> Zadania
+            </button>
+            <button class="filter-btn <?= $filter_action === 'project' ? 'active' : '' ?>" onclick="applyFilter('action', 'project')">
+                <i class="fa-solid fa-folder"></i> Projekty
+            </button>
+            <button class="filter-btn <?= $filter_action === 'user' ? 'active' : '' ?>" onclick="applyFilter('action', 'user')">
+                <i class="fa-solid fa-user"></i> Użytkownicy
+            </button>
         </div>
 
         <!-- Clear Filters -->
-        <button class="filter-btn" onclick="window.location.href='/pages/logs.php'" style="width: 100%; margin-top: 1rem;">
+        <button class="filter-btn" onclick="window.location.href='/pages/logs.php'" style="margin-top: 1rem;">
             <i class="fa-solid fa-redo"></i> Resetuj
         </button>
     </aside>
@@ -503,8 +462,7 @@ function get_action_icon_color($action) {
 <script>
 function applyFilter(type, value) {
     const params = new URLSearchParams(window.location.search);
-    if (type === 'user') params.set('user', value);
-    else if (type === 'date') params.set('date', value);
+    if (type === 'date') params.set('date', value);
     else if (type === 'action') params.set('action', value);
     params.set('page', '1');
     window.location.href = '/pages/logs.php?' + params.toString();
