@@ -2,7 +2,6 @@
 require_once __DIR__ . '/../includes/header.php';
 
 $db = Database::getInstance()->getConnection();
-$user_id = $_SESSION['user_id'];
 
 // Get activity logs with advanced filtering
 $page = (int)($_GET['page'] ?? 1);
@@ -31,7 +30,7 @@ $stmt_count->execute($params);
 $total = (int)$stmt_count->fetchColumn();
 $total_pages = ceil($total / $per_page);
 
-// Get logs
+// Get logs - ALL workspace logs, no user filter
 $stmt_logs = $db->prepare("
     SELECT l.*, u.full_name, u.email, u.avatar
     FROM activity_logs l
@@ -419,7 +418,7 @@ function get_action_icon_color($action) {
                         </div>
                         <div class="log-info">
                             <div class="log-user"><?= sanitize($log['full_name'] ?? 'System') ?></div>
-                            <?php if ($log['email']): ?>
+                            <?php if (!empty($log['email'])): ?>
                             <div class="log-email"><?= sanitize($log['email']) ?></div>
                             <?php endif; ?>
                         </div>
