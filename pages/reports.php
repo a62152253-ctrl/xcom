@@ -7,13 +7,13 @@ $user_id = $_SESSION['user_id'];
 
 // 1. Tasks completed per day last 14 days
 $stmt_daily = $db->prepare("
-    SELECT DATE(updated_at) as day, COUNT(*) as cnt
+    SELECT DATE(t.updated_at) as day, COUNT(*) as cnt
     FROM tasks t
     INNER JOIN projects p ON t.project_id = p.id
     LEFT JOIN project_members pm ON p.id = pm.project_id
     WHERE (p.created_by = ? OR pm.user_id = ?) AND t.status = 'Done'
       AND t.updated_at >= DATE_SUB(CURDATE(), INTERVAL 14 DAY)
-    GROUP BY DATE(updated_at) ORDER BY day ASC
+    GROUP BY DATE(t.updated_at) ORDER BY day ASC
 ");
 $stmt_daily->execute([$user_id, $user_id]);
 $daily_data = $stmt_daily->fetchAll();
@@ -222,3 +222,4 @@ new Chart(document.getElementById('donutChart').getContext('2d'), {
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
+
