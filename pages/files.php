@@ -77,10 +77,11 @@ function file_icon($name) {
 
 <!-- Files grid -->
 <?php if (empty($files)): ?>
-<div class="empty-state">
-    <i class="fa-solid fa-folder-open"></i>
-    <h3>Brak plików</h3>
-    <p>Pliki pojawią się tutaj po dodaniu załączników do zadań.</p>
+<div class="empty-state-premium" style="max-width:420px;margin:40px auto">
+    <div class="es-icon">📁</div>
+    <div class="es-title">Brak plików</div>
+    <div class="es-sub">Nie masz jeszcze żadnych plików. Dodaj załączniki do zadań, aby się tu pojawiły.</div>
+    <a href="/pages/tasks.php" class="es-btn"><i class="fa-solid fa-plus"></i> Przejdź do zadań</a>
 </div>
 <?php else: ?>
 <div class="files-grid">

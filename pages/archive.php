@@ -31,7 +31,7 @@ $archived = $stmt->fetchAll();
 <div class="empty-state-premium" style="max-width:420px;margin:40px auto">
     <div class="es-icon">📦</div>
     <div class="es-title">Brak zarchiwizowanych projektów</div>
-    <div class="es-sub">Projekty, które zarchiwizujesz z poziomu zarządzania projektami, pojawią się tutaj.</div>
+    <div class="es-sub">Zarchiwizowane projekty pojawią się tutaj. Możesz je przywrócić w każdej chwili.</div>
     <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-folder-open"></i> Idź do projektów</a>
 </div>
 <?php else: ?>
@@ -61,30 +61,6 @@ $archived = $stmt->fetchAll();
 </div>
 <?php endif; ?>
 
-<script>
-async function restoreProject(id) {
-    if (!confirm('Przywrócić projekt?')) return;
-    const res = await fetch('/api/projects.php?action=restore', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ id })
-    });
-    const json = await res.json();
-    if (json.success) location.reload();
-    else alert(json.error || 'Błąd przywracania');
-}
-
-async function deleteProject(id) {
-    if (!confirm('TRWALE usunąć ten projekt i wszystkie jego zadania? Tej operacji nie można cofnąć.')) return;
-    const res = await fetch('/api/projects.php?action=delete', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ id })
-    });
-    const json = await res.json();
-    if (json.success) location.reload();
-    else alert(json.error || 'Błąd usuwania');
-}
-</script>
+<script src="/assets/js/archive.js"></script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

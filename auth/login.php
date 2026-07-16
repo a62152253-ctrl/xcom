@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <span>TaskManager Pro</span>
                 </div>
                 <h2 class="auth-title">Witaj ponownie</h2>
-                <p class="auth-subtitle">Zaloguj się, aby kontynuować pracę</p>
+                <p class="auth-subtitle">Zaloguj się do swojego workspace, aby zarządzać projektami.</p>
             </div>
 
             <?php if (!empty($error)): ?>
@@ -143,6 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <button class="btn btn-primary" type="submit" style="width: 100%;">Zaloguj się</button>
+                <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">Dbamy o bezpieczeństwo Twoich danych.</p>
             </form>
 
             <div class="social-login-divider">LUB ZALOGUJ PRZEZ</div>
