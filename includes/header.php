@@ -125,10 +125,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <i class="fa-solid fa-chart-bar"></i>
                     <span>Raporty</span>
                 </a>
-                <a href="/pages/team.php" class="nav-item <?php echo $current_page == 'team.php' ? 'active' : ''; ?>">
-                    <i class="fa-solid fa-users"></i>
-                    <span>Zespół</span>
-                </a>
                 <a href="/pages/logs.php" class="nav-item <?php echo $current_page == 'logs.php' ? 'active' : ''; ?>">
                     <i class="fa-solid fa-history"></i>
                     <span>Logi</span>
