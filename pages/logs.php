@@ -430,7 +430,7 @@ function get_action_icon_color($action) {
                     </div>
                     <div class="log-action">
                         <span class="log-action-code"><?= str_replace('_', ' ', sanitize($log['action'])) ?></span>
-                        <?php if ($log['description']): ?>
+                        <?php if (!empty($log['description'])): ?>
                         <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
                             <?= sanitize($log['description']) ?>
                         </div>
