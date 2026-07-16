@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../includes/header.php';
 
 $db = Database::getInstance()->getConnection();
+$user_id = $_SESSION['user_id'];
 
 // Get activity logs with advanced filtering
 $page = (int)($_GET['page'] ?? 1);
@@ -11,8 +12,8 @@ $offset = ($page - 1) * $per_page;
 $filter_action = trim($_GET['action'] ?? '');
 $filter_date = trim($_GET['date'] ?? '');
 
-$where = "WHERE 1=1";
-$params = [];
+$where = "WHERE l.user_id = ?";
+$params = [$user_id];
 
 if ($filter_action) {
     $where .= " AND l.action LIKE ?";
