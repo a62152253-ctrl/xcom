@@ -7,7 +7,7 @@
         <div class="modal-body">
             <input type="hidden" id="note-id">
             <div class="form-group">
-                <label class="form-label">Tytuł</label>
+                <label class="form-label" for="note-title">Tytuł</label>
                 <input class="form-control" type="text" id="note-title" placeholder="np. Pomysł na feature...">
             </div>
             <div class="form-group">
