@@ -2,7 +2,7 @@
     <div class="modal-window" style="max-width:480px">
         <div class="modal-header">
             <h2 class="modal-title"><i class="fa-solid fa-user-plus" style="color:var(--primary)"></i> Dodaj członka</h2>
-            <button class="modal-close" onclick="closeAddMemberModal()">&times;</button>
+            <button type="button" class="modal-close" onclick="closeAddMemberModal()">&times;</button>
         </div>
         <div class="modal-body">
             <input type="hidden" id="member-project-id">
@@ -11,7 +11,7 @@
                 <input class="form-control" type="email" id="member-email" placeholder="np. kolega@firma.pl" maxlength="255">
             </div>
             <div class="form-group">
-                <label class="form-label">Rola w projekcie</label>
+                <label class="form-label" for="member-role">Rola w projekcie</label>
                 <select class="form-control" id="member-role">
                     <option value="Member">Member</option>
                     <option value="Administrator">Administrator</option>
@@ -19,8 +19,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeAddMemberModal()" style="width:auto">Anuluj</button>
-            <button class="btn btn-primary" onclick="submitAddMember()" style="width:auto">Dodaj</button>
+            <button type="button" class="btn btn-secondary" onclick="closeAddMemberModal()" style="width:auto">Anuluj</button>
+            <button type="button" class="btn btn-primary" onclick="submitAddMember()" style="width:auto">Dodaj</button>
         </div>
     </div>
 </div>

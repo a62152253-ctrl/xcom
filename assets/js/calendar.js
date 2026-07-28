@@ -2,7 +2,7 @@ let editingEventId = null;
 
 function goToMonth(m, y) {
     if (!m || !y || isNaN(m) || isNaN(y)) return;
-    window.location.href = `/pages/calendar.php?month=${parseInt(m)}&year=${parseInt(y)}`;
+    window.location.href = '/pages/calendar.php?month=' + encodeURIComponent(parseInt(m, 10)) + '&year=' + encodeURIComponent(parseInt(y, 10));
 }
 
 function goToToday() {
@@ -27,7 +27,7 @@ function showDayEvents(date) {
 }
 
 async function editEvent(id) {
-    const json = await apiGet(`/api/calendar_detail.php?id=${parseInt(id)}`);
+    const json = await apiGet(`/api/calendar_detail.php?id=${parseInt(id, 10)}`);
     if (!json?.event) {
         Toast.error('Nie udało się załadować wydarzenia.');
         return;
@@ -86,7 +86,7 @@ async function saveEvent() {
 async function deleteEvent() {
     if (!editingEventId) return;
     confirmDialog('Usunąć to wydarzenie?', async () => {
-        const json = await apiPost('/api/calendar.php?action=delete', { id: parseInt(editingEventId) });
+        const json = await apiPost('/api/calendar.php?action=delete', { id: parseInt(editingEventId, 10) });
         if (json.success) {
             Toast.success('Wydarzenie usunięte.');
             closeEventModal();

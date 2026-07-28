@@ -8,7 +8,7 @@ function filterProjects(q) {
 
 // Dropdown menus
 function toggleProjectMenu(id) {
-    const menu = document.getElementById('project-menu-' + parseInt(id));
+    const menu = document.getElementById('project-menu-' + parseInt(id, 10));
     const isOpen = menu.classList.contains('active');
     document.querySelectorAll('.project-dropdown').forEach(m => m.classList.remove('active'));
     if (!isOpen) menu.classList.add('active');
@@ -51,13 +51,13 @@ async function submitCreateProject() {
 
 // Add Member
 function openAddMemberModal(id) {
-    document.getElementById('member-project-id').value = parseInt(id);
+    document.getElementById('member-project-id').value = parseInt(id, 10);
     document.getElementById('add-member-modal').classList.add('active');
 }
 function closeAddMemberModal() { document.getElementById('add-member-modal').classList.remove('active'); }
 
 async function submitAddMember() {
-    const project_id = parseInt(document.getElementById('member-project-id').value);
+    const project_id = parseInt(document.getElementById('member-project-id').value, 10);
     const email = document.getElementById('member-email').value.trim();
     const role = document.getElementById('member-role').value;
     if (!email) { Toast.error('Podaj adres e-mail.'); return; }
@@ -74,7 +74,7 @@ async function submitAddMember() {
 // Archive
 function archiveProject(id) {
     confirmDialog('Zarchiwizować projekt?', async () => {
-        const json = await apiPost('/api/projects.php?action=archive', { id: parseInt(id) });
+        const json = await apiPost('/api/projects.php?action=archive', { id: parseInt(id, 10) });
         if (json.success) { Toast.success('Projekt zarchiwizowany.'); setTimeout(() => location.reload(), 800); }
         else Toast.error(json.error || 'Błąd archiwizacji');
     });

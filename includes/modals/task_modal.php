@@ -2,21 +2,21 @@
     <div class="modal-window" style="max-width: 640px;">
         <div class="modal-header">
             <h2 class="modal-title" id="task-modal-title">Nowe zadanie</h2>
-            <button class="modal-close" onclick="closeTaskModal()">&times;</button>
+            <button type="button" class="modal-close" onclick="closeTaskModal()">&times;</button>
         </div>
         <div class="modal-body">
             <input type="hidden" id="task-id">
             <div class="form-group">
-                <label class="form-label" for="task-name">Tytuł zadania *</label>
+                <label class="form-label">Tytuł zadania *</label>
                 <input class="form-control" type="text" id="task-name" placeholder="Co trzeba zrobić?" maxlength="255">
             </div>
             <div class="form-group">
-                <label class="form-label" for="task-desc">Opis</label>
+                <label class="form-label">Opis</label>
                 <textarea class="form-control" id="task-desc" rows="3" placeholder="Szczegóły, wymagania..." maxlength="5000"></textarea>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label class="form-label" for="task-project">Projekt *</label>
+                    <label class="form-label">Projekt *</label>
                     <div style="display: flex; gap: 0.5rem;">
                         <select class="form-control" id="task-project" style="flex: 1;">
                             <option value="">-- Wybierz projekt --</option>
@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="task-assign">Przypisz do</label>
+                    <label class="form-label">Przypisz do</label>
                     <select class="form-control" id="task-assign">
                         <option value="">-- Nieprzypisany --</option>
                         <?php foreach ($all_users as $u): ?>
@@ -41,7 +41,7 @@
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label class="form-label" for="task-priority">Priorytet</label>
+                    <label class="form-label">Priorytet</label>
                     <select class="form-control" id="task-priority">
                         <option value="Low">🟢 Niski</option>
                         <option value="Medium" selected>🔵 Średni</option>
@@ -50,7 +50,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="task-status">Status</label>
+                    <label class="form-label">Status</label>
                     <select class="form-control" id="task-status">
                         <option value="To Do">To Do</option>
                         <option value="In Progress">In Progress</option>
@@ -60,16 +60,16 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="form-label" for="task-deadline">Termin (deadline)</label>
+                <label class="form-label">Termin (deadline)</label>
                 <input class="form-control" type="date" id="task-deadline">
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-danger" id="task-delete-btn" onclick="deleteCurrentTask()" style="display: none;">
+            <button type="button" class="btn btn-danger" id="task-delete-btn" onclick="deleteCurrentTask()" style="display: none;">
                 <i class="fa-solid fa-trash"></i> Usuń
             </button>
-            <button class="btn btn-secondary" onclick="closeTaskModal()">Anuluj</button>
-            <button class="btn btn-primary" onclick="saveTask()" id="task-save-btn">
+            <button type="button" class="btn btn-secondary" onclick="closeTaskModal()">Anuluj</button>
+            <button type="button" class="btn btn-primary" onclick="saveTask()" id="task-save-btn">
                 <i class="fa-solid fa-floppy-disk"></i> Zapisz
             </button>
         </div>
