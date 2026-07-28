@@ -92,6 +92,7 @@ $tab = in_array($_GET['tab'] ?? '', $allowed_tabs, true) ? $_GET['tab'] : 'profi
                 <h2 class="settings-section-title">Zmiana hasła</h2>
                 <p style="color:var(--text-secondary);font-size:.875rem;margin-bottom:1.25rem">Zostaw puste jeśli nie chcesz zmieniać hasła.</p>
 
+                <link rel="stylesheet" href="/assets/css/auth.css">
                 <script src="/assets/js/auth.js" defer></script>
 
                 <div class="form-group">

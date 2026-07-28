@@ -7,12 +7,12 @@
         <div class="modal-body">
             <input type="hidden" id="event-id">
             <div class="form-group">
-                <label class="form-label">Tytuł *</label>
+                <label class="form-label" for="event-title">Tytuł *</label>
                 <input class="form-control" type="text" id="event-title" placeholder="Co się będzie dziać?" maxlength="255">
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label class="form-label">Data *</label>
+                    <label class="form-label" for="event-date">Data *</label>
                     <input class="form-control" type="date" id="event-date">
                 </div>
                 <div class="form-group">

@@ -1,7 +1,7 @@
 let editingEventId = null;
 
 function goToMonth(m, y) {
-    if (!m || !y || isNaN(m) || isNaN(y)) return;
+    if (!m || !y || Number.isNaN(Number(m)) || Number.isNaN(Number(y))) return;
     window.location.href = '/pages/calendar.php?month=' + encodeURIComponent(parseInt(m, 10)) + '&year=' + encodeURIComponent(parseInt(y, 10));
 }
 
@@ -27,7 +27,7 @@ function showDayEvents(date) {
 }
 
 async function editEvent(id) {
-    const json = await apiGet(`/api/calendar_detail.php?id=${parseInt(id, 10)}`);
+    const json = await apiGet('/api/calendar_detail.php?id=' + encodeURIComponent(parseInt(id, 10)));
     if (!json?.event) {
         Toast.error('Nie udało się załadować wydarzenia.');
         return;

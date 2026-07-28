@@ -7,22 +7,22 @@
         <div class="modal-body">
             <input type="hidden" id="note-id">
             <div class="form-group">
-                <label class="form-label">Tytuł</label>
+                <label class="form-label" for="note-title">Tytuł</label>
                 <input class="form-control" type="text" id="note-title" placeholder="np. Pomysł na feature...">
             </div>
             <div class="form-group">
-                <label class="form-label" for="note-content">Treść</label>
+                <label class="form-label">Treść</label>
                 <textarea class="form-control" id="note-content" rows="6" placeholder="Wpisz notatke..."></textarea>
             </div>
             <div class="form-group">
-                <label class="form-label">Tagi (oddziel przecinkami)</label>
+                <label class="form-label" for="note-tags">Tagi (oddziel przecinkami)</label>
                 <input class="form-control" type="text" id="note-tags" placeholder="np. pomysł, ważne, projekt-X">
             </div>
             <div class="form-group">
                 <label class="form-label" for="note-color">Kolor</label>
                 <div class="color-picker-row">
                     <?php foreach ($note_colors as $c): ?>
-                    <div class="color-chip" data-color="<?= $c ?>" style="background:<?= $c ?>" role="button" tabindex="0" aria-label="Wybierz kolor" onclick="selectColor('<?= $c ?>')"></div>
+                    <div class="color-chip" data-color="<?= $c ?>" style="background:<?= $c ?>" role="button" tabindex="0" aria-label="Wybierz kolor" onclick="selectColor('<?= $c ?>', '<?= md5($c) ?>')" onkeydown="if(event.key==='Enter')selectColor('<?= $c ?>', '<?= md5($c) ?>')"></div>
                     <?php endforeach; ?>
                 </div>
                 <input type="hidden" id="note-color" value="#3b82f6">
