@@ -167,7 +167,7 @@ const NotifPoller = {
         this.badge = document.getElementById('notif-count');
         if (!this.badge) return;
 
-        this.lastCount = parseInt(this.badge.textContent) || 0;
+        this.lastCount = parseInt(this.badge.textContent, 10) || 0;
         this.interval = setInterval(() => this.poll(), 30000); // every 30s
     },
 
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Animate stat counters
     document.querySelectorAll('[data-counter]').forEach(el => {
-        const target = parseInt(el.dataset.counter);
+        const target = parseInt(el.dataset.counter, 10);
         if (!isNaN(target)) animateCounter(el, target);
     });
 
