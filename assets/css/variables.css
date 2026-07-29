@@ -1,0 +1,15 @@
+/* assets/css/variables.css */
+:root {
+    --ds-color-primary: var(--primary, #3b82f6);
+    --ds-color-secondary: var(--text-secondary, #475569);
+    --ds-color-success: var(--success, #10b981);
+    --ds-color-danger: var(--danger, #ef4444);
+    --ds-color-warning: var(--warning, #f59e0b);
+
+    --ds-bg-base: var(--bg-primary, #f0f4f8);
+    --ds-bg-surface: var(--bg-secondary, #ffffff);
+
+    --ds-border: var(--border-color, #e2e8f0);
+    --ds-radius: 8px;
+    --ds-radius-lg: 12px;
+}

@@ -16,31 +16,15 @@ $user_projects = $stmt_projs->fetchAll();
 $stmt_users = $db->query("SELECT id, full_name, email FROM users WHERE status='Active' ORDER BY full_name ASC");
 $all_users = $stmt_users->fetchAll();
 
+require_once __DIR__ . '/../services/TaskService.php';
+
 $open_task_id = (int)($_GET['task_id'] ?? 0);
 $filter_project = (int)($_GET['project_id'] ?? 0);
 
-$base_query = "
-    SELECT t.*, p.name as project_name, p.color as project_color,
-           u.full_name as assigned_name
-    FROM tasks t
-    INNER JOIN projects p ON t.project_id = p.id
-    LEFT JOIN project_members pm ON p.id = pm.project_id
-    LEFT JOIN users u ON t.assigned_to = u.id
-    WHERE (p.created_by = ? OR pm.user_id = ?) AND p.is_archived = 0
-";
-
-$params = [$user_id, $user_id];
-
-if ($filter_project) {
-    $base_query .= " AND t.project_id = ?";
-    $params[] = $filter_project;
-}
-
-$base_query .= " ORDER BY FIELD(t.priority,'Critical','High','Medium','Low'), t.deadline ASC";
-
-$stmt_tasks = $db->prepare($base_query);
-$stmt_tasks->execute($params);
-$all_tasks = $stmt_tasks->fetchAll();
+$taskObjects = \Services\TaskService::getUserTasks($user_id, $filter_project);
+$all_tasks = array_map(function($tObj) {
+    return (array) $tObj;
+}, $taskObjects);
 
 $open_task = null;
 if ($open_task_id) {
@@ -532,51 +516,6 @@ foreach ($all_tasks as $t) {
 </div>
 
 <script>
-let draggedId = null;
-
-function dragStart(e) {
-    draggedId = e.currentTarget.dataset.id;
-    e.currentTarget.style.opacity = '0.5';
-}
-
-function dragOver(e) {
-    e.preventDefault();
-    e.currentTarget.classList.add('drag-over');
-}
-
-function dragLeave(e) {
-    e.currentTarget.classList.remove('drag-over');
-}
-
-async function drop(e, newStatus) {
-    e.preventDefault();
-    e.currentTarget.classList.remove('drag-over');
-    if (!draggedId) return;
-
-    const card = document.getElementById('task-' + draggedId);
-    const oldStatus = card?.dataset.status;
-    if (oldStatus === newStatus) {
-        if (card) card.style.opacity = '1';
-        return;
-    }
-
-    const col = document.getElementById('col-' + newStatus.replace(/ /g, '-').toLowerCase());
-    const addBtn = col?.querySelector('.kanban-add-btn');
-    if (card && col) {
-        col.insertBefore(card, addBtn);
-        card.dataset.status = newStatus;
-        card.style.opacity = '1';
-    }
-    updateColumnCounts();
-
-    const json = await apiPost('/api/tasks.php?action=update_status', { task_id: parseInt(draggedId), status: newStatus });
-    if (!json.success) {
-        Toast.error(json.error || 'Błąd zapisu statusu');
-        location.reload();
-    }
-    draggedId = null;
-}
-
 function updateColumnCounts() {
     document.querySelectorAll('.kanban-column').forEach(col => {
         const id = col.id.replace('col-', '');
