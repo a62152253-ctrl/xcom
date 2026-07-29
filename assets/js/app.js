@@ -364,6 +364,54 @@ function handleGlobalSearch(val) {
     GlobalSearch.search(val);
 }
 
+// ─── Kanban Drag & Drop ──────────────────────────────────────────────────────────
+let draggedId = null;
+
+window.dragStart = function(e) {
+    draggedId = e.currentTarget.dataset.id;
+    e.currentTarget.style.opacity = '0.5';
+};
+
+window.dragOver = function(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+};
+
+window.dragLeave = function(e) {
+    e.currentTarget.classList.remove('drag-over');
+};
+
+window.drop = async function(e, newStatus) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    if (!draggedId) return;
+
+    const card = document.getElementById('task-' + draggedId);
+    const oldStatus = card?.dataset.status;
+    if (oldStatus === newStatus) {
+        if (card) card.style.opacity = '1';
+        return;
+    }
+
+    const col = document.getElementById('col-' + newStatus.replace(/ /g, '-').toLowerCase());
+    const addBtn = col?.querySelector('.kanban-add-btn');
+    if (card && col) {
+        col.insertBefore(card, addBtn);
+        card.dataset.status = newStatus;
+        card.style.opacity = '1';
+    }
+
+    // Attempt updateColumnCounts if it exists
+    if (typeof updateColumnCounts === 'function') updateColumnCounts();
+
+    const json = await apiPost('/api/tasks.php?action=update_status', { task_id: parseInt(draggedId), status: newStatus });
+    if (!json.success) {
+        Toast.error(json.error || 'Błąd zapisu statusu');
+        setTimeout(() => location.reload(), 1000);
+    }
+    draggedId = null;
+};
+
 // ─── Input Auto-grow for textareas ───────────────────────────────────────────
 document.querySelectorAll('textarea[data-autogrow]')?.forEach(el => {
     el.addEventListener('input', () => {
@@ -408,13 +456,16 @@ function closeCommandPalette() {
     if (pal) pal.classList.remove('open');
 }
 
+let searchTimeout;
 function filterCmdItems(q) {
     q = q.trim().toLowerCase();
-    document.querySelectorAll('#cmdBody .cmd-item').forEach(item => {
+
+    // Default static items filtering
+    document.querySelectorAll('#cmdBody .cmd-item:not(.dynamic-search-result)').forEach(item => {
         const searchText = (item.dataset.search || '') + ' ' + (item.querySelector('.cmd-item-text')?.textContent || '');
         item.style.display = (!q || searchText.toLowerCase().includes(q)) ? 'flex' : 'none';
     });
-    // Hide empty sections
+
     document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => {
         let next = label.nextElementSibling;
         let hasVisible = false;
@@ -424,7 +475,62 @@ function filterCmdItems(q) {
         }
         label.style.display = hasVisible ? '' : 'none';
     });
+
     cmdSelectedIdx = -1;
+
+    // Server-side dynamic global search
+    const dynamicContainer = document.getElementById('cmdDynamicResults') || createDynamicResultsContainer();
+    if (!q || q.length < 2) {
+        dynamicContainer.innerHTML = '';
+        return;
+    }
+
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        try {
+            const res = await apiGet('/api/search.php?q=' + encodeURIComponent(q));
+            if (res && res.results) {
+                renderDynamicResults(res.results, dynamicContainer);
+            }
+        } catch(e) {}
+    }, 300);
+}
+
+function createDynamicResultsContainer() {
+    const cont = document.createElement('div');
+    cont.id = 'cmdDynamicResults';
+    document.getElementById('cmdBody').appendChild(cont);
+    return cont;
+}
+
+function renderDynamicResults(results, container) {
+    container.innerHTML = '';
+    if (results.length === 0) return;
+
+    const label = document.createElement('div');
+    label.className = 'cmd-section-label';
+    label.textContent = '🔎 Wyniki z bazy';
+    container.appendChild(label);
+
+    results.forEach(r => {
+        const item = document.createElement('div');
+        item.className = 'cmd-item dynamic-search-result';
+        item.onclick = () => { window.location.href = r.url; };
+
+        let iconHtml = '';
+        if (r.type === 'project') iconHtml = '📁';
+        else if (r.type === 'task') iconHtml = '✅';
+        else if (r.type === 'note') iconHtml = '📝';
+
+        item.innerHTML = `
+            <div class="cmd-item-icon" style="font-size: 1.2rem;">${iconHtml}</div>
+            <div>
+                <div class="cmd-item-text">${r.title}</div>
+                <div class="cmd-item-sub">${r.subtitle}</div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
 }
 
 function setThemeDark() {

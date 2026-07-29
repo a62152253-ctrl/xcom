@@ -330,13 +330,25 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
     <div class="hero-left">
         <div class="hero-greeting"><?= $greeting ?>, 👋</div>
         <div class="hero-name"><?= sanitize($user_name) ?>!</div>
-        <div class="hero-stats">
-            <span class="hero-stat"><i class="fa-solid fa-list-check"></i> <?= count($tasks_today) ?> zadań na dziś</span>
-            <?php if ($overdue_count > 0): ?>
-            <span class="hero-stat" style="background:rgba(239,68,68,.25)"><i class="fa-solid fa-clock"></i> <?= $overdue_count ?> po terminie</span>
-            <?php endif; ?>
-            <span class="hero-stat"><i class="fa-solid fa-circle-check"></i> <?= $done_count ?> ukończonych</span>
-        </div>
+        <?php if ($projects_count === 0 && $active_tasks_count === 0): ?>
+            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <div style="font-weight: 700; margin-bottom: 0.5rem;"><i class="fa-solid fa-rocket"></i> Zacznijmy od konfiguracji:</div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div><?= $projects_count > 0 ? '☑' : '☐' ?> Utwórz pierwszy projekt</div>
+                    <div><?= $active_tasks_count > 0 ? '☑' : '☐' ?> Dodaj pierwsze zadanie</div>
+                    <div>☐ Ustaw profil</div>
+                    <div>☐ Zaproś członka zespołu</div>
+                </div>
+            </div>
+        <?php else: ?>
+            <div class="hero-stats">
+                <span class="hero-stat"><i class="fa-solid fa-list-check"></i> <?= count($tasks_today) ?> zadań na dziś</span>
+                <?php if ($overdue_count > 0): ?>
+                <span class="hero-stat" style="background:rgba(239,68,68,.25)"><i class="fa-solid fa-clock"></i> <?= $overdue_count ?> po terminie</span>
+                <?php endif; ?>
+                <span class="hero-stat"><i class="fa-solid fa-circle-check"></i> <?= $done_count ?> ukończonych</span>
+            </div>
+        <?php endif; ?>
         <div class="hero-actions">
             <button class="hero-btn hero-btn-primary" onclick="window.location.href='/pages/tasks.php'">
                 <i class="fa-solid fa-plus"></i> Nowe zadanie
@@ -519,15 +531,21 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         </div>
         <?php if (!empty($activity_logs)): ?>
         <div class="activity-feed">
-        <?php foreach (array_slice($activity_logs, 0, 7) as $log): ?>
+        <?php foreach (array_slice($activity_logs, 0, 7) as $log):
+            $day = (date('Y-m-d', strtotime($log['created_at'])) == date('Y-m-d')) ? 'Dzisiaj' : date('d.m', strtotime($log['created_at']));
+            $desc = $log['action'];
+            if ($log['action'] == 'project_create') $desc = "Utworzono projekt";
+            if ($log['action'] == 'task_create') $desc = "Dodano zadanie";
+            if ($log['action'] == 'task_status_update') $desc = "Zmieniono status zadania";
+        ?>
         <div class="af-item">
             <div class="af-dot" style="background:var(--primary-light);color:var(--primary);font-weight:700;font-size:11px">
-                <?= strtoupper(substr($log['full_name'] ?? 'S', 0, 1)) ?>
+                <i class="fa-solid fa-check"></i>
             </div>
             <div class="af-content">
                 <div class="af-who"><?= sanitize($log['full_name'] ?? 'System') ?></div>
-                <div class="af-what"><?= sanitize($log['action']) ?></div>
-                <div class="af-when"><?= date('d.m H:i', strtotime($log['created_at'])) ?></div>
+                <div class="af-what"><?= sanitize($day) ?> ✓ <?= sanitize($desc) ?> <?= $log['details'] ? ('- '.sanitize($log['details'])) : '' ?></div>
+                <div class="af-when"><?= date('H:i', strtotime($log['created_at'])) ?></div>
             </div>
         </div>
         <?php endforeach; ?>
@@ -550,6 +568,28 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             Live
         </span>
     </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; background: rgba(0,0,0,0.02); padding: 1rem; border-radius: 8px;">
+        <div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">Produktywność</div>
+            <div style="font-weight: 700; font-size: 1.25rem; color: var(--primary);">
+                <div style="font-family: monospace; letter-spacing: -1px;">████████ 80%</div>
+            </div>
+        </div>
+        <div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">Ukończone zadania</div>
+            <div style="font-weight: 700; font-size: 1.25rem;"><?= $done_count ?></div>
+        </div>
+        <div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">Aktywne projekty</div>
+            <div style="font-weight: 700; font-size: 1.25rem;"><?= $projects_count ?></div>
+        </div>
+        <div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">Czas pracy</div>
+            <div style="font-weight: 700; font-size: 1.25rem;">42h</div>
+        </div>
+    </div>
+
     <canvas id="trendChart" style="max-height:280px"></canvas>
 </div>
 

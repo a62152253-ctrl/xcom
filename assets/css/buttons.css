@@ -1,0 +1,29 @@
+/* assets/css/buttons.css */
+.ds-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0.5rem 1rem;
+    border-radius: var(--ds-radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    text-decoration: none;
+}
+.ds-btn-primary {
+    background: var(--ds-color-primary);
+    color: white;
+}
+.ds-btn-primary:hover {
+    filter: brightness(1.1);
+}
+.ds-btn-outline {
+    background: transparent;
+    border: 1px solid var(--ds-border);
+    color: var(--text-primary);
+}
+.ds-btn-outline:hover {
+    background: var(--ds-bg-base);
+}
