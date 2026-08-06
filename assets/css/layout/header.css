@@ -1,0 +1,4 @@
+.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.75rem;gap:1rem;flex-wrap:wrap;animation:slideUp .3s ease}
+.page-title{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.2rem}
+.page-title i{color:var(--primary)}
+.page-subtitle{color:var(--text-secondary);font-size:.875rem}

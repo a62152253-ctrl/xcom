@@ -1,0 +1,6 @@
+.badge-pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:var(--radius-full);font-size:.68rem;font-weight:700;letter-spacing:.02em}
+.badge-owner{background:rgba(245,158,11,.15);color:#d97706}
+.badge-admin{background:rgba(59,130,246,.15);color:var(--primary)}
+.badge-member{background:rgba(100,116,139,.12);color:#64748b}
+.badge-active{background:rgba(16,185,129,.12);color:#059669}
+.badge-blocked{background:rgba(239,68,68,.12);color:var(--danger)}

@@ -1,0 +1,8 @@
+.card{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:1.5rem;box-shadow:var(--shadow-sm);transition:box-shadow .2s ease;margin-bottom:1.25rem}
+.card:hover{box-shadow:var(--shadow-md)}
+.card-title{font-size:.925rem;font-weight:700;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem}
+.card-title i{color:var(--primary);font-size:.875rem}
+/* Missing enhancements */
+.card { background: var(--bg-primary); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); transition: var(--transition); }
+.card:hover { box-shadow: var(--shadow-md); }
+.card--elevated { box-shadow: var(--shadow-lg); }
