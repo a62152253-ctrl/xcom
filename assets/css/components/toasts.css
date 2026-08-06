@@ -1,0 +1,11 @@
+.toast-container{position:fixed;bottom:1.5rem;right:1.5rem;display:flex;flex-direction:column-reverse;gap:.5rem;z-index:9999;pointer-events:none}
+.toast{display:flex;align-items:center;gap:.75rem;padding:.875rem 1.25rem;border-radius:var(--radius-lg);font-size:.825rem;font-weight:600;box-shadow:var(--shadow-xl);pointer-events:all;opacity:0;transform:translateX(100%);transition:var(--transition);border:1px solid rgba(0,0,0,.1)}
+.toast--visible{opacity:1;transform:translateX(0)}
+.toast--success{background:#064e3b;color:#6ee7b7;border-color:#065f46}
+.toast--error{background:#7f1d1d;color:#fca5a5;border-color:#991b1b}
+.toast--warning{background:#78350f;color:#fcd34d;border-color:#92400e}
+.toast--info{background:#1e3a5f;color:#93c5fd;border-color:#1d4ed8}
+.toast i{font-size:1rem;flex-shrink:0}
+.toast span{flex-grow:1}
+.toast-close{background:none;border:none;cursor:pointer;color:inherit;opacity:.6;font-size:1.1rem;padding:0;line-height:1;flex-shrink:0}
+.toast-close:hover{opacity:1}

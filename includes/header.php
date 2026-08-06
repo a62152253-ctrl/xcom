@@ -39,7 +39,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <title><?php echo APP_NAME; ?></title>
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="/assets/css/premium.css">
+
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- FullCalendar CDN -->
