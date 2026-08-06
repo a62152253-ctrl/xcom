@@ -11,7 +11,7 @@
 .note-preview{color:var(--text-secondary);font-size:.78rem;line-height:1.6;flex-grow:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical}
 .note-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem}
 .note-tag{background:var(--primary-light);color:var(--primary);font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:var(--radius-full)}
-.note-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border-color);padding-top:.625rem;margin-top:auto;margin-bottom:0;padding-bottom:0;padding-top:.75rem}
+.note-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border-color);margin-top:auto;margin-bottom:0;padding-bottom:0;padding-top:.75rem}
 .note-date{font-size:.68rem;color:var(--text-muted)}
 .note-actions{display:flex;gap:.25rem;opacity:0;transition:opacity .2s}
 .note-card:hover .note-actions{opacity:1}

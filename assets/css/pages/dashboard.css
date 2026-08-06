@@ -23,5 +23,5 @@
 .dashboard-welcome-actions{display:flex;gap:.75rem;flex-wrap:wrap}
 .dashboard-welcome-actions .btn-primary{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);backdrop-filter:blur(4px)}
 .dashboard-welcome-actions .btn-primary:hover{background:rgba(255,255,255,.35)}
-.dashboard-welcome-actions .btn-secondary{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)}
+.dashboard-welcome-actions .btn-secondary{background:rgba(0,0,0,.15);color:#fff;border-color:rgba(255,255,255,.3)}
 .text-danger{color:#fca5a5}
