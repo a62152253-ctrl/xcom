@@ -130,11 +130,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <span>Logi</span>
                 </a>
 
-                <span class="nav-section-label">Zasoby</span>
-                <a href="/pages/notes.php" class="nav-item <?php echo $current_page == 'notes.php' ? 'active' : ''; ?>">
-                    <i class="fa-solid fa-note-sticky"></i>
-                    <span>Notatki</span>
+                <div class="nav-section-header" style="display:flex;justify-content:space-between;align-items:center;padding-right:1rem;margin-top:1.25rem">
+                    <span class="nav-section-label" style="margin:0">Obszar roboczy</span>
+                    <button class="sidebar-add-btn" onclick="event.preventDefault(); createNewPageInSidebar(null)" title="Nowa strona główna" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:4px;transition:var(--transition)"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <a href="/pages/notes.php" class="nav-item <?php echo $current_page == 'notes.php' ? 'active' : ''; ?>" style="margin-bottom:0.25rem">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Strony & Notatki</span>
                 </a>
+                <div class="sidebar-tree-wrapper" id="sidebar-pages-tree" style="padding-left:0.5rem;margin-bottom:1rem">
+                    <!-- Loaded dynamically via JavaScript in app.js -->
+                </div>
+
+                <span class="nav-section-label">Zasoby</span>
                 <a href="/pages/files.php" class="nav-item <?php echo $current_page == 'files.php' ? 'active' : ''; ?>">
                     <i class="fa-solid fa-folder"></i>
                     <span>Pliki</span>

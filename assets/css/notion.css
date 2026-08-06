@@ -1,0 +1,342 @@
+/* assets/css/notion.css - Notion Theme & Layout */
+.notion-workspace {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 120px);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+    padding: 1.5rem 2rem;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.notion-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.notion-breadcrumbs {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+.notion-breadcrumbs span {
+    cursor: pointer;
+    transition: var(--transition);
+}
+.notion-breadcrumbs span:hover {
+    color: var(--primary);
+}
+
+.notion-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.save-status {
+    font-size: 11px;
+    color: var(--success);
+    margin-right: 12px;
+    font-weight: 600;
+    transition: opacity 0.3s;
+}
+
+.notion-action-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+}
+.notion-action-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--text-muted);
+}
+.notion-action-btn.active {
+    color: var(--warning);
+    background: rgba(245, 158, 11, 0.1);
+    border-color: var(--warning);
+}
+
+.notion-canvas {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.notion-page-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.notion-icon-picker-trigger {
+    font-size: 2.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+.notion-icon-picker-trigger:hover {
+    background: var(--bg-tertiary);
+}
+
+.notion-emoji-picker {
+    position: absolute;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+    border-radius: 8px;
+    padding: 0.5rem;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    z-index: 1000;
+}
+.notion-emoji-picker span {
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    text-align: center;
+    transition: var(--transition);
+}
+.notion-emoji-picker span:hover {
+    background: var(--primary-light);
+}
+
+.notion-page-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    border: none;
+    outline: none;
+    background: none;
+    color: var(--text-primary);
+    width: 100%;
+}
+
+.notion-editor {
+    min-height: 300px;
+    margin-bottom: 2.5rem;
+}
+
+/* Blocks styling */
+.notion-block {
+    outline: none;
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    position: relative;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    transition: background 0.1s;
+}
+.notion-block:hover {
+    background: rgba(0,0,0,0.015);
+}
+[data-theme="dark"] .notion-block:hover {
+    background: rgba(255,255,255,0.015);
+}
+.notion-block:empty::before {
+    content: attr(placeholder);
+    color: var(--text-muted);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.notion-block-h1 { font-size: 1.8rem; font-weight: 700; margin-top: 1.2rem; }
+.notion-block-h2 { font-size: 1.4rem; font-weight: 600; margin-top: 1rem; }
+.notion-block-quote { border-left: 3px solid var(--primary); padding-left: 12px; color: var(--text-secondary); font-style: italic; }
+.notion-block-code { font-family: monospace; background: var(--bg-tertiary); padding: 8px 12px; border-radius: 6px; font-size: 0.95rem; }
+
+.notion-block-todo-container { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.notion-block-todo-check { margin-top: 5px; width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
+.notion-block-todo { flex: 1; outline: none; }
+.notion-block-todo-container.checked .notion-block-todo { text-decoration: line-through; color: var(--text-muted); }
+
+.notion-block-bullet-container { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.notion-block-bullet-dot { font-size: 1.1rem; color: var(--primary); line-height: 1.3; }
+.notion-block-bullet { flex: 1; outline: none; }
+
+/* Table block styling */
+.notion-block-table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+.notion-block-table td { border: 1px solid var(--border-color); padding: 6px 10px; outline: none; }
+
+/* Subpages Widget */
+.notion-subpages-widget {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+}
+.subpages-widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+.subpages-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+.subpage-card {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.subpage-card:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
+}
+
+/* Empty State / Landing */
+.notion-empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 1.5rem;
+}
+.nes-emoji { font-size: 4rem; margin-bottom: 1rem; }
+.nes-title { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.75rem; }
+.nes-text { color: var(--text-secondary); max-width: 500px; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.6; }
+
+/* Slash Command Menu */
+.notion-slash-menu {
+    position: absolute;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+    border-radius: 8px;
+    width: 260px;
+    max-height: 280px;
+    overflow-y: auto;
+    z-index: 10000;
+    padding: 4px;
+}
+.nsm-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: var(--transition);
+}
+.nsm-item:hover, .nsm-item.active {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+.nsm-item i { width: 14px; text-align: center; color: var(--text-secondary); }
+.nsm-item:hover i { color: var(--primary); }
+.nsm-item kbd { margin-left: auto; font-size: 10px; background: var(--bg-tertiary); padding: 2px 4px; border-radius: 4px; color: var(--text-muted); }
+
+/* Sidebar pages hierarchy stylings */
+.sidebar-page-item-wrap {
+    display: flex;
+    flex-direction: column;
+}
+.sidebar-page-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    user-select: none;
+}
+.sidebar-page-item:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.sidebar-page-item.active {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 600;
+}
+.sidebar-page-caret {
+    font-size: 9px;
+    width: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+}
+.sidebar-page-caret.expanded {
+    transform: rotate(90deg);
+}
+.sidebar-page-icon {
+    margin-right: 6px;
+    font-size: 14px;
+}
+.sidebar-page-title-txt {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sidebar-page-actions {
+    display: none;
+    align-items: center;
+    gap: 4px;
+}
+.sidebar-page-item:hover .sidebar-page-actions {
+    display: flex;
+}
+.sidebar-page-action-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 10px;
+}
+.sidebar-page-action-btn:hover {
+    background: var(--border-color);
+    color: var(--text-primary);
+}
+.sidebar-page-children {
+    padding-left: 12px;
+    display: none;
+}
+.sidebar-page-children.expanded {
+    display: block;
+}

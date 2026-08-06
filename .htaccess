@@ -1,0 +1,22 @@
+# XCOM TaskManager Pro - Apache Server Configuration & Security
+Options -Indexes
+
+# Block sensitive files from being accessed directly
+<FilesMatch "^\.(env|git|gitignore)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(sql|bak|log|conf|sh|json)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Custom directory access protection
+RewriteEngine On
+RewriteRule ^config/ - [F,L]
+RewriteRule ^security/ - [F,L]
+
+# Custom Error Pages
+ErrorDocument 403 /auth/login.php
+ErrorDocument 404 /pages/dashboard.php

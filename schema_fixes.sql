@@ -99,3 +99,12 @@ CREATE TABLE IF NOT EXISTS audit_log (
     INDEX idx_entity (entity_type, entity_id),
     INDEX idx_user_id (user_id)
 );
+
+-- Notion-style pages enhancements for notes table
+ALTER TABLE notes ADD COLUMN parent_id INT NULL DEFAULT NULL AFTER user_id;
+ALTER TABLE notes ADD COLUMN icon VARCHAR(100) DEFAULT NULL AFTER title;
+ALTER TABLE notes ADD COLUMN is_favorite TINYINT DEFAULT 0 AFTER is_pinned;
+ALTER TABLE notes ADD COLUMN is_archived TINYINT DEFAULT 0 AFTER is_favorite;
+ALTER TABLE notes ADD COLUMN is_trash TINYINT DEFAULT 0 AFTER is_archived;
+ALTER TABLE notes ADD FOREIGN KEY (parent_id) REFERENCES notes(id) ON DELETE SET NULL;
+CREATE INDEX idx_notes_parent_id ON notes(parent_id);
