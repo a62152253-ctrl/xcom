@@ -371,6 +371,12 @@ foreach ($all_tasks as $t) {
             <span class="kanban-count" id="count-<?= str_replace(' ', '-', strtolower($status)) ?>"><?= count($cards) ?></span>
         </div>
 
+        <div class="empty-state" style="padding: 2rem 1rem; opacity: 0.7;<?= empty($cards) ? '' : ' display: none;' ?>" id="empty-state-<?= str_replace(' ', '-', strtolower($status)) ?>">
+            <i class="fa-solid <?= $col_icons[$status] ?>" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+            <h3 style="font-size: 0.95rem; margin-bottom: 0.25rem;">Brak zadań</h3>
+            <p style="font-size: 0.8rem; margin: 0;">Przeciągnij zadanie tutaj lub kliknij "Dodaj zadanie".</p>
+        </div>
+
         <?php foreach ($cards as $c): ?>
         <div class="kanban-card" draggable="true" id="task-<?= (int)$c['id'] ?>"
              data-id="<?= (int)$c['id'] ?>" data-status="<?= sanitize($c['status']) ?>"
@@ -583,6 +589,11 @@ function updateColumnCounts() {
         const count = col.querySelectorAll('.kanban-card').length;
         const badge = document.getElementById('count-' + id);
         if (badge) badge.textContent = count;
+
+        const emptyState = document.getElementById('empty-state-' + id);
+        if (emptyState) {
+            emptyState.style.display = count === 0 ? 'block' : 'none';
+        }
     });
 }
 
