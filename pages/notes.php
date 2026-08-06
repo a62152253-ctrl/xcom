@@ -1,193 +1,83 @@
 <?php
-// pages/notes.php
+// pages/notes.php - Notion Workspace
 require_once __DIR__ . '/../includes/header.php';
 
-$db = Database::getInstance()->getConnection();
-$user_id = $_SESSION['user_id'];
-
-$stmt = $db->prepare("SELECT * FROM notes WHERE user_id = ? ORDER BY is_pinned DESC, updated_at DESC");
-$stmt->execute([$user_id]);
-$notes = $stmt->fetchAll();
-
-$note_colors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#ec4899'];
+$active_id = isset($_GET['id']) ? (int)$_GET['id'] : null;
 ?>
+<link rel="stylesheet" href="/assets/css/notion.css">
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title"><i class="fa-solid fa-note-sticky"></i> Notatki</h1>
-        <p class="page-subtitle">Twoje prywatne notatki — widoczne tylko dla Ciebie.</p>
-    </div>
-    <button class="btn btn-primary" onclick="openNoteModal()">
-        <i class="fa-solid fa-plus"></i> Nowa notatka
-    </button>
-</div>
-
-<!-- Search -->
-<div class="notes-search-wrap">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <input type="text" class="form-control notes-search" id="notes-search" placeholder="Szukaj w notatkach..." oninput="filterNotes(this.value)">
-</div>
-
-<!-- Notes grid -->
-<div class="notes-grid" id="notes-grid">
-<?php if (empty($notes)): ?>
-    <div class="empty-state-premium" style="grid-column:1/-1">
-        <div class="es-icon">📝</div>
-        <div class="es-title">Brak notatek</div>
-        <div class="es-sub">Twoje prywatne notatki są widoczne tylko dla Ciebie. Stwórz pierwszą teraz!</div>
-        <button class="es-btn" onclick="openNoteModal()"><i class="fa-solid fa-plus"></i> Nowa notatka</button>
-    </div>
-<?php else: ?>
-    <?php foreach ($notes as $n): ?>
-    <div class="note-card" data-id="<?= $n['id'] ?>" data-search="<?= strtolower(sanitize($n['title']) . ' ' . sanitize($n['content'])) ?>"
-         style="border-top:4px solid <?= $n['color'] ?>">
-        <?php if ($n['is_pinned']): ?>
-        <div class="note-pin"><i class="fa-solid fa-thumbtack"></i></div>
-        <?php endif; ?>
-        <h3 class="note-title"><?= sanitize($n['title']) ?></h3>
-        <p class="note-preview"><?= nl2br(sanitize(mb_substr($n['content'] ?? '', 0, 150))) ?><?= mb_strlen($n['content'] ?? '') > 150 ? '…' : '' ?></p>
-        <?php if (!empty($n['tags'])): ?>
-        <div class="note-tags">
-            <?php foreach (array_filter(array_map('trim', explode(',', $n['tags']))) as $tag): ?>
-            <span class="note-tag"><?= sanitize($tag) ?></span>
-            <?php endforeach; ?>
-        </div>
-        <?php endif; ?>
-        <div class="note-footer">
-            <span class="note-date"><?= date('d.m.Y H:i', strtotime($n['updated_at'])) ?></span>
-            <div class="note-actions">
-                <button class="note-btn" onclick='editNote(<?= json_encode($n) ?>)' title="Edytuj"><i class="fa-solid fa-pen"></i></button>
-                <button class="note-btn note-btn-del" onclick="deleteNote(<?= $n['id'] ?>)" title="Usuń"><i class="fa-solid fa-trash"></i></button>
-            </div>
+<div class="notion-workspace" id="notion-workspace-container" data-active-id="<?= $active_id ?>">
+    <!-- Dynamic Workspace Header -->
+    <div class="notion-header-bar" id="notion-header-bar" style="display:none">
+        <div class="notion-breadcrumbs" id="notion-breadcrumbs"></div>
+        <div class="notion-header-actions">
+            <span class="save-status" id="notion-save-status"><i class="fa-solid fa-circle-check"></i> Zapisano</span>
+            <button class="notion-action-btn" id="btn-favorite" onclick="togglePageFavorite()" title="Ulubione"><i class="fa-regular fa-star"></i></button>
+            <button class="notion-action-btn" id="btn-archive" onclick="togglePageArchive()" title="Zarchiwizuj"><i class="fa-solid fa-box-archive"></i></button>
+            <button class="notion-action-btn btn-danger-icon" id="btn-trash" onclick="togglePageTrash()" title="Przenieś do kosza"><i class="fa-solid fa-trash-can"></i></button>
         </div>
     </div>
-    <?php endforeach; ?>
-<?php endif; ?>
-</div>
 
-<!-- Modal -->
-<div class="modal-overlay" id="note-modal">
-    <div class="modal-window" style="max-width:560px">
-        <div class="modal-header">
-            <h2 class="modal-title" id="note-modal-title">Nowa notatka</h2>
-            <button class="modal-close" onclick="closeNoteModal()">&times;</button>
-        </div>
-        <div class="modal-body">
-            <input type="hidden" id="note-id">
-            <div class="form-group">
-                <label class="form-label">Tytuł</label>
-                <input class="form-control" type="text" id="note-title" placeholder="np. Pomysł na feature...">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Treść</label>
-                <textarea class="form-control" id="note-content" rows="6" placeholder="Wpisz notatke..."></textarea>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Tagi (oddziel przecinkami)</label>
-                <input class="form-control" type="text" id="note-tags" placeholder="np. pomysł, ważne, projekt-X">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Kolor</label>
-                <div class="color-picker-row">
-                    <?php foreach ($note_colors as $c): ?>
-                    <div class="color-chip" data-color="<?= $c ?>" style="background:<?= $c ?>" onclick="selectColor('<?= $c ?>')"></div>
-                    <?php endforeach; ?>
+    <!-- Page Content Container -->
+    <div class="notion-canvas" id="notion-canvas" style="display:none">
+        <!-- Icon & Title Section -->
+        <div class="notion-page-meta">
+            <div class="notion-page-icon-wrapper">
+                <button class="notion-icon-picker-trigger" id="page-icon-btn" onclick="toggleEmojiPicker(event)">📝</button>
+                <div class="notion-emoji-picker" id="notion-emoji-picker" style="display:none">
+                    <span onclick="selectEmoji('📝')">📝</span>
+                    <span onclick="selectEmoji('💡')">💡</span>
+                    <span onclick="selectEmoji('📅')">📅</span>
+                    <span onclick="selectEmoji('🚀')">🚀</span>
+                    <span onclick="selectEmoji('⭐')">⭐</span>
+                    <span onclick="selectEmoji('📌')">📌</span>
+                    <span onclick="selectEmoji('🎯')">🎯</span>
+                    <span onclick="selectEmoji('💼')">💼</span>
+                    <span onclick="selectEmoji('📂')">📂</span>
+                    <span onclick="selectEmoji('🔒')">🔒</span>
                 </div>
-                <input type="hidden" id="note-color" value="#3b82f6">
             </div>
-            <div class="form-group">
-                <label class="form-check">
-                    <input type="checkbox" id="note-pinned"> Przypnij notatkę na górze
-                </label>
+            <div class="notion-title-wrapper">
+                <input type="text" class="notion-page-title" id="notion-page-title" placeholder="Bez tytułu" oninput="handleTitleInput()">
             </div>
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeNoteModal()" style="width:auto">Anuluj</button>
-            <button class="btn btn-primary" onclick="saveNote()" style="width:auto"><i class="fa-solid fa-floppy-disk"></i> Zapisz</button>
+
+        <!-- Block Editor Area -->
+        <div class="notion-editor" id="notion-editor"></div>
+
+        <!-- Subpages Index Widget -->
+        <div class="notion-subpages-widget">
+            <div class="subpages-widget-header">
+                <span>Podstrony</span>
+                <button onclick="createNewSubpage()" class="btn btn-secondary btn-sm"><i class="fa-solid fa-plus"></i> Dodaj podstronę</button>
+            </div>
+            <div id="subpages-list" class="subpages-list"></div>
         </div>
+    </div>
+
+    <!-- Empty State / Landing -->
+    <div class="notion-empty-state" id="notion-empty-state">
+        <div class="nes-emoji">🌐</div>
+        <h2 class="nes-title">Witaj w swoim Obszarze Roboczym</h2>
+        <p class="nes-text">Wybierz stronę z panelu bocznego, aby rozpocząć edycję lub stwórz nową stronę główną, by zorganizować swoje notatki, wiedzę i zadania w stylu Notion.</p>
+        <button class="btn btn-primary" onclick="createNewPageInSidebar(null)"><i class="fa-solid fa-plus"></i> Stwórz pierwszą stronę</button>
     </div>
 </div>
 
-<script>
-let selectedColor = '#3b82f6';
+<!-- Slash Command Menu Dropdown -->
+<div class="notion-slash-menu" id="notion-slash-menu" style="display:none">
+    <div class="nsm-item" onclick="convertActiveBlock('p')"><i class="fa-solid fa-paragraph"></i> <span>Tekst (paragraf)</span><kbd>/p</kbd></div>
+    <div class="nsm-item" onclick="convertActiveBlock('h1')"><i class="fa-solid fa-heading"></i> <span>Nagłówek 1</span><kbd>/h1</kbd></div>
+    <div class="nsm-item" onclick="convertActiveBlock('h2')"><i class="fa-solid fa-heading"></i> <span>Nagłówek 2</span><kbd>/h2</kbd></div>
+    <div class="nsm-item" onclick="convertActiveBlock('todo')"><i class="fa-solid fa-square-check"></i> <span>Checklista (zadanie)</span><kbd>/todo</kbd></div>
+    <div class="nsm-item" onclick="convertActiveBlock('bullet')"><i class="fa-solid fa-list-ul"></i> <span>Lista punktowana</span><kbd>/list</kbd></div>
+    <div class="nsm-item" onclick="convertActiveBlock('quote')"><i class="fa-solid fa-quote-left"></i> <span>Cytat</span><kbd>/quote</kbd></div>
+    <div class="nsm-item" onclick="convertActiveBlock('code')"><i class="fa-solid fa-code"></i> <span>Blok kodu</span><kbd>/code</kbd></div>
+    <div class="nsm-item" onclick="convertActiveBlock('table')"><i class="fa-solid fa-table"></i> <span>Tabela</span><kbd>/table</kbd></div>
+</div>
 
-function selectColor(c) {
-    selectedColor = c;
-    document.getElementById('note-color').value = c;
-    document.querySelectorAll('.color-chip').forEach(el => {
-        el.classList.toggle('color-chip--active', el.dataset.color === c);
-    });
-}
-
-// Init first color
-document.querySelector('.color-chip')?.classList.add('color-chip--active');
-
-function openNoteModal() {
-    document.getElementById('note-id').value = '';
-    document.getElementById('note-title').value = '';
-    document.getElementById('note-content').value = '';
-    document.getElementById('note-tags').value = '';
-    document.getElementById('note-pinned').checked = false;
-    document.getElementById('note-modal-title').textContent = 'Nowa notatka';
-    selectColor('#3b82f6');
-    document.getElementById('note-modal').classList.add('active');
-}
-
-function closeNoteModal() {
-    document.getElementById('note-modal').classList.remove('active');
-}
-
-function editNote(n) {
-    document.getElementById('note-id').value = n.id;
-    document.getElementById('note-title').value = n.title;
-    document.getElementById('note-content').value = n.content || '';
-    document.getElementById('note-tags').value = n.tags || '';
-    document.getElementById('note-pinned').checked = n.is_pinned == 1;
-    document.getElementById('note-modal-title').textContent = 'Edytuj notatkę';
-    selectColor(n.color || '#3b82f6');
-    document.getElementById('note-modal').classList.add('active');
-}
-
-async function saveNote() {
-    const id = document.getElementById('note-id').value;
-    const payload = {
-        id: id || null,
-        title: document.getElementById('note-title').value.trim() || 'Bez tytułu',
-        content: document.getElementById('note-content').value,
-        tags: document.getElementById('note-tags').value,
-        color: document.getElementById('note-color').value,
-        is_pinned: document.getElementById('note-pinned').checked ? 1 : 0
-    };
-    const action = id ? 'update' : 'create';
-    const res = await fetch('/api/notes.php?action=' + action, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
-    });
-    const json = await res.json();
-    if (json.success) location.reload();
-    else alert(json.error || 'Błąd zapisu');
-}
-
-async function deleteNote(id) {
-    if (!confirm('Usunąć notatkę?')) return;
-    const res = await fetch('/api/notes.php?action=delete', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ id })
-    });
-    const json = await res.json();
-    if (json.success) location.reload();
-}
-
-function filterNotes(q) {
-    q = q.toLowerCase();
-    document.querySelectorAll('.note-card').forEach(card => {
-        card.style.display = card.dataset.search.includes(q) ? '' : 'none';
-    });
-}
-
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNoteModal(); });
-</script>
+<script src="/assets/js/notion-sidebar.js"></script>
+<script src="/assets/js/notion-editor.js"></script>
+<script src="/assets/js/notion-commands.js"></script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
