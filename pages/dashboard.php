@@ -325,6 +325,29 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
 }
 </style>
 
+<?php if ($projects_count === 0): ?>
+<!-- ═══ ONBOARDING HERO ═══════════════════════════════════════════════════════════ -->
+<div class="premium-hero" style="background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);">
+    <div class="hero-left">
+        <div class="hero-greeting">👋 Witaj</div>
+        <div class="hero-name"><?= sanitize($user_name) ?>!</div>
+        <div style="font-size: 1.1rem; opacity: 0.9; margin: 1rem 0 1.5rem 0;">
+            Zacznijmy od konfiguracji:
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;"><i class="fa-regular fa-square" style="font-size: 1.2rem; opacity: 0.7;"></i> <span>Utwórz pierwszy projekt</span></div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;"><i class="fa-regular fa-square" style="font-size: 1.2rem; opacity: 0.7;"></i> <span>Dodaj pierwsze zadanie</span></div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;"><i class="fa-regular fa-square" style="font-size: 1.2rem; opacity: 0.7;"></i> <span>Ustaw profil</span></div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;"><i class="fa-regular fa-square" style="font-size: 1.2rem; opacity: 0.7;"></i> <span>Zaproś członka zespołu</span></div>
+        </div>
+        <div class="hero-actions">
+            <button class="hero-btn hero-btn-primary" onclick="window.location.href='/pages/projects.php'">
+                <i class="fa-solid fa-folder-plus"></i> Utwórz projekt
+            </button>
+        </div>
+    </div>
+</div>
+<?php else: ?>
 <!-- ═══ PREMIUM HERO ═══════════════════════════════════════════════════════════ -->
 <div class="premium-hero">
     <div class="hero-left">
@@ -366,6 +389,7 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         <div class="hero-ws-bar"><div class="hero-ws-fill" style="width:<?= $ws_pct ?>%"></div></div>
     </div>
 </div>
+<?php endif; ?>
 
 <!-- ═══ PREMIUM KPI CARDS ════════════════════════════════════════════════════════ -->
 <div class="pkpi-grid">
@@ -504,10 +528,10 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         </div>
         <?php endforeach; else: ?>
         <div class="empty-state-premium">
-            <div class="es-icon">📁</div>
-            <div class="es-title">Brak projektów</div>
-            <div class="es-sub">Stwórz pierwszy projekt i zaproś zespół do pracy.</div>
-            <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Nowy projekt</a>
+            <div class="es-icon">🚀</div>
+            <div class="es-title">Nie masz jeszcze projektów</div>
+            <div class="es-sub">Stwórz pierwszy projekt i zacznij organizować swoją pracę.</div>
+            <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Utwórz projekt</a>
         </div>
         <?php endif; ?>
     </div>
@@ -519,18 +543,47 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         </div>
         <?php if (!empty($activity_logs)): ?>
         <div class="activity-feed">
-        <?php foreach (array_slice($activity_logs, 0, 7) as $log): ?>
-        <div class="af-item">
-            <div class="af-dot" style="background:var(--primary-light);color:var(--primary);font-weight:700;font-size:11px">
-                <?= strtoupper(substr($log['full_name'] ?? 'S', 0, 1)) ?>
+        <?php
+        $today_logs = [];
+        $older_logs = [];
+        $today_str = date('Y-m-d');
+        foreach ($activity_logs as $log) {
+            $log_date = date('Y-m-d', strtotime($log['created_at']));
+            if ($log_date === $today_str) {
+                $today_logs[] = $log;
+            } else {
+                $older_logs[] = $log;
+            }
+        }
+        ?>
+        <?php if (!empty($today_logs)): ?>
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 1rem;">Dzisiaj</div>
+            <?php foreach (array_slice($today_logs, 0, 5) as $log): ?>
+            <div class="af-item">
+                <div class="af-dot" style="background:var(--primary-light);color:var(--primary);font-weight:700;font-size:11px">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <div class="af-content">
+                    <div class="af-what"><?= sanitize($log['action']) ?></div>
+                    <div class="af-when"><?= date('H:i', strtotime($log['created_at'])) ?> · <?= sanitize($log['full_name'] ?? 'System') ?></div>
+                </div>
             </div>
-            <div class="af-content">
-                <div class="af-who"><?= sanitize($log['full_name'] ?? 'System') ?></div>
-                <div class="af-what"><?= sanitize($log['action']) ?></div>
-                <div class="af-when"><?= date('d.m H:i', strtotime($log['created_at'])) ?></div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+        <?php if (!empty($older_logs)): ?>
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin: 1rem 0; padding-top: 1rem; border-top: 1px solid var(--border-color);">Wcześniej</div>
+            <?php foreach (array_slice($older_logs, 0, 3) as $log): ?>
+            <div class="af-item">
+                <div class="af-dot" style="background:var(--bg-secondary);color:var(--text-muted);font-weight:700;font-size:11px">
+                    <?= strtoupper(substr($log['full_name'] ?? 'S', 0, 1)) ?>
+                </div>
+                <div class="af-content">
+                    <div class="af-what"><?= sanitize($log['action']) ?></div>
+                    <div class="af-when"><?= date('d.m H:i', strtotime($log['created_at'])) ?> · <?= sanitize($log['full_name'] ?? 'System') ?></div>
+                </div>
             </div>
-        </div>
-        <?php endforeach; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
         </div>
         <?php else: ?>
         <div class="empty-inline">
@@ -549,6 +602,36 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             <span style="width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 2s infinite;display:inline-block"></span>
             Live
         </span>
+    </div>
+    <div style="display: flex; gap: 2rem; margin-bottom: 2rem; align-items: center; background: var(--bg-secondary); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+        <div style="flex: 1;">
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">Wskaźnik Produktywności</div>
+            <div style="display: flex; align-items: baseline; gap: 1rem; margin-bottom: 0.5rem;">
+                <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary);"><?= $ws_pct ?>%</div>
+                <div style="color: var(--success); font-size: 0.9rem;"><i class="fa-solid fa-arrow-up"></i> Cel osiągnięty</div>
+            </div>
+            <div class="progress-bar-track" style="height: 10px;">
+                <div class="progress-bar-fill" style="width:<?= $ws_pct ?>%; background: linear-gradient(90deg, var(--primary), #8b5cf6);"></div>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; flex: 1;">
+            <div>
+                <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Ukończone zadania</div>
+                <div style="font-size: 1.5rem; font-weight: 700;"><?= $done_count ?></div>
+            </div>
+            <div>
+                <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Aktywne projekty</div>
+                <div style="font-size: 1.5rem; font-weight: 700;"><?= $projects_count ?></div>
+            </div>
+            <div>
+                <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Czas pracy (est.)</div>
+                <div style="font-size: 1.5rem; font-weight: 700;"><?= $done_count * 2 ?>h</div>
+            </div>
+            <div>
+                <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Zadania na dziś</div>
+                <div style="font-size: 1.5rem; font-weight: 700;"><?= count($tasks_today) ?></div>
+            </div>
+        </div>
     </div>
     <canvas id="trendChart" style="max-height:280px"></canvas>
 </div>

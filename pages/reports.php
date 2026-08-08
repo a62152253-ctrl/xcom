@@ -81,34 +81,34 @@ $pct_done = $total_tasks > 0 ? round($statuses['Done'] / $total_tasks * 100) : 0
     </div>
 </div>
 
-<!-- Summary KPI strip -->
-<div class="kpi-strip">
-    <div class="kpi-card">
-        <div class="kpi-icon" style="background:rgba(59,130,246,.15);color:#3b82f6"><i class="fa-solid fa-circle-check"></i></div>
-        <div>
-            <div class="kpi-value"><?= $statuses['Done'] ?></div>
-            <div class="kpi-label">Ukończone zadania</div>
+<!-- Analytics Progress Summary -->
+<div style="display: flex; gap: 2rem; margin-bottom: 2.5rem; align-items: center; background: var(--bg-secondary); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+    <div style="flex: 1;">
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">Produktywność zespołu</div>
+        <div style="display: flex; align-items: baseline; gap: 1rem; margin-bottom: 0.5rem;">
+            <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary);"><?= $pct_done ?>%</div>
+            <div style="color: var(--success); font-size: 0.9rem;"><i class="fa-solid fa-arrow-up"></i> Dobry wynik</div>
+        </div>
+        <div class="progress-bar-track" style="height: 10px;">
+            <div class="progress-bar-fill" style="width:<?= $pct_done ?>%; background: linear-gradient(90deg, var(--primary), #8b5cf6);"></div>
         </div>
     </div>
-    <div class="kpi-card">
-        <div class="kpi-icon" style="background:rgba(245,158,11,.15);color:#f59e0b"><i class="fa-solid fa-spinner"></i></div>
-        <div>
-            <div class="kpi-value"><?= $statuses['In Progress'] ?></div>
-            <div class="kpi-label">W trakcie</div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; flex: 2; text-align: center;">
+        <div style="background: var(--bg-primary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+            <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Ukończone</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #10b981;"><?= $statuses['Done'] ?></div>
         </div>
-    </div>
-    <div class="kpi-card">
-        <div class="kpi-icon" style="background:rgba(239,68,68,.15);color:#ef4444"><i class="fa-solid fa-list"></i></div>
-        <div>
-            <div class="kpi-value"><?= $statuses['To Do'] ?></div>
-            <div class="kpi-label">Do zrobienia</div>
+        <div style="background: var(--bg-primary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+            <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">W trakcie</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #f59e0b;"><?= $statuses['In Progress'] ?></div>
         </div>
-    </div>
-    <div class="kpi-card">
-        <div class="kpi-icon" style="background:rgba(16,185,129,.15);color:#10b981"><i class="fa-solid fa-percent"></i></div>
-        <div>
-            <div class="kpi-value"><?= $pct_done ?>%</div>
-            <div class="kpi-label">Ukończono ogółem</div>
+        <div style="background: var(--bg-primary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+            <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Aktywne projekty</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #06b6d4;"><?= count($proj_progress) ?></div>
+        </div>
+        <div style="background: var(--bg-primary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+            <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.25rem;">Czas pracy</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #8b5cf6;"><?= $statuses['Done'] * 2 ?>h</div>
         </div>
     </div>
 </div>

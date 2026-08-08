@@ -26,31 +26,20 @@ function validate_input($input, $type = 'string', $max_length = 255) {
 
 // CSRF check
 function validate_csrf($token) {
-    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token ?? '');
+    require_once __DIR__ . '/../security/Csrf.php';
+    return \Security\Csrf::validate($token);
 }
 
 // Log activity to database with security context
 function log_activity($user_id, $action, $details = null) {
-    try {
-        $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("INSERT INTO activity_logs (user_id, action, details, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)");
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-        $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 255);
-        $stmt->execute([$user_id, $action, $details, $ip, $ua]);
-    } catch (PDOException $e) {
-        error_log("Activity log failed: " . $e->getMessage());
-    }
+    require_once __DIR__ . '/../security/SecurityAudit.php';
+    \Security\SecurityAudit::logActivity($user_id, $action, $details);
 }
 
 // Create notification
 function create_notification($user_id, $title, $message, $type = 'info') {
-    try {
-        $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$user_id, $title, $message, $type]);
-    } catch (PDOException $e) {
-        error_log("Notification creation failed: " . $e->getMessage());
-    }
+    require_once __DIR__ . '/../notifications/NotificationService.php';
+    \Notifications\NotificationService::notify($user_id, $title, $message, $type);
 }
 
 // Send email (simple wrapper, requires SMTP setup)
