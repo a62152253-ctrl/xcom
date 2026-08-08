@@ -6,11 +6,12 @@ define('APP_NAME', 'TaskManager Pro');
 define('APP_VERSION', '1.0.0');
 
 // Database Configuration
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', 'root');
-define('DB_NAME', 'xcom');
-define('DB_PORT', '3307');
+require_once __DIR__ . '/env.php';
+define('DB_HOST', env('DB_HOST', 'localhost'));
+define('DB_USER', env('DB_USER', 'root'));
+define('DB_PASS', env('DB_PASS', 'root'));
+define('DB_NAME', env('DB_NAME', 'xcom'));
+define('DB_PORT', env('DB_PORT', '3306'));
 
 // Session Settings
 define('SESSION_LIFETIME', 1800); // 30 minutes in seconds

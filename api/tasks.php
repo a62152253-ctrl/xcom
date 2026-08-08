@@ -2,6 +2,7 @@
 // api/tasks.php - Fixed API with proper validation & error handling
 require_once __DIR__ . '/../includes/middleware.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../services/TaskService.php';
 
 require_auth_api();
 
@@ -152,9 +153,16 @@ try {
                 exit;
             }
             
-            $stmt = $db->prepare("INSERT INTO tasks (project_id, name, description, deadline, priority, status, assigned_to, created_by) VALUES (?, ?, ?, ?, ?, 'To Do', ?, ?)");
-            $stmt->execute([$project_id, $name, $description, $deadline ?: null, $priority, $assigned_to, $user_id]);
-            $task_id = $db->lastInsertId();
+            $data = [
+                'project_id' => $project_id,
+                'name' => $name,
+                'description' => $description,
+                'deadline' => $deadline,
+                'priority' => $priority,
+                'assigned_to' => $assigned_to,
+                'created_by' => $user_id
+            ];
+            $task_id = TaskService::createTask($data);
             
             if ($assigned_to && $assigned_to != $user_id) {
                 create_notification($assigned_to, 'Przypisano nowe zadanie', "Zostałeś przypisany do zadania: $name", 'task_assign');

@@ -13,8 +13,10 @@ if (file_exists($env_file)) {
 }
 
 // Helper to get env with fallback
-function env($key, $default = null) {
-    return $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key) ?: $default;
+if (!function_exists('env')) {
+    function env($key, $default = null) {
+        return $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key) ?: $default;
+    }
 }
 
 // Security Headers (should be in web server config, but set here as backup)
