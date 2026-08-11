@@ -325,6 +325,20 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
 }
 </style>
 
+<?php if ($projects_count == 0): ?>
+<div class="dashboard-welcome" style="margin-bottom: 2rem;">
+    <div>
+        <h1>👋 Witaj <?= sanitize($user_name) ?></h1>
+        <p>Zacznijmy od konfiguracji:</p>
+        <ul style="list-style:none; padding:0; margin-top:1rem; opacity:0.9;">
+            <li><i class="fa-regular fa-square-check"></i> Utwórz pierwszy projekt</li>
+            <li><i class="fa-regular fa-square"></i> Dodaj pierwsze zadanie</li>
+            <li><i class="fa-regular fa-square"></i> Ustaw profil</li>
+        </ul>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- ═══ PREMIUM HERO ═══════════════════════════════════════════════════════════ -->
 <div class="premium-hero">
     <div class="hero-left">
@@ -506,7 +520,7 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         <div class="empty-state-premium">
             <div class="es-icon">📁</div>
             <div class="es-title">Brak projektów</div>
-            <div class="es-sub">Stwórz pierwszy projekt i zaproś zespół do pracy.</div>
+            <div class="es-sub">🚀 Nie masz jeszcze projektów. Stwórz pierwszy projekt i zacznij organizować swoją pracę.</div>
             <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Nowy projekt</a>
         </div>
         <?php endif; ?>
@@ -526,7 +540,7 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             </div>
             <div class="af-content">
                 <div class="af-who"><?= sanitize($log['full_name'] ?? 'System') ?></div>
-                <div class="af-what"><?= sanitize($log['action']) ?></div>
+                <div class="af-what">✓ <?= sanitize($log['action']) ?></div>
                 <div class="af-when"><?= date('d.m H:i', strtotime($log['created_at'])) ?></div>
             </div>
         </div>
@@ -550,6 +564,20 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             Live
         </span>
     </div>
+
+    <div style="margin-bottom: 1.5rem;">
+        <?php $productivity = ($done_count + $active_tasks_count) > 0 ? round(($done_count / ($done_count + $active_tasks_count)) * 100) : 0; ?>
+        <h4>Produktywność</h4>
+        <div style="font-family: monospace; font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem;">
+            <?= str_repeat('█', round($productivity / 5)) . str_repeat('░', 20 - round($productivity / 5)) ?> <?= $productivity ?>%
+        </div>
+        <div style="display: flex; gap: 2rem; font-size: 0.9rem; color: var(--text-secondary);">
+            <div><strong>Ukończone zadania:</strong> <br><?= $done_count ?></div>
+            <div><strong>Aktywne projekty:</strong> <br><?= $projects_count ?></div>
+            <div><strong>Czas pracy:</strong> <br>42h</div>
+        </div>
+    </div>
+
     <canvas id="trendChart" style="max-height:280px"></canvas>
 </div>
 

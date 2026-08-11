@@ -25,8 +25,9 @@ function validate_input($input, $type = 'string', $max_length = 255) {
 }
 
 // CSRF check
+require_once __DIR__ . '/../security/Csrf.php';
 function validate_csrf($token) {
-    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token ?? '');
+    return \Security\Csrf::validate($token);
 }
 
 // Log activity to database with security context
@@ -42,15 +43,12 @@ function log_activity($user_id, $action, $details = null) {
     }
 }
 
+require_once __DIR__ . '/../notifications/NotificationService.php';
+require_once __DIR__ . '/../notifications/NotificationCenter.php';
+
 // Create notification
 function create_notification($user_id, $title, $message, $type = 'info') {
-    try {
-        $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$user_id, $title, $message, $type]);
-    } catch (PDOException $e) {
-        error_log("Notification creation failed: " . $e->getMessage());
-    }
+    \Notifications\NotificationService::send($user_id, $title, $message, $type);
 }
 
 // Send email (simple wrapper, requires SMTP setup)

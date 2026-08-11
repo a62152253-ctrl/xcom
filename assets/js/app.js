@@ -493,3 +493,60 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+
+// Global Search (Ctrl + K)
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'k') {
+        e.preventDefault();
+        const modal = document.getElementById('globalSearchModal');
+        const input = document.getElementById('globalSearchInput');
+        if (modal) {
+            modal.classList.add('active');
+            input.focus();
+        }
+    }
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('globalSearchModal');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    }
+});
+
+const gInput = document.getElementById('globalSearchInput');
+if (gInput) {
+    let timeout = null;
+    gInput.addEventListener('input', function(e) {
+        clearTimeout(timeout);
+        const q = e.target.value.trim();
+        const res = document.getElementById('globalSearchResults');
+
+        if (q.length < 2) {
+            res.innerHTML = '';
+            return;
+        }
+
+        timeout = setTimeout(async () => {
+            try {
+                res.innerHTML = '<div class="search-loading">Szukanie...</div>';
+                const response = await fetch(`/api/search.php?q=${encodeURIComponent(q)}`);
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+                    res.innerHTML = data.results.map(r => `
+                        <a href="${r.url}" class="search-result-card" style="text-decoration:none; color:inherit;">
+                            <div class="src-body">
+                                <div class="src-title">${r.title}</div>
+                                <div class="src-desc">${r.subtitle}</div>
+                            </div>
+                        </a>
+                    `).join('');
+                } else {
+                    res.innerHTML = '<div class="search-empty">Brak wyników</div>';
+                }
+            } catch (err) {
+                res.innerHTML = '<div class="search-empty">Błąd wyszukiwania</div>';
+            }
+        }, 300);
+    });
+}
