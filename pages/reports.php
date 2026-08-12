@@ -83,6 +83,21 @@ $pct_done = $total_tasks > 0 ? round($statuses['Done'] / $total_tasks * 100) : 0
 
 <!-- Summary KPI strip -->
 <div class="kpi-strip">
+    <div class="kpi-card" style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 0.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="kpi-label" style="font-weight: bold; font-size: 1.1rem;"><i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Produktywność</div>
+            <div class="kpi-value" style="font-size: 1.2rem;"><?= $pct_done ?>%</div>
+        </div>
+        <div class="progress-bar-track" style="height: 10px;">
+            <div class="progress-bar-fill" style="width: <?= $pct_done ?>%; background: linear-gradient(90deg, var(--primary), #10b981);"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
+            <span>Ukończone zadania: <strong><?= $statuses['Done'] ?></strong></span>
+            <span>Aktywne projekty: <strong><?= count($proj_progress) ?></strong></span>
+            <span>Czas pracy: <strong>42h</strong></span>
+        </div>
+    </div>
+
     <div class="kpi-card">
         <div class="kpi-icon" style="background:rgba(59,130,246,.15);color:#3b82f6"><i class="fa-solid fa-circle-check"></i></div>
         <div>

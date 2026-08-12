@@ -236,9 +236,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <div class="cmd-search-wrap">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" id="cmdInput" placeholder="Wpisz komendę lub wyszukaj..."
-                        oninput="filterCmdItems(this.value)" autocomplete="off">
+                        oninput="handleGlobalSearch(this.value)" autocomplete="off">
                 </div>
                 <div class="cmd-body" id="cmdBody">
+                    <div id="cmdSearchResults" style="display:none; padding: 1rem;"></div>
+
+                    <div id="cmdDefaultItems">
                     <!-- Quick actions -->
                     <div class="cmd-section-label">⚡ Szybkie akcje</div>
                     <div class="cmd-item" data-search="nowe zadanie dodaj" onclick="window.location.href='/pages/tasks.php'">
@@ -299,6 +302,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <div class="cmd-item" data-search="light jasny motyw" onclick="setThemeLight();closeCommandPalette()">
                         <div class="cmd-item-icon"><i class="fa-solid fa-sun"></i></div>
                         <div class="cmd-item-text">Jasny motyw</div>
+                    </div>
                     </div>
                 </div>
                 <div class="cmd-footer">

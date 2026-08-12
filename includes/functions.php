@@ -24,9 +24,11 @@ function validate_input($input, $type = 'string', $max_length = 255) {
     }
 }
 
+require_once __DIR__ . '/../security/Csrf.php';
+
 // CSRF check
 function validate_csrf($token) {
-    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token ?? '');
+    return \Security\Csrf::validate($token);
 }
 
 // Log activity to database with security context
