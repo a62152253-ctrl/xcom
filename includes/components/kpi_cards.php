@@ -2,7 +2,7 @@
 <div class="pkpi-grid">
 
     <div class="pkpi-card" style="--pkpi-color:#6366f1;--pkpi-light:rgba(99,102,241, 0.1);--pkpi-grad:linear-gradient(90deg,#6366f1,#8b5cf6);--pkpi-glow:rgba(99,102,241, 0.1)"
-         onclick="window.location.href='/pages/projects.php'">
+         role="button" tabindex="0" onclick="window.location.href='/pages/projects.php'">
         <div class="pkpi-top">
             <div class="pkpi-icon"><i class="fa-solid fa-folder-open"></i></div>
             <span class="pkpi-trend flat"><i class="fa-solid fa-minus"></i> aktywne</span>
@@ -13,7 +13,7 @@
     </div>
 
     <div class="pkpi-card" style="--pkpi-color:#06b6d4;--pkpi-light:rgba(6,182,212, 0.1);--pkpi-grad:linear-gradient(90deg,#06b6d4,#0ea5e9);--pkpi-glow:rgba(6,182,212, 0.1)"
-         onclick="window.location.href='/pages/tasks.php'">
+         role="button" tabindex="0" onclick="window.location.href='/pages/tasks.php'">
         <div class="pkpi-top">
             <div class="pkpi-icon"><i class="fa-solid fa-list-check"></i></div>
             <?php if ($active_tasks_count > 0): ?>

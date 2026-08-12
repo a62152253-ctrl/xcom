@@ -19,7 +19,7 @@
                 <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                     <?php $colors = ['#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#f97316']; ?>
                     <?php foreach ($colors as $c): ?>
-                    <div style="width: 40px; height: 40px; background: <?= $c ?>; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;" onclick="selectProjectColor('<?= $c ?>')" id="color-<?= md5($c) ?>"></div>
+                    <div style="width: 40px; height: 40px; background: <?= $c ?>; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;" role="button" tabindex="0" onclick="selectProjectColor('<?= $c ?>')" id="color-<?= md5($c) ?>"></div>
                     <?php endforeach; ?>
                     <input type="hidden" id="project-color" value="#3b82f6">
                 </div>

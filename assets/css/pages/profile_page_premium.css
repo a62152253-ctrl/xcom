@@ -5,7 +5,7 @@
     background: linear-gradient(135deg, #1e1b4b, #312e81);
     border-radius: 20px;
     padding: 32px;
-    color: #fff;
+    color: #ffffff;
     display: flex;
     align-items: center;
     gap: 24px;
@@ -26,7 +26,7 @@
     width: 80px; height: 80px;
     border-radius: 50%;
     background: linear-gradient(135deg, #6366f1, #06b6d4);
-    color: #fff;
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
