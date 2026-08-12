@@ -13,7 +13,6 @@
     cursor: pointer;
     transition: all .18s;
 }
-.task-premium:hover { border-color: var(--primary); transform: translateX(3px); background: var(--primary-light); }
 .task-check {
     width: 18px; height: 18px;
     border-radius: 50%;
@@ -25,10 +24,7 @@
     transition: all .2s;
     cursor: pointer;
 }
-.task-check.done { background: var(--success); border-color: var(--success); color: #fff; font-size: 10px; }
 .task-premium-body { flex: 1; min-width: 0; }
-.task-premium-name { font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.task-premium-meta { display: flex; gap: 8px; align-items: center; margin-top: 3px; font-size: 11px; color: var(--text-muted); }
 .task-prio {
     display: inline-flex;
     align-items: center;

@@ -1,22 +1,8 @@
 /* ─── Projects Page ───────────────────────────────────────── */
-.projects-toolbar{display:flex;flex-wrap:wrap;gap:.875rem;align-items:center;margin-bottom:1.5rem;padding:1rem 1.25rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-lg)}
-.projects-search-wrap{position:relative}
 .projects-search-wrap i{position:absolute;left:.875rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.8rem}
 .projects-search-wrap .form-control{padding-left:2.25rem;width:200px}
-.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem}
-.project-card{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-lg);overflow:hidden;transition:var(--transition);display:flex;flex-direction:column;animation:slideUp .3s ease}
 .project-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
-.project-card-stripe{height:5px}
-.project-card-body{padding:1.25rem;flex-grow:1}
-.project-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.5rem;gap:.5rem}
-.project-card-title{font-weight:800;font-size:.95rem;cursor:pointer;line-height:1.3;flex-grow:1}
 .project-card-title:hover{color:var(--primary)}
-.project-card-desc{color:var(--text-secondary);font-size:.8rem;line-height:1.5;margin-bottom:1rem;min-height:40px}
-.project-card-progress{margin-bottom:.25rem}
-.project-card-footer{padding:.875rem 1.25rem;border-top:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;background:var(--bg-primary);font-size:.78rem}
-.project-card-menu-wrap{position:relative}
-.project-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--bg-secondary);border:1.5px solid var(--border-color);border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);min-width:160px;display:none;flex-direction:column;z-index:999}
 .project-dropdown.active{display:flex}
-.project-dropdown-item{padding:.625rem 1rem;font-size:.825rem;cursor:pointer;display:flex;align-items:center;gap:.625rem;color:var(--text-secondary);transition:var(--transition)}
 .project-dropdown-item:hover{background:var(--primary-light);color:var(--primary)}
 .project-dropdown-item--danger:hover{background:rgba(239,68,68,.08);color:var(--danger)}

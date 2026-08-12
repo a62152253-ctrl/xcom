@@ -1,13 +1,4 @@
 /* ─── Notifications Page ─────────────────────────────────── */
-.notif-full-list{display:flex;flex-direction:column;gap:.5rem}
-.notif-full-item{display:flex;align-items:flex-start;gap:1rem;padding:1rem 1.25rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-lg);transition:var(--transition);animation:slideUp .3s ease}
 .notif-full-item:hover{box-shadow:var(--shadow-md)}
-.notif-unread{border-left:3px solid var(--primary);background:var(--primary-light)}
-.notif-full-icon{width:40px;height:40px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
-.notif-full-body{flex-grow:1;min-width:0}
-.notif-full-title{font-weight:700;font-size:.85rem;margin-bottom:.2rem}
-.notif-full-message{color:var(--text-secondary);font-size:.78rem}
-.notif-full-time{color:var(--text-muted);font-size:.72rem;white-space:nowrap;flex-shrink:0}
-.notif-delete-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;padding:.25rem;border-radius:var(--radius-sm);transition:var(--transition);flex-shrink:0}
 .notif-delete-btn:hover{color:var(--danger);background:rgba(239,68,68,.08)}
 @keyframes fadeOutRight{to{opacity:0;transform:translateX(40px)}}

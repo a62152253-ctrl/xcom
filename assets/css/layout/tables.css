@@ -1,6 +1,4 @@
 /* ─── Tables ─────────────────────────────────────────────── */
-.custom-table-container{overflow-x:auto;border-radius:var(--radius-md);border:1px solid var(--border-color)}
-.custom-table{width:100%;border-collapse:collapse;font-size:.825rem}
 .custom-table th{padding:.6rem 1rem;border-bottom:2px solid var(--border-color);color:var(--text-muted);font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
 .custom-table td{padding:.8rem 1rem;border-bottom:1px solid var(--border-color);vertical-align:middle}
 .custom-table tbody tr{transition:background .15s}

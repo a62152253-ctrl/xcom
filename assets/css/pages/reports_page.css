@@ -1,20 +1,4 @@
 /* ─── Reports Page ───────────────────────────────────────── */
-.reports-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
-.reports-chart-card{margin-bottom:0}
-.proj-progress-item{margin-bottom:1rem}
-.proj-progress-label{display:flex;align-items:center;gap:.5rem;font-size:.825rem;font-weight:600;margin-bottom:.35rem}
-.proj-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.proj-progress-nums{margin-left:auto;color:var(--text-muted);font-size:.75rem}
-.proj-progress-list{display:flex;flex-direction:column;gap:1rem}
-.ranking-list{display:flex;flex-direction:column;gap:.5rem}
-.ranking-item{display:flex;align-items:center;gap:.875rem;padding:.625rem 1rem;background:var(--bg-tertiary);border-radius:var(--radius-md);font-size:.825rem;animation:slideUp .3s ease}
-.ranking-pos{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0;background:var(--border-color);color:var(--text-muted)}
-.ranking-pos-1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff}
-.ranking-pos-2{background:linear-gradient(135deg,#94a3b8,#64748b);color:#fff}
-.ranking-pos-3{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff}
-.ranking-name{flex-grow:1;font-weight:700}
-.ranking-badge{background:var(--primary-light);color:var(--primary);padding:2px 10px;border-radius:var(--radius-full);font-size:.7rem;font-weight:700}
 
 /* Live indicator */
-#live-indicator{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--success)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
