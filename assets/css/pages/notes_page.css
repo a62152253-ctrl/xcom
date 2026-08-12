@@ -3,5 +3,5 @@
 .note-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
 .note-card:hover .note-actions{opacity:1}
 .note-btn:hover{background:var(--bg-tertiary);color:var(--primary)}
-.note-btn-del:hover{color:var(--danger) !important;background:rgba(239,68,68,.08) !important}
+.note-btn-del:hover{color:var(--danger) !important;background:rgba(239,68,68, 0.08) !important}
 .color-chip:hover{transform:scale(1.2)}

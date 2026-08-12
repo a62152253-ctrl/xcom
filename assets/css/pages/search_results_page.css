@@ -1,5 +1,5 @@
 /* ─── Search Results Page ─────────────────────────────────── */
 .search-result-card:hover{box-shadow:var(--shadow-md);border-color:var(--primary);transform:translateX(4px)}
-.src-title mark{background:rgba(59,130,246,.2);color:var(--primary);border-radius:2px;padding:0 2px}
-.src-desc mark{background:rgba(59,130,246,.15);color:var(--primary);border-radius:2px;padding:0 2px}
+.src-title mark{background:rgba(59,130,246, 0.2);color:var(--primary);border-radius:2px;padding:0 2px}
+.src-desc mark{background:rgba(59,130,246, 0.15);color:var(--primary);border-radius:2px;padding:0 2px}
 .search-result-card:hover .src-arrow{transform:translateX(4px);color:var(--primary)}

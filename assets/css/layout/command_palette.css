@@ -5,7 +5,7 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.6);
+    background: rgba(0,0,0, 0.6);
     backdrop-filter: blur(6px);
     z-index: 9999;
     align-items: flex-start;
@@ -21,7 +21,7 @@
     border-radius: 20px;
     width: 100%;
     max-width: 620px;
-    box-shadow: 0 32px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.05);
+    box-shadow: 0 32px 80px rgba(0,0,0, 0.45), 0 0 0 1px rgba(255,255,255, 0.05);
     overflow: hidden;
     animation: cmdIn .2s cubic-bezier(.34,1.56,.64,1);
 }

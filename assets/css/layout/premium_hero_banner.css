@@ -21,7 +21,7 @@
     top: -60px; right: -60px;
     width: 280px; height: 280px;
     border-radius: 50%;
-    background: rgba(255,255,255,.05);
+    background: rgba(255,255,255, 0.05);
     pointer-events: none;
 }
 .premium-hero::after {
@@ -30,7 +30,7 @@
     bottom: -80px; left: 30%;
     width: 200px; height: 200px;
     border-radius: 50%;
-    background: rgba(255,255,255,.04);
+    background: rgba(255,255,255, 0.04);
     pointer-events: none;
 }
 .hero-left { position: relative; z-index: 1; }
@@ -58,7 +58,7 @@
     gap: 6px;
     font-size: 13px;
     opacity: .9;
-    background: rgba(255,255,255,.12);
+    background: rgba(255,255,255, 0.12);
     padding: 5px 12px;
     border-radius: 99px;
     backdrop-filter: blur(4px);
@@ -87,17 +87,17 @@
     background: #fff;
     color: #1e1b4b;
 }
-.hero-btn-primary:hover { background: rgba(255,255,255,.9); transform: translateY(-1px); }
+.hero-btn-primary:hover { background: rgba(255,255,255, 0.9); transform: translateY(-1px); }
 .hero-btn-ghost {
-    background: rgba(255,255,255,.15);
+    background: rgba(255,255,255, 0.15);
     color: #fff;
-    border: 1.5px solid rgba(255,255,255,.3);
+    border: 1.5px solid rgba(255,255,255, 0.3);
     backdrop-filter: blur(4px);
 }
-.hero-btn-ghost:hover { background: rgba(255,255,255,.25); transform: translateY(-1px); }
+.hero-btn-ghost:hover { background: rgba(255,255,255, 0.25); transform: translateY(-1px); }
 .hero-workspace-card {
-    background: rgba(255,255,255,.1);
-    border: 1px solid rgba(255,255,255,.2);
+    background: rgba(255,255,255, 0.1);
+    border: 1px solid rgba(255,255,255, 0.2);
     border-radius: 16px;
     padding: 16px 20px;
     min-width: 200px;
@@ -109,5 +109,5 @@
 .hero-ws-label { font-size: 10px; opacity: .6; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
 .hero-ws-name  { font-size: 15px; font-weight: 800; margin-bottom: 12px; }
 .hero-ws-row   { display: flex; justify-content: space-between; font-size: 12px; opacity: .8; margin-bottom: 4px; }
-.hero-ws-bar   { height: 4px; background: rgba(255,255,255,.2); border-radius: 99px; margin-top: 8px; overflow: hidden; }
+.hero-ws-bar   { height: 4px; background: rgba(255,255,255, 0.2); border-radius: 99px; margin-top: 8px; overflow: hidden; }
 .hero-ws-fill  { height: 100%; background: #22c55e; border-radius: 99px; transition: width .8s ease; }

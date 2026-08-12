@@ -5,4 +5,4 @@
 .project-card-title:hover{color:var(--primary)}
 .project-dropdown.active{display:flex}
 .project-dropdown-item:hover{background:var(--primary-light);color:var(--primary)}
-.project-dropdown-item--danger:hover{background:rgba(239,68,68,.08);color:var(--danger)}
+.project-dropdown-item--danger:hover{background:rgba(239,68,68, 0.08);color:var(--danger)}

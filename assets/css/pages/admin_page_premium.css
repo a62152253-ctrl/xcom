@@ -17,7 +17,7 @@
     gap: 14px;
     transition: transform .2s, box-shadow .2s;
 }
-.admin-stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+.admin-stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0, 0.08); }
 .admin-stat-icon {
     width: 44px; height: 44px;
     border-radius: 12px;

@@ -21,7 +21,7 @@
 }
 .notif-premium.unread {
     background: var(--primary-light);
-    border-color: rgba(99,102,241,.2);
+    border-color: rgba(99,102,241, 0.2);
 }
 .notif-premium:hover { border-color: var(--primary); }
 .notif-p-icon {

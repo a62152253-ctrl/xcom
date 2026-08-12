@@ -3,15 +3,15 @@
     <div class="modal-window" style="max-width: 500px;">
         <div class="modal-header">
             <h2 class="modal-title">Nowy projekt</h2>
-            <button class="modal-close" onclick="closeCreateProjectModal()">&times;</button>
+            <button type="button" class="modal-close" onclick="closeCreateProjectModal()">&times;</button>
         </div>
         <div class="modal-body">
             <div class="form-group">
-                <label class="form-label">Nazwa projektu *</label>
+                <label class="form-label" for="project-name">Nazwa projektu *</label>
                 <input class="form-control" type="text" id="project-name" placeholder="Nazwa" maxlength="255">
             </div>
             <div class="form-group">
-                <label class="form-label">Opis</label>
+                <label class="form-label" for="project-description">Opis</label>
                 <textarea class="form-control" id="project-description" rows="2" placeholder="Krótki opis..." maxlength="1000"></textarea>
             </div>
             <div class="form-group">
@@ -25,13 +25,13 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="form-label">Termin (opcjonalnie)</label>
+                <label class="form-label" for="project-deadline">Termin (opcjonalnie)</label>
                 <input class="form-control" type="date" id="project-deadline">
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeCreateProjectModal()">Anuluj</button>
-            <button class="btn btn-primary" onclick="saveNewProject()"><i class="fa-solid fa-plus"></i> Utwórz</button>
+            <button type="button" class="btn btn-secondary" onclick="closeCreateProjectModal()">Anuluj</button>
+            <button type="button" class="btn btn-primary" onclick="saveNewProject()"><i class="fa-solid fa-plus"></i> Utwórz</button>
         </div>
     </div>
 </div>

@@ -11,6 +11,6 @@
 /* Dashboard welcome */
 .dashboard-welcome h1{font-size:1.4rem;font-weight:800;margin-bottom:.35rem}
 .dashboard-welcome p{opacity:.9;font-size:.9rem}
-.dashboard-welcome-actions .btn-primary{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);backdrop-filter:blur(4px)}
-.dashboard-welcome-actions .btn-primary:hover{background:rgba(255,255,255,.35)}
-.dashboard-welcome-actions .btn-secondary{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)}
+.dashboard-welcome-actions .btn-primary{background:rgba(255,255,255, 0.2);border:1.5px solid rgba(255,255,255, 0.4);backdrop-filter:blur(4px)}
+.dashboard-welcome-actions .btn-primary:hover{background:rgba(255,255,255, 0.35)}
+.dashboard-welcome-actions .btn-secondary{background:rgba(255,255,255, 0.15);color:#fff;border-color:rgba(255,255,255, 0.3)}
