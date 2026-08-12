@@ -1,0 +1,24 @@
+/* ─── Profile Page ───────────────────────────────────────── */
+.profile-grid{display:grid;grid-template-columns:300px 1fr;gap:1.25rem;align-items:start}
+.profile-card{text-align:center;padding:2rem 1.5rem}
+.profile-avatar-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-bottom:1.25rem;width:120px;height:120px}
+.progress-ring-svg{position:absolute;top:0;left:0;width:120px;height:120px}
+.profile-avatar-img,.profile-avatar-circle{width:80px;height:80px;border-radius:50%;object-fit:cover;position:relative;z-index:1}
+.profile-avatar-circle{background:linear-gradient(135deg,var(--primary),var(--info));color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800}
+.profile-ring-pct{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:var(--radius-full);z-index:2}
+.profile-name{font-size:1.2rem;font-weight:800;margin-bottom:.25rem}
+.profile-email{color:var(--text-muted);font-size:.8rem;margin-bottom:.875rem}
+.profile-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.625rem;border:1px solid var(--border-color);border-radius:var(--radius-md);padding:.875rem;margin:.875rem 0;text-align:center}
+.profile-stat strong{display:block;font-size:1.5rem;font-weight:900;color:var(--primary)}
+.profile-stat span{font-size:.7rem;color:var(--text-muted);font-weight:600}
+
+/* Heatmap */
+.heatmap-grid{display:grid;grid-template-columns:repeat(35,1fr);gap:3px;margin-top:.5rem}
+.heatmap-cell{aspect-ratio:1;border-radius:2px;cursor:pointer;transition:transform .1s}
+.heatmap-cell:hover{transform:scale(1.3)}
+.heatmap-0{background:var(--bg-tertiary)}
+.heatmap-1{background:rgba(59,130,246,.2)}
+.heatmap-2{background:rgba(59,130,246,.45)}
+.heatmap-3{background:rgba(59,130,246,.7)}
+.heatmap-4{background:var(--primary)}
+.activity-action-tag{background:var(--primary-light);color:var(--primary);font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:3px;font-family:monospace}

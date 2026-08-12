@@ -1,0 +1,12 @@
+/* ─── Keyframes ─────────────────────────────────────────── */
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideRight { from{opacity:0;transform:translateX(-16px)} to{opacity:1;transform:translateX(0)} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+@keyframes ripple { from{transform:scale(0);opacity:.4} to{transform:scale(2.5);opacity:0} }
+@keyframes toastIn { from{opacity:0;transform:translateX(100%)} to{opacity:1;transform:translateX(0)} }
+@keyframes toastOut { to{opacity:0;transform:translateX(120%)} }
+@keyframes shimmer { from{background-position:-200%} to{background-position:200%} }
+@keyframes countUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+@keyframes badgePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.3)} }

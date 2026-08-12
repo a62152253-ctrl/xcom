@@ -1,0 +1,76 @@
+/* ─── Buttons ────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.625rem 1.25rem;border-radius:var(--radius-md);font-weight:600;font-size:.875rem;border:none;cursor:pointer;transition:var(--transition)}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 2px 8px var(--primary-glow)}
+.btn-primary:hover{background:var(--primary-hover);box-shadow:0 4px 16px var(--primary-glow);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+.btn-secondary{background:var(--bg-tertiary);color:var(--text-primary);border:1.5px solid var(--border-color)}
+.btn-secondary:hover{background:var(--border-color);border-color:transparent}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--danger);border:1.5px solid rgba(239,68,68,.2)}
+.btn-danger:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+.btn-ghost{background:transparent;color:var(--text-secondary);border:none}
+.btn-ghost:hover{background:var(--bg-tertiary);color:var(--text-primary)}
+.btn-sm{padding:.35rem .75rem;font-size:.78rem}
+.btn-icon{width:36px;height:36px;padding:0;border-radius:var(--radius-md);font-size:.9rem}
+.btn-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);animation:ripple .6s ease-out forwards;pointer-events:none}
+
+/* === BUTTONS === */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--bg-secondary);
+    border-color: var(--text-secondary);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--primary);
+}
+
+.btn-ghost:hover:not(:disabled) {
+    background: var(--bg-tertiary);
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.btn-lg {
+    padding: 1rem 1.5rem;
+    font-size: 1.025rem;
+}

@@ -1,0 +1,11 @@
+/* ================================================================
+   ARCHIVE + REPORTS misc
+   ================================================================ */
+.report-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+.report-title { font-size: 15px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }

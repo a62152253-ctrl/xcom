@@ -1,3 +1,50 @@
+/* =========================================
+   TASKMANAGER PRO — PREMIUM CSS v3
+   Full upgrade: animations, toast, mobile, settings, profile, search, projects
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ================================================================
+   TASKMANAGER PRO — premium.css
+   Premium SaaS upgrade: command palette, empty states, KPI cards,
+   workspace badge, micro-animations, skeleton loading
+   ================================================================ */
+
+/* assets/css/enhancements.css - Modern UI/UX upgrades */
+
+:root {
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --primary-light: #60a5fa;
+    --secondary: #6b7280;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #06b6d4;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-tertiary: #f3f4f6;
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    --border-color: #e5e7eb;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+    --bg-primary: #111827;
+    --bg-secondary: #1f2937;
+    --bg-tertiary: #2d3748;
+    --text-primary: #f3f4f6;
+    --text-secondary: #d1d5db;
+    --text-muted: #9ca3af;
+    --border-color: #374151;
+}
+
 /* Auth Specific Styles */
 
 /* Password Toggle */

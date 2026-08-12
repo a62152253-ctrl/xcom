@@ -1,0 +1,72 @@
+/* ================================================================
+   PREMIUM SETTINGS
+   ================================================================ */
+.settings-layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+.settings-nav {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 8px;
+    position: sticky;
+    top: 80px;
+}
+.settings-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all .15s;
+    text-decoration: none;
+}
+.settings-nav-item:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.settings-nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 700; }
+.settings-nav-item i { width: 16px; text-align: center; }
+
+/* Toggle switch */
+.toggle-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.toggle-wrap:last-child { border-bottom: none; }
+.toggle-label { font-size: 14px; font-weight: 600; }
+.toggle-sub   { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.toggle-switch {
+    position: relative;
+    width: 44px; height: 24px;
+    flex-shrink: 0;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+.toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--bg-tertiary);
+    border: 1.5px solid var(--border-color);
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all .25s;
+}
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    left: 3px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--text-muted);
+    border-radius: 50%;
+    transition: all .25s;
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--primary); border-color: var(--primary); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px) translateY(-50%); background: #fff; }

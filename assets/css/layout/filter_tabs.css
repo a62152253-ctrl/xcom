@@ -1,0 +1,6 @@
+/* ─── Filter Tabs ────────────────────────────────────────── */
+.filter-tabs{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.filter-tab{display:inline-flex;align-items:center;gap:.4rem;padding:.375rem .875rem;border-radius:var(--radius-full);font-size:.78rem;font-weight:600;background:var(--bg-secondary);border:1.5px solid var(--border-color);transition:var(--transition);cursor:pointer}
+.filter-tab:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.filter-tab.active{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 2px 8px var(--primary-glow)}
+.filter-tab-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}

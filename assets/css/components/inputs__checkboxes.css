@@ -1,0 +1,16 @@
+/* === INPUTS & CHECKBOXES === */
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.form-check input[type="checkbox"],
+.form-check input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--primary);
+}

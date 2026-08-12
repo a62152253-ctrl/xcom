@@ -1,0 +1,46 @@
+/* ================================================================
+   PROFILE PAGE PREMIUM
+   ================================================================ */
+.profile-hero {
+    background: linear-gradient(135deg, #1e1b4b, #312e81);
+    border-radius: 20px;
+    padding: 32px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+}
+.profile-hero::after {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.05);
+}
+.profile-av-large {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #06b6d4);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 900;
+    border: 4px solid rgba(255,255,255,.25);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+.profile-hero-info { position: relative; z-index: 1; }
+.profile-hero-name { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
+.profile-hero-email { opacity: .75; font-size: 13px; margin-bottom: 12px; }
+.profile-hero-stats { display: flex; gap: 20px; flex-wrap: wrap; }
+.profile-hero-stat { text-align: center; }
+.profile-hero-stat .val { font-size: 20px; font-weight: 900; }
+.profile-hero-stat .lbl { font-size: 10px; opacity: .65; text-transform: uppercase; letter-spacing: .05em; }

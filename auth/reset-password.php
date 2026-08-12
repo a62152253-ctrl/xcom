@@ -74,7 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($error)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resetowanie hasła | TaskManager Pro</title>
     <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="/assets/css/auth.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="/assets/js/auth.js" defer></script>
 </head>
