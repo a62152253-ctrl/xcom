@@ -360,8 +360,47 @@ document.addEventListener('click', (e) => {
 });
 
 // ─── Global Search handler (for header) ────────────────────────────────────
-function handleGlobalSearch(val) {
-    GlobalSearch.search(val);
+let searchTimeout;
+async function handleGlobalSearch(q) {
+    q = q.trim();
+    const defaultItems = document.getElementById('cmdDefaultItems');
+    const searchResults = document.getElementById('cmdSearchResults');
+
+    if (!q) {
+        if(defaultItems) defaultItems.style.display = 'block';
+        if(searchResults) searchResults.style.display = 'none';
+        filterCmdItems('');
+        return;
+    }
+
+    if(defaultItems) defaultItems.style.display = 'none';
+    if(searchResults) {
+        searchResults.style.display = 'block';
+        searchResults.innerHTML = '<div class="search-loading"><i class="fa-solid fa-spinner fa-spin"></i> Szukam...</div>';
+    }
+
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        const data = await apiGet(`/api/search.php?q=${encodeURIComponent(q)}&limit=6`);
+        if (!searchResults) return;
+
+        if (!data || !data.results || data.results.length === 0) {
+            searchResults.innerHTML = '<div class="search-empty" style="color:var(--text-muted); text-align:center; padding: 2rem;">Brak wyników dla "<strong>' + q + '</strong>"</div>';
+            return;
+        }
+
+        const html = data.results.map(r => `
+            <a href="${r.url}" class="cmd-item" style="display:flex; text-decoration:none; color:inherit;">
+                <div class="cmd-item-icon"><i class="fa-solid ${r.type === 'task' ? 'fa-list-check' : (r.type === 'note' ? 'fa-note-sticky' : 'fa-folder')}"></i></div>
+                <div>
+                    <div class="cmd-item-text">${r.title}</div>
+                    <div class="cmd-item-sub">${r.subtitle || (r.type === 'task' ? 'Zadanie' : (r.type === 'note' ? 'Notatka' : 'Projekt'))}</div>
+                </div>
+            </a>
+        `).join('');
+
+        searchResults.innerHTML = html + `<a href="/pages/search.php?q=${encodeURIComponent(q)}" class="cmd-item" style="justify-content:center; text-decoration:none; color:var(--primary); font-weight:600;">Zobacz wszystkie wyniki →</a>`;
+    }, 300);
 }
 
 // ─── Input Auto-grow for textareas ───────────────────────────────────────────

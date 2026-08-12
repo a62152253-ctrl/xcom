@@ -470,6 +470,41 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
 </div>
 
 <!-- ═══ PROJECTS & ACTIVITY ═══════════════════════════════════════════════════════ -->
+<?php if ($projects_count === 0): ?>
+<!-- Dashboard Onboarding -->
+<div class="dashboard-onboarding" style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm);">
+    <h2 style="margin-top: 0; font-size: 1.5rem; color: var(--text-primary);">👋 Witaj <?= sanitize($user_name) ?></h2>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Zacznijmy od konfiguracji:</p>
+
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; color: var(--text-primary); font-size: 1.05rem;">
+            <input type="checkbox" checked disabled style="width: 20px; height: 20px;">
+            <span style="text-decoration: line-through; color: var(--text-muted);">Zaloguj się</span>
+        </label>
+
+        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; color: var(--text-primary); font-size: 1.05rem;">
+            <input type="checkbox" disabled style="width: 20px; height: 20px;">
+            <a href="/pages/projects.php" style="color: var(--primary); text-decoration: none; font-weight: 500;">Utwórz pierwszy projekt</a>
+        </label>
+
+        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; color: var(--text-primary); font-size: 1.05rem;">
+            <input type="checkbox" disabled style="width: 20px; height: 20px;">
+            <a href="/pages/tasks.php" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dodaj pierwsze zadanie</a>
+        </label>
+
+        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; color: var(--text-primary); font-size: 1.05rem;">
+            <input type="checkbox" disabled style="width: 20px; height: 20px;">
+            <a href="/pages/profile.php" style="color: var(--primary); text-decoration: none; font-weight: 500;">Ustaw profil</a>
+        </label>
+
+        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; color: var(--text-primary); font-size: 1.05rem;">
+            <input type="checkbox" disabled style="width: 20px; height: 20px;">
+            <a href="/pages/admin.php" style="color: var(--primary); text-decoration: none; font-weight: 500;">Zaproś członka zespołu</a>
+        </label>
+    </div>
+</div>
+<?php endif; ?>
+
 <div class="projects-row">
 
     <!-- Projects Progress -->
@@ -504,10 +539,10 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         </div>
         <?php endforeach; else: ?>
         <div class="empty-state-premium">
-            <div class="es-icon">📁</div>
-            <div class="es-title">Brak projektów</div>
-            <div class="es-sub">Stwórz pierwszy projekt i zaproś zespół do pracy.</div>
-            <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Nowy projekt</a>
+            <div class="es-icon">🚀</div>
+            <div class="es-title">Nie masz jeszcze projektów</div>
+            <div class="es-sub">Stwórz pierwszy projekt i zacznij organizować swoją pracę.</div>
+            <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Utwórz projekt</a>
         </div>
         <?php endif; ?>
     </div>

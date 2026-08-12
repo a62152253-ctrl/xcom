@@ -1,0 +1,38 @@
+/* buttons.css - Button Styles */
+.ds-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.ds-btn-primary {
+    background-color: var(--primary);
+    color: white;
+}
+
+.ds-btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+.ds-btn-secondary {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.ds-btn-secondary:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.ds-btn-danger {
+    background-color: var(--danger);
+    color: white;
+}

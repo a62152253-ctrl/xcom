@@ -3,6 +3,12 @@
    Full upgrade: animations, toast, mobile, settings, profile, search, projects
    ========================================= */
 
+@import url('components/variables.css');
+@import url('components/buttons.css');
+@import url('components/cards.css');
+@import url('components/forms.css');
+@import url('components/animations.css');
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 /* ─── Variables ─────────────────────────────────────────── */

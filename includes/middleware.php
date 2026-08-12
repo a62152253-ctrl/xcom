@@ -15,11 +15,14 @@ function require_auth_api() {
     }
 }
 
+require_once __DIR__ . '/../security/Csrf.php';
+require_once __DIR__ . '/../security/Permissions.php';
+
 function require_csrf_token() {
     $input = json_decode(file_get_contents('php://input'), true) ?? [];
     $token = $input['csrf_token'] ?? $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
     
-    if (!$token || !hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
+    if (!\Security\Csrf::validate($token)) {
         http_response_code(403);
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode(['error' => 'CSRF token validation failed']);
