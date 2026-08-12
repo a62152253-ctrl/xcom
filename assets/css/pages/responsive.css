@@ -1,0 +1,52 @@
+/* ─── Responsive ──────────────────────────────────────────── */
+
+@media (max-width:768px) {
+    /* Mobile sidebar */
+
+    .tasks-search-wrap .form-control{width:160px}
+}
+
+@media (max-width:480px) {
+    .top-actions .theme-toggler{display:none}
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media(max-width:900px) {
+    .pkpi-grid { grid-template-columns: repeat(2,1fr); }
+    .premium-hero { padding: 20px; }
+    .hero-workspace-card { min-width: auto; width: 100%; }
+    .settings-layout { grid-template-columns: 1fr; }
+    .settings-nav { position: static; }
+}
+@media(max-width:500px) {
+    .pkpi-grid { grid-template-columns: 1fr; }
+    .hero-name { font-size: 20px; }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .card {
+        padding: 1rem;
+    }
+
+    .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .modal-window {
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    .table {
+        font-size: 0.85rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.75rem;
+    }
+}

@@ -1,0 +1,32 @@
+/* ─── Tables ─────────────────────────────────────────────── */
+.custom-table th{padding:.6rem 1rem;border-bottom:2px solid var(--border-color);color:var(--text-muted);font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.custom-table td{padding:.8rem 1rem;border-bottom:1px solid var(--border-color);vertical-align:middle}
+.custom-table tbody tr{transition:background .15s}
+.custom-table tbody tr:hover{background:var(--primary-light)}
+.custom-table tbody tr:last-child td{border-bottom:none}
+
+/* === TABLES === */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.table th {
+    background: var(--bg-tertiary);
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.table tbody tr:hover {
+    background: var(--bg-secondary);
+}

@@ -1,0 +1,21 @@
+/* ─── Settings Page ───────────────────────────────────────── */
+.settings-nav-item:hover{background:var(--primary-light);color:var(--primary)}
+.settings-nav-item.active{background:var(--primary-light);color:var(--primary);font-weight:700}
+.settings-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.settings-toggle-row:last-child{border-bottom:none}
+
+/* Toggle switch */
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider::before{content:'';position:absolute;width:20px;height:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:var(--shadow-sm)}
+.toggle-switch input:checked + .toggle-slider{background:var(--primary)}
+.toggle-switch input:checked + .toggle-slider::before{transform:translateX(20px)}
+
+/* Password bars */
+.session-info-card>i{font-size:1.5rem;color:var(--text-muted)}
+
+/* Theme picker */
+.theme-option:hover{border-color:var(--primary);transform:scale(1.02)}
+.theme-preview--dark .theme-preview-sidebar{background:#1e293b;width:35%}
+.theme-preview--dark .theme-preview-content{background:#0f172a;flex:1}
+.theme-preview--light .theme-preview-sidebar{background:#ffffff;width:35%;border-right:1px solid #e2e8f0}
+.theme-preview--light .theme-preview-content{background:#f0f4f8;flex:1}

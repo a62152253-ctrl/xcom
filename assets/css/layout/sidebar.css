@@ -1,0 +1,18 @@
+/* ─── Sidebar ────────────────────────────────────────────── */
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-track{background:transparent}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:4px}
+.sidebar-logo i{background:linear-gradient(135deg,var(--primary),var(--info));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sidebar-logo span{background:linear-gradient(135deg,var(--primary),var(--info));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* Nav */
+.nav-item:hover{background:var(--primary-light);color:var(--primary)}
+.nav-item.active{background:var(--primary-light);color:var(--primary);font-weight:700}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;height:60%;width:3px;background:var(--primary);border-radius:0 4px 4px 0}
+.nav-item i{width:18px;text-align:center;font-size:.875rem;flex-shrink:0}
+
+/* Sidebar footer */
+
+/* Mobile sidebar overlay */
+.sidebar-overlay.active{display:block;animation:fadeIn .2s ease}
+.hamburger-btn:hover{background:var(--bg-tertiary)}

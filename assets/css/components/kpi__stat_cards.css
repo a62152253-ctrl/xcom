@@ -1,0 +1,16 @@
+/* ─── KPI / Stat Cards ───────────────────────────────────── */
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:3px;opacity:0;transition:opacity .2s;background:linear-gradient(90deg,var(--primary),var(--info))}
+.stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.stat-card:hover::after{opacity:1}
+.stat-info h3{font-size:2rem;font-weight:900;letter-spacing:-.05em;animation:countUp .5s ease}
+.stat-info p{color:var(--text-muted);font-size:.75rem;font-weight:600;margin-top:.15rem;text-transform:uppercase;letter-spacing:.05em}
+.stat-card--danger .stat-info h3{color:var(--danger)}
+
+.kpi-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+
+/* Dashboard welcome */
+.dashboard-welcome h1{font-size:1.4rem;font-weight:800;margin-bottom:.35rem}
+.dashboard-welcome p{opacity:.9;font-size:.9rem}
+.dashboard-welcome-actions .btn-primary{background:rgba(255,255,255, 0.2);border:1.5px solid rgba(255,255,255, 0.4);backdrop-filter:blur(4px)}
+.dashboard-welcome-actions .btn-primary:hover{background:rgba(255,255,255, 0.35)}
+.dashboard-welcome-actions .btn-secondary{background:rgba(255,255,255, 0.15);color:#fff;border-color:rgba(255,255,255, 0.3)}

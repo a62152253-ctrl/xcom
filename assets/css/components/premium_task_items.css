@@ -1,0 +1,39 @@
+/* ================================================================
+   PREMIUM TASK ITEMS
+   ================================================================ */
+.task-premium {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all .18s;
+}
+.task-check {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s;
+    cursor: pointer;
+}
+.task-premium-body { flex: 1; min-width: 0; }
+.task-prio {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 99px;
+    font-size: 10px;
+    font-weight: 700;
+}
+.prio-low      { background: rgba(16,185,129, 0.1); color: #059669; }
+.prio-medium   { background: rgba(245,158,11, 0.1);  color: #d97706; }
+.prio-high     { background: rgba(239,68,68, 0.1);   color: #dc2626; }
+.prio-critical { background: rgba(139,92,246, 0.12); color: #7c3aed; }

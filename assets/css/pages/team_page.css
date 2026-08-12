@@ -1,0 +1,6 @@
+/* ─── Team Page ──────────────────────────────────────────── */
+.team-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+.team-stat strong{display:block;font-size:1.15rem;font-weight:900;color:var(--primary)}
+.team-stat span{font-size:.65rem;color:var(--text-muted);font-weight:600;text-transform:uppercase}
+.team-progress-bar div{height:100%;border-radius:3px}
+.invite-info-box i{color:var(--primary);margin-top:.15rem;flex-shrink:0}

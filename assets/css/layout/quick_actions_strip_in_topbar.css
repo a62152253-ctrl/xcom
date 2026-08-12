@@ -1,0 +1,34 @@
+/* ── Quick actions strip in topbar ──────────────────────────────── */
+.topbar-quick {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 8px;
+}
+.topbar-quick .btn {
+    padding: 5px 12px;
+    font-size: 12px;
+    border-radius: 8px;
+}
+.cmd-hint {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+}
+.cmd-hint:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.cmd-hint kbd {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 10px;
+    font-family: inherit;
+}

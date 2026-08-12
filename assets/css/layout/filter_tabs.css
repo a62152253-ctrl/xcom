@@ -1,0 +1,3 @@
+/* ─── Filter Tabs ────────────────────────────────────────── */
+.filter-tab:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.filter-tab.active{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 2px 8px var(--primary-glow)}

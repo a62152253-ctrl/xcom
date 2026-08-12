@@ -1,0 +1,3 @@
+/* ─── Files Page ─────────────────────────────────────────── */
+.file-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.file-download-btn:hover{background:var(--primary);color:#fff}

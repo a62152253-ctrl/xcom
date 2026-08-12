@@ -1,0 +1,34 @@
+/* ================================================================
+   ACTIVITY FEED (premium timeline)
+   ================================================================ */
+.activity-feed { display: flex; flex-direction: column; }
+.af-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    position: relative;
+}
+.af-item + .af-item::before {
+    content: '';
+    position: absolute;
+    left: 15px; top: 0;
+    width: 2px; height: 100%;
+    background: var(--border-color);
+}
+.af-dot {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+.af-content { flex: 1; padding-top: 4px; }
+.af-who { font-weight: 700; font-size: 13px; }
+.af-what { color: var(--text-muted); font-size: 12px; margin-top: 1px; }
+.af-when { font-size: 10px; color: var(--text-muted); margin-top: 2px; }

@@ -1,0 +1,3 @@
+/* ─── Cards ──────────────────────────────────────────────── */
+.card:hover{box-shadow:var(--shadow-md)}
+.card-title i{color:var(--primary);font-size:.875rem}

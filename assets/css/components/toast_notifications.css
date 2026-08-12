@@ -1,0 +1,4 @@
+/* ─── Toast Notifications ─────────────────────────────────── */
+.toast i{font-size:1rem;flex-shrink:0}
+.toast span{flex-grow:1}
+.toast-close:hover{opacity:1}

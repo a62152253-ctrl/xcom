@@ -1,0 +1,8 @@
+/* ─── Projects Page ───────────────────────────────────────── */
+.projects-search-wrap i{position:absolute;left:.875rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.8rem}
+.projects-search-wrap .form-control{padding-left:2.25rem;width:200px}
+.project-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+.project-card-title:hover{color:var(--primary)}
+.project-dropdown.active{display:flex}
+.project-dropdown-item:hover{background:var(--primary-light);color:var(--primary)}
+.project-dropdown-item--danger:hover{background:rgba(239,68,68, 0.08);color:var(--danger)}
