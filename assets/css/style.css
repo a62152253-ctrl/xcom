@@ -2,6 +2,7 @@
    TASKMANAGER PRO — PREMIUM CSS v3
    Full upgrade: animations, toast, mobile, settings, profile, search, projects
    ========================================= */
+@import url("pages/tasks.css");
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
@@ -630,4 +631,3 @@ img{max-width:100%;display:block}
     .notes-grid{grid-template-columns:1fr}
     .team-grid{grid-template-columns:1fr}
     .files-grid{grid-template-columns:1fr}
-}

@@ -123,6 +123,13 @@ $admin_users    = count(array_filter($users, fn($u) => in_array($u['role'], ['Ow
 <div class="card">
     <h2 class="card-title"><i class="fa-solid fa-shield-halved"></i> Logi systemowe</h2>
     <div style="max-height: 400px; overflow-y: auto; font-family: monospace; font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem; background: var(--bg-primary); padding: 1rem; border-radius: var(--radius-md);">
+        <?php if (empty($all_logs)): ?>
+            <div class="empty-state-premium" style="padding: 2rem; opacity: 0.7; text-align: center; margin: auto;">
+                <div class="es-icon" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-shield-halved" style="font-size: 2rem;"></i></div>
+                <h4 class="es-title" style="font-size: 1rem; margin-bottom: 0.25rem;">Brak logów systemowych</h4>
+                <p class="es-sub" style="font-size: 0.8rem;">System nie zarejestrował jeszcze żadnej aktywności.</p>
+            </div>
+        <?php else: ?>
         <?php foreach ($all_logs as $log): ?>
             <div>
                 <span style="color: var(--text-muted);">[<?php echo date('Y-m-d H:i:s', strtotime($log['created_at'])); ?>]</span>
@@ -132,6 +139,7 @@ $admin_users    = count(array_filter($users, fn($u) => in_array($u['role'], ['Ow
                 <span style="color: var(--text-secondary);"><?php echo sanitize($log['details']); ?></span>
             </div>
         <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 </div>
 
