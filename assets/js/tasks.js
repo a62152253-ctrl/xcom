@@ -27,7 +27,7 @@ async function drop(e, newStatus) {
     }
 
     const col = document.getElementById('col-' + newStatus.replace(/ /g, '-').toLowerCase());
-    const addBtn = col?.querySelector('.kanban-add-btn');
+    const addBtn = col ? col.querySelector('.kanban-add-btn') : null;
     if (card && col) {
         col.insertBefore(card, addBtn);
         card.dataset.status = newStatus;
@@ -35,7 +35,7 @@ async function drop(e, newStatus) {
     }
     updateColumnCounts();
 
-    const json = await apiPost('/api/tasks.php?action=update_status', { task_id: parseInt(draggedId), status: newStatus });
+    const json = await apiPost('/api/tasks.php?action=update_status', { task_id: parseInt(draggedId, 10), status: newStatus });
     if (!json.success) {
         Toast.error(json.error || 'Błąd zapisu statusu');
         location.reload();
@@ -87,7 +87,7 @@ function openAddTaskModal(status = 'To Do') {
 }
 
 async function openTaskDetail(id) {
-    const json = await apiGet('/api/tasks.php?action=get&id=' + parseInt(id));
+    const json = await apiGet('/api/tasks.php?action=get&id=' + parseInt(id, 10));
     if (!json?.task) {
         Toast.error('Nie udało się załadować zadania.');
         return;
@@ -132,8 +132,8 @@ async function saveTask() {
         id: editingTaskId,
         name,
         description: document.getElementById('task-desc').value,
-        project_id: parseInt(project_id),
-        assigned_to: parseInt(document.getElementById('task-assign').value) || null,
+        project_id: parseInt(project_id, 10),
+        assigned_to: parseInt(document.getElementById('task-assign').value, 10) || null,
         priority: document.getElementById('task-priority').value,
         status: document.getElementById('task-status').value,
         deadline: document.getElementById('task-deadline').value || null
@@ -155,7 +155,7 @@ async function saveTask() {
 async function deleteCurrentTask() {
     if (!editingTaskId) return;
     confirmDialog('Trwale usunąć to zadanie?', async () => {
-        const json = await apiPost('/api/tasks.php?action=delete', { id: parseInt(editingTaskId) });
+        const json = await apiPost('/api/tasks.php?action=delete', { id: parseInt(editingTaskId, 10) });
         if (json.success) {
             Toast.success('Zadanie usunięte.');
             closeTaskModal();
@@ -230,6 +230,6 @@ async function saveNewProject() {
 document.addEventListener('DOMContentLoaded', () => {
     const ot = document.getElementById('open-task-id-holder');
     if (ot && ot.value) {
-        openTaskDetail(parseInt(ot.value));
+        openTaskDetail(parseInt(ot.value, 10));
     }
 });
