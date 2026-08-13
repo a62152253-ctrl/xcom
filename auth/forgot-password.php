@@ -44,8 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt_update = $db->prepare("UPDATE users SET password_reset_token = ?, password_reset_expires = ? WHERE id = ?");
                     $stmt_update->execute([$reset_token, $expires_at, $user['id']]);
                     
-                    // TODO: Send email with reset link
-                    // send_email($email, 'Reset hasła', "Kliknij: /auth/forgot-password.php?step=reset&token=$reset_token");
+                    // Send email with reset link
+                    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+                    $domain = $_SERVER['HTTP_HOST'];
+                    $reset_link = "$protocol://$domain/auth/forgot-password.php?step=reset&token=$reset_token";
+                    $email_message = "<p>Kliknij poniższy link, aby zresetować hasło:</p><p><a href='$reset_link'>$reset_link</a></p>";
+                    send_email($email, 'Reset hasła', $email_message);
                     
                     log_activity($user['id'], 'password_reset_request', 'Password reset requested');
                     $success = 'Jeśli konto istnieje, wyślemy Ci link do resetowania hasła.';
