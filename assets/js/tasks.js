@@ -26,16 +26,22 @@ async function drop(e, newStatus) {
         return;
     }
 
-    const col = document.getElementById('col-' + newStatus.replace(/ /g, '-').toLowerCase());
+    const col = document.getElementById('col-' + newStatus.replaceAll(' ', '-').toLowerCase());
     const addBtn = col ? col.querySelector('.kanban-add-btn') : null;
     if (card && col) {
-        col.insertBefore(card, addBtn);
+        if (addBtn) {
+            col.insertBefore(card, addBtn);
+        } else {
+            col.appendChild(card);
+        }
         card.dataset.status = newStatus;
         card.style.opacity = '1';
     }
     updateColumnCounts();
 
-    const json = await apiPost('/api/tasks.php?action=update_status', { task_id: parseInt(draggedId, 10), status: newStatus });
+    const parsedDraggedId = Number.parseInt(draggedId, 10);
+    if (Number.isNaN(parsedDraggedId)) return;
+    const json = await apiPost('/api/tasks.php?action=update_status', { task_id: parsedDraggedId, status: newStatus });
     if (!json.success) {
         Toast.error(json.error || 'Błąd zapisu statusu');
         location.reload();
@@ -87,7 +93,9 @@ function openAddTaskModal(status = 'To Do') {
 }
 
 async function openTaskDetail(id) {
-    const json = await apiGet('/api/tasks.php?action=get&id=' + parseInt(id, 10));
+    const parsedId = Number.parseInt(id, 10);
+    if (Number.isNaN(parsedId)) return;
+    const json = await apiGet('/api/tasks.php?action=get&id=' + parsedId);
     if (!json?.task) {
         Toast.error('Nie udało się załadować zadania.');
         return;
@@ -128,12 +136,14 @@ async function saveTask() {
     const btn = document.getElementById('task-save-btn');
     btn.disabled = true;
 
+    const parsedProjectId = Number.parseInt(project_id, 10);
+    const parsedAssignTo = Number.parseInt(document.getElementById('task-assign').value, 10);
     const payload = {
         id: editingTaskId,
         name,
         description: document.getElementById('task-desc').value,
-        project_id: parseInt(project_id, 10),
-        assigned_to: parseInt(document.getElementById('task-assign').value, 10) || null,
+        project_id: Number.isNaN(parsedProjectId) ? 0 : parsedProjectId,
+        assigned_to: Number.isNaN(parsedAssignTo) ? null : parsedAssignTo,
         priority: document.getElementById('task-priority').value,
         status: document.getElementById('task-status').value,
         deadline: document.getElementById('task-deadline').value || null
@@ -154,8 +164,10 @@ async function saveTask() {
 
 async function deleteCurrentTask() {
     if (!editingTaskId) return;
+    const parsedTaskId = Number.parseInt(editingTaskId, 10);
+    if (Number.isNaN(parsedTaskId)) return;
     confirmDialog('Trwale usunąć to zadanie?', async () => {
-        const json = await apiPost('/api/tasks.php?action=delete', { id: parseInt(editingTaskId, 10) });
+        const json = await apiPost('/api/tasks.php?action=delete', { id: parsedTaskId });
         if (json.success) {
             Toast.success('Zadanie usunięte.');
             closeTaskModal();
@@ -230,6 +242,9 @@ async function saveNewProject() {
 document.addEventListener('DOMContentLoaded', () => {
     const ot = document.getElementById('open-task-id-holder');
     if (ot && ot.value) {
-        openTaskDetail(parseInt(ot.value, 10));
+        const parsedId = Number.parseInt(ot.value, 10);
+        if (!Number.isNaN(parsedId)) {
+            openTaskDetail(parsedId);
+        }
     }
 });
