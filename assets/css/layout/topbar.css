@@ -1,0 +1,98 @@
+/* ─── Main Content & Topbar ──────────────────────────────────────── */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 100vh;
+}
+
+/* Top bar */
+.top-bar {
+    height: 62px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* Search bar */
+.search-bar {
+    flex: 1;
+    max-width: 320px;
+    position: relative;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.5rem 1rem 0.5rem 2.25rem;
+    border-radius: var(--radius-full);
+    border: 1.5px solid var(--border-color);
+    background: var(--bg-primary);
+    outline: none;
+    font-size: 0.8rem;
+    transition: var(--transition);
+}
+
+.search-bar input:focus {
+    border-color: var(--primary);
+    background: var(--bg-secondary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.search-bar > i {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    pointer-events: none;
+}
+
+/* Top actions */
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    flex-shrink: 0;
+}
+
+.theme-toggler,
+.notification-badge {
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+    font-size: 0.95rem;
+    position: relative;
+}
+
+.theme-toggler:hover,
+.notification-badge:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.notification-badge .badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: var(--danger);
+    color: #fff;
+    font-size: 0.55rem;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: var(--radius-full);
+    min-width: 15px;
+    text-align: center;
+}

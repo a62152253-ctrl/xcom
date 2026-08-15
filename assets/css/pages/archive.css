@@ -1,0 +1,66 @@
+/* ─── Archive Page ───────────────────────────────────────── */
+.archive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 1.25rem;
+}
+
+.archive-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition);
+    animation: slideUp 0.3s ease;
+}
+
+.archive-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.archive-bar {
+    height: 4px;
+}
+
+.archive-body {
+    padding: 1.25rem;
+    flex-grow: 1;
+}
+
+.archive-name {
+    font-weight: 800;
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+}
+
+.archive-desc {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    margin-bottom: 0.875rem;
+    min-height: 38px;
+}
+
+.archive-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.archive-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.archive-actions {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+}

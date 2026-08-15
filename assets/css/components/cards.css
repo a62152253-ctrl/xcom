@@ -1,0 +1,32 @@
+/* === CARDS & CONTAINERS === */
+.card {
+    background: var(--bg-primary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    margin-bottom: 1.25rem;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card--elevated {
+    box-shadow: var(--shadow-lg);
+}
+
+.card-title {
+    font-size: 0.925rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-title i {
+    color: var(--primary);
+    font-size: 0.875rem;
+}
