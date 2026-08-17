@@ -1,0 +1,52 @@
+/* ─── Responsive ──────────────────────────────────────────── */
+@media (max-width:1200px) {
+    .kanban-board{grid-template-columns:repeat(2,1fr)}
+    .reports-grid{grid-template-columns:1fr}
+    .profile-grid{grid-template-columns:1fr}
+    .settings-layout{grid-template-columns:1fr;gap:1rem}
+    .settings-nav{position:static;display:flex;flex-wrap:wrap;gap:.25rem}
+}
+
+@media (max-width:900px) {
+    .kanban-board{grid-template-columns:repeat(2,1fr)}
+    .form-row{grid-template-columns:1fr}
+    .dashboard-welcome{flex-direction:column;gap:.875rem}
+}
+
+@media (max-width:768px) {
+    /* Mobile sidebar */
+    .sidebar{position:fixed;left:0;top:0;height:100vh;z-index:200;transform:translateX(-100%);transition:transform .3s ease}
+    .sidebar--open{transform:translateX(0)}
+    .hamburger-btn{display:flex !important}
+    .main-content{min-height:100vh}
+
+    .kanban-board{grid-template-columns:1fr}
+    .projects-grid{grid-template-columns:1fr}
+    .team-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+    .dashboard-grid{grid-template-columns:repeat(2,1fr)}
+    .notes-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+    .files-grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+    .content-body{padding:1rem}
+    .top-bar{padding:0 1rem;gap:.75rem}
+    .search-bar{max-width:200px}
+    .page-header{flex-direction:column;align-items:flex-start}
+    .kpi-strip{grid-template-columns:repeat(2,1fr)}
+    .tasks-toolbar{flex-wrap:wrap}
+    .tasks-search-wrap .form-control{width:160px}
+    .modal-window{max-width:100%;border-radius:var(--radius-xl) var(--radius-xl) 0 0}
+    .modal-overlay{align-items:flex-end;padding:0}
+    .profile-grid{grid-template-columns:1fr}
+    .settings-layout{grid-template-columns:1fr}
+}
+
+@media (max-width:480px) {
+    .dashboard-grid{grid-template-columns:1fr 1fr}
+    .kpi-strip{grid-template-columns:1fr 1fr}
+    .filter-tabs{gap:.25rem}
+    .filter-tab{padding:.3rem .625rem;font-size:.72rem}
+    .page-title{font-size:1.25rem}
+    .top-actions .theme-toggler{display:none}
+    .notes-grid{grid-template-columns:1fr}
+    .team-grid{grid-template-columns:1fr}
+    .files-grid{grid-template-columns:1fr}
+}

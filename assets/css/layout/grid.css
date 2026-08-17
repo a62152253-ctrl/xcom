@@ -1,0 +1,46 @@
+/* ─── Main Content ──────────────────────────────────────── */
+.main-content{flex-grow:1;display:flex;flex-direction:column;min-width:0;min-height:100vh}
+
+/* Top bar */
+.top-bar{height:62px;background:var(--bg-secondary);border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:100}
+
+/* Search bar */
+.search-bar{flex:1;max-width:320px;position:relative}
+.search-bar input{width:100%;padding:.5rem 1rem .5rem 2.25rem;border-radius:var(--radius-full);border:1.5px solid var(--border-color);background:var(--bg-primary);outline:none;font-size:.8rem;transition:var(--transition)}
+.search-bar input:focus{border-color:var(--primary);background:var(--bg-secondary);box-shadow:0 0 0 3px var(--primary-light)}
+.search-bar>i{position:absolute;left:.875rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.8rem;pointer-events:none}
+
+/* Search results dropdown */
+#search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--bg-secondary);border:1.5px solid var(--border-color);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);max-height:400px;overflow-y:auto;display:none;flex-direction:column;z-index:999}
+.search-result-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;font-size:.825rem;transition:var(--transition);border-bottom:1px solid var(--border-color)}
+.search-result-item:last-child{border-bottom:none}
+.search-result-item:hover{background:var(--primary-light)}
+.search-result-icon{width:32px;height:32px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
+.search-result-icon--task{background:rgba(59,130,246,.1);color:var(--primary)}
+.search-result-icon--project{background:rgba(16,185,129,.1);color:var(--success)}
+.search-result-icon--note{background:rgba(139,92,246,.1);color:var(--purple)}
+.search-result-title{font-weight:600;color:var(--text-primary)}
+.search-result-sub{color:var(--text-muted);font-size:.72rem;margin-top:.1rem}
+.search-see-all{display:block;padding:.625rem 1rem;text-align:center;font-size:.8rem;font-weight:600;color:var(--primary);background:var(--primary-light);border-top:1px solid var(--border-color)}
+.search-see-all:hover{background:var(--primary);color:#fff}
+.search-loading{padding:1rem;text-align:center;color:var(--text-muted);font-size:.825rem}
+.search-empty{padding:1rem;text-align:center;color:var(--text-muted);font-size:.825rem}
+
+/* Top actions */
+.top-actions{display:flex;align-items:center;gap:.875rem;flex-shrink:0}
+.theme-toggler,.notification-badge{cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);transition:var(--transition);font-size:.95rem;position:relative}
+.theme-toggler:hover,.notification-badge:hover{background:var(--bg-tertiary);color:var(--text-primary)}
+.notification-badge .badge{position:absolute;top:4px;right:4px;background:var(--danger);color:#fff;font-size:.55rem;font-weight:700;padding:1px 5px;border-radius:var(--radius-full);min-width:15px;text-align:center}
+
+/* Notification dropdown */
+.notification-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:340px;background:var(--bg-secondary);border:1.5px solid var(--border-color);border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);max-height:400px;overflow-y:auto;display:none;flex-direction:column;z-index:999}
+.notification-dropdown.active{display:flex}
+.notif-dd-header{padding:.75rem 1rem;border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;font-size:.85rem}
+.notif-dd-title{font-weight:700}
+.notif-item{padding:.75rem 1rem;border-bottom:1px solid var(--border-color);font-size:.8rem;cursor:pointer;transition:var(--transition)}
+.notif-item:hover{background:var(--primary-light)}
+.notif-item.unread{font-weight:600;border-left:3px solid var(--primary)}
+.notif-item:last-child{border-bottom:none}
+
+/* Content */
+.content-body{padding:1.75rem 2rem;flex-grow:1;animation:fadeIn .25s ease}
