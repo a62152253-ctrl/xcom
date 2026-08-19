@@ -73,7 +73,8 @@ function start_secure_session() {
 
     // --- 5. Generate CSRF token if missing ---
     if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        require_once __DIR__ . '/../security/Csrf.php';
+        Csrf::generateToken();
     }
 
     return true;

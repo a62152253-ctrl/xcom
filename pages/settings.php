@@ -42,6 +42,7 @@ $tab = in_array($_GET['tab'] ?? '', $allowed_tabs, true) ? $_GET['tab'] : 'profi
         <!-- ── PROFILE TAB ── -->
         <?php if ($tab === 'profile'): ?>
         <form method="POST" action="/api/profile.php?action=settings" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
             <div class="settings-section">
                 <h2 class="settings-section-title">Zdjęcie profilowe</h2>
                 <div class="avatar-upload-row">
@@ -88,6 +89,7 @@ $tab = in_array($_GET['tab'] ?? '', $allowed_tabs, true) ? $_GET['tab'] : 'profi
         <!-- ── SECURITY TAB ── -->
         <?php elseif ($tab === 'security'): ?>
         <form method="POST" action="/api/profile.php?action=settings">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
             <div class="settings-section">
                 <h2 class="settings-section-title">Zmiana hasła</h2>
                 <p style="color:var(--text-secondary);font-size:.875rem;margin-bottom:1.25rem">Zostaw puste jeśli nie chcesz zmieniać hasła.</p>
@@ -143,6 +145,7 @@ $tab = in_array($_GET['tab'] ?? '', $allowed_tabs, true) ? $_GET['tab'] : 'profi
         <!-- ── NOTIFICATIONS TAB ── -->
         <?php elseif ($tab === 'notifications'): ?>
         <form method="POST" action="/api/profile.php?action=settings">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
             <div class="settings-section">
                 <h2 class="settings-section-title">Powiadomienia email</h2>
                 <div class="settings-toggle-row">
