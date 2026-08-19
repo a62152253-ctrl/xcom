@@ -43,14 +43,9 @@ function log_activity($user_id, $action, $details = null) {
 }
 
 // Create notification
+require_once __DIR__ . '/../notifications/NotificationService.php';
 function create_notification($user_id, $title, $message, $type = 'info') {
-    try {
-        $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$user_id, $title, $message, $type]);
-    } catch (PDOException $e) {
-        error_log("Notification creation failed: " . $e->getMessage());
-    }
+    NotificationService::notify($user_id, $title, $message, $type);
 }
 
 // Send email (simple wrapper, requires SMTP setup)

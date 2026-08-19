@@ -13,7 +13,23 @@ header('Content-Type: application/json; charset=utf-8');
 $action = $_GET['action'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true) ?? [];
+    // Determine input and check CSRF based on content type
+    $is_json = (strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false);
+    if ($is_json) {
+        $input = json_decode(file_get_contents('php://input'), true) ?? [];
+        $csrf_token = $input['csrf_token'] ?? '';
+    } else {
+        $input = $_POST;
+        $csrf_token = $_POST['csrf_token'] ?? '';
+    }
+
+    // Check CSRF
+    require_once __DIR__ . '/../security/Csrf.php';
+    if (!Csrf::validateToken($csrf_token)) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Błąd walidacji CSRF.']);
+        exit;
+    }
 
     // UPDATE PROFILE
     if ($action === 'settings') {

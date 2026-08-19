@@ -35,6 +35,24 @@ $stmt_logs = $db->prepare("SELECT l.*, u.full_name FROM activity_logs l LEFT JOI
 $stmt_logs->execute();
 $activity_logs = $stmt_logs->fetchAll();
 
+// Group logs by date for timeline
+$activity_timeline = [];
+foreach ($activity_logs as $log) {
+    $date = date('Y-m-d', strtotime($log['created_at']));
+    $today = date('Y-m-d');
+    $yesterday = date('Y-m-d', strtotime('-1 day'));
+
+    if ($date == $today) {
+        $label = 'Dzisiaj';
+    } elseif ($date == $yesterday) {
+        $label = 'Wczoraj';
+    } else {
+        $label = date('d.m.Y', strtotime($log['created_at']));
+    }
+
+    $activity_timeline[$label][] = $log;
+}
+
 $stmt_top_proj = $db->prepare("
     SELECT DISTINCT p.id, p.name, p.color,
         (SELECT COUNT(*) FROM tasks WHERE project_id = p.id) as total,
@@ -50,6 +68,53 @@ $top_projects = $stmt_top_proj->fetchAll();
 $hour = (int)date('H');
 $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wieczór');
 ?>
+
+<?php if ($projects_count == 0 && $active_tasks_count == 0): ?>
+<div class="welcome-banner" style="background: linear-gradient(135deg, var(--primary), var(--purple)); color: white; padding: 2rem; border-radius: 1rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 10px 25px rgba(59,130,246,0.3);">
+    <div>
+        <h2 style="margin: 0 0 0.5rem 0; font-size: 1.5rem;">👋 Witaj <?= htmlspecialchars(explode(' ', $_SESSION['user_name'])[0] ?? '') ?>!</h2>
+        <p style="margin: 0; opacity: 0.9;">Zacznijmy od konfiguracji Twojego obszaru roboczego.</p>
+
+        <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;"><i class="fa-regular fa-square-check" style="color: #4ade80;"></i> Utworzono konto</div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;"><i class="fa-regular fa-square"></i> Utwórz pierwszy projekt</div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; opacity: 0.7;"><i class="fa-regular fa-square"></i> Dodaj pierwsze zadanie</div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; opacity: 0.7;"><i class="fa-regular fa-square"></i> Zaproś członka zespołu</div>
+        </div>
+    </div>
+    <div style="font-size: 5rem; opacity: 0.2;"><i class="fa-solid fa-rocket"></i></div>
+</div>
+<?php endif; ?>
+
+<?php
+$total_tasks = $active_tasks_count + $done_count;
+$productivity_pct = $total_tasks > 0 ? round(($done_count / $total_tasks) * 100) : 0;
+?>
+<div style="background: var(--bg-secondary); border-radius: 1rem; padding: 1.5rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: space-between; gap: 2rem;">
+    <div style="flex: 1;">
+        <div style="font-size: 0.875rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem;">Produktywność</div>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="font-size: 2rem; font-weight: 800; color: var(--primary);"><?= $productivity_pct ?>%</div>
+            <div style="flex: 1; background: var(--bg-tertiary); height: 8px; border-radius: 4px; overflow: hidden;">
+                <div style="width: <?= $productivity_pct ?>%; background: var(--primary); height: 100%; border-radius: 4px;"></div>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex; gap: 2rem;">
+        <div>
+            <div style="font-size: 0.875rem; color: var(--text-muted);">Ukończone zadania</div>
+            <div style="font-size: 1.5rem; font-weight: 700;"><?= $done_count ?></div>
+        </div>
+        <div>
+            <div style="font-size: 0.875rem; color: var(--text-muted);">Aktywne projekty</div>
+            <div style="font-size: 1.5rem; font-weight: 700;"><?= $projects_count ?></div>
+        </div>
+        <div>
+            <div style="font-size: 0.875rem; color: var(--text-muted);">Czas pracy</div>
+            <div style="font-size: 1.5rem; font-weight: 700;">42h <span style="font-size: 0.875rem; font-weight: 400; color: var(--success);"><i class="fa-solid fa-arrow-up"></i></span></div>
+        </div>
+    </div>
+</div>
 
 <style>
 .dashboard-hero {

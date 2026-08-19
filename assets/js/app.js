@@ -408,14 +408,14 @@ function closeCommandPalette() {
     if (pal) pal.classList.remove('open');
 }
 
-function filterCmdItems(q) {
+async function filterCmdItems(q) {
     q = q.trim().toLowerCase();
-    document.querySelectorAll('#cmdBody .cmd-item').forEach(item => {
+    document.querySelectorAll('#cmdBody .cmd-item:not(.dynamic-result)').forEach(item => {
         const searchText = (item.dataset.search || '') + ' ' + (item.querySelector('.cmd-item-text')?.textContent || '');
         item.style.display = (!q || searchText.toLowerCase().includes(q)) ? 'flex' : 'none';
     });
     // Hide empty sections
-    document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => {
+    document.querySelectorAll('#cmdBody .cmd-section-label:not(.dynamic-result)').forEach(label => {
         let next = label.nextElementSibling;
         let hasVisible = false;
         while (next && !next.classList.contains('cmd-section-label')) {
@@ -424,7 +424,56 @@ function filterCmdItems(q) {
         }
         label.style.display = hasVisible ? '' : 'none';
     });
+
+    // Dynamic search
+    if (q.length >= 2) {
+        try {
+            const res = await apiGet('/api/tasks.php?action=search&q=' + encodeURIComponent(q));
+            if (res.results) {
+                document.querySelectorAll('#cmdBody .dynamic-result').forEach(el => el.remove());
+                const cmdBody = document.getElementById('cmdBody');
+
+                if (res.results.length > 0) {
+                    const label = document.createElement('div');
+                    label.className = 'cmd-section-label dynamic-result';
+                    label.textContent = '🔎 Wyniki z bazy';
+                    cmdBody.appendChild(label);
+                }
+
+                res.results.forEach(result => {
+                    const el = document.createElement('div');
+                    el.className = 'cmd-item dynamic-result';
+                    el.onclick = () => window.location.href = `/pages/tasks.php?task_id=${result.id}`;
+
+                    const icon = document.createElement('div');
+                    icon.className = 'cmd-item-icon';
+                    icon.innerHTML = '<i class="fa-solid fa-check-circle" style="color:var(--primary)"></i>';
+
+                    const text = document.createElement('div');
+                    text.className = 'cmd-item-text';
+                    text.textContent = result.name;
+
+                    const proj = document.createElement('div');
+                    proj.style.fontSize = '0.75rem';
+                    proj.style.color = 'var(--text-muted)';
+                    proj.style.marginLeft = 'auto';
+                    proj.textContent = result.project_name;
+
+                    el.appendChild(icon);
+                    el.appendChild(text);
+                    el.appendChild(proj);
+                    cmdBody.appendChild(el);
+                });
+            }
+        } catch(e) {
+            console.error('Search error', e);
+        }
+    } else {
+        document.querySelectorAll('#cmdBody .dynamic-result').forEach(el => el.remove());
+    }
+
     cmdSelectedIdx = -1;
+    document.querySelectorAll('#cmdBody .cmd-item').forEach(i => i.classList.remove('selected'));
 }
 
 function setThemeDark() {

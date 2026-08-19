@@ -24,15 +24,9 @@ try {
                 exit;
             }
             
-            $stmt = $db->prepare("
-                SELECT t.*, u.full_name as assigned_name, u.avatar as assigned_avatar
-                FROM tasks t
-                LEFT JOIN users u ON t.assigned_to = u.id
-                WHERE t.project_id = ?
-                ORDER BY t.created_at DESC
-            ");
-            $stmt->execute([$project_id]);
-            $tasks = $stmt->fetchAll();
+            require_once __DIR__ . '/../services/TaskService.php';
+            $taskService = new TaskService();
+            $tasks = $taskService->getProjectTasks($project_id, $user_id);
             echo json_encode(['tasks' => $tasks]);
             exit;
         }
@@ -157,7 +151,7 @@ try {
             $task_id = $db->lastInsertId();
             
             if ($assigned_to && $assigned_to != $user_id) {
-                create_notification($assigned_to, 'Przypisano nowe zadanie', "Zostałeś przypisany do zadania: $name", 'task_assign');
+                NotificationService::notifyNewTask($assigned_to, $name);
             }
             
             log_activity($user_id, 'task_create', "Created task '$name' in project $project_id");
@@ -191,7 +185,7 @@ try {
                 $db->prepare("UPDATE tasks SET status = ? WHERE id = ?")->execute([$status, $task_id]);
                 
                 if ($task['assigned_to'] && $task['assigned_to'] != $user_id) {
-                    create_notification($task['assigned_to'], 'Status zmieniony', "Zadanie '{$task['name']}' zmieniono na: $status", 'status_change');
+                    NotificationService::notifyStatusChange($task['assigned_to'], $task['name'], $status);
                 }
                 
                 log_activity($user_id, 'task_status_update', "Task ID $task_id → $status");
@@ -226,7 +220,7 @@ try {
             $stmt->execute([$task_id, $user_id, $comment]);
             
             if ($task['assigned_to'] && $task['assigned_to'] != $user_id) {
-                create_notification($task['assigned_to'], 'Nowy komentarz', "Dodano komentarz do: {$task['name']}", 'comment');
+                NotificationService::notifyNewComment($task['assigned_to'], $task['name']);
             }
             
             log_activity($user_id, 'task_comment', "Comment added to task ID $task_id");
