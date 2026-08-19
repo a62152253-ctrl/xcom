@@ -34,7 +34,7 @@ class ProjectService {
 
     public function createProject($name, $description, $color, $deadline, $user_id) {
         if (empty($name)) {
-            throw new \Exception('Nazwa projektu jest wymagana.');
+            throw new \RuntimeException('Nazwa projektu jest wymagana.');
         }
 
         try {
@@ -49,17 +49,17 @@ class ProjectService {
             return $project_id;
         } catch (Exception $e) {
             $this->projectModel->rollBack();
-            throw new \Exception('Błąd serwera: ' . $e->getMessage());
+            throw new \RuntimeException('Błąd serwera: ' . $e->getMessage());
         }
     }
 
     public function editProject($id, $name, $description, $color, $deadline, $user_id) {
         if (!$id || !has_project_access($id, 'Administrator')) {
-            throw new \Exception('Brak uprawnień do edycji tego projektu.', 403);
+            throw new \RuntimeException('Brak uprawnień do edycji tego projektu.', 403);
         }
 
         if (empty($name)) {
-            throw new \Exception('Nazwa projektu jest wymagana.');
+            throw new \RuntimeException('Nazwa projektu jest wymagana.');
         }
 
         $this->projectModel->updateProject($id, $name, $description, $color, $deadline ?: null);
@@ -68,7 +68,7 @@ class ProjectService {
 
     public function archiveProject($id, $user_id) {
         if (!$id || !has_project_access($id, 'Administrator')) {
-            throw new \Exception('Brak uprawnień.', 403);
+            throw new \RuntimeException('Brak uprawnień.', 403);
         }
 
         $this->projectModel->archiveProject($id);
@@ -77,7 +77,7 @@ class ProjectService {
 
     public function restoreProject($id, $user_id) {
         if (!$id || !has_project_access($id, 'Administrator')) {
-            throw new \Exception('Brak uprawnień.', 403);
+            throw new \RuntimeException('Brak uprawnień.', 403);
         }
 
         $this->projectModel->restoreProject($id);
@@ -88,7 +88,7 @@ class ProjectService {
         $proj = $this->projectModel->getArchivedProjectCreator($id);
 
         if (!$proj || ($user_role !== 'Owner' && $proj['created_by'] != $user_id)) {
-            throw new \Exception('Brak uprawnień do trwałego usunięcia.', 403);
+            throw new \RuntimeException('Brak uprawnień do trwałego usunięcia.', 403);
         }
 
         $this->projectModel->deleteProject($id);
@@ -97,13 +97,13 @@ class ProjectService {
 
     public function addMember($project_id, $email, $role, $user_id) {
         if (!$project_id || !has_project_access($project_id, 'Administrator')) {
-            throw new \Exception('Brak uprawnień.', 403);
+            throw new \RuntimeException('Brak uprawnień.', 403);
         }
 
         $target_user = $this->projectModel->findUserByEmail($email);
 
         if (!$target_user) {
-            throw new \Exception('Nie znaleziono użytkownika o tym adresie e-mail.', 404);
+            throw new \RuntimeException('Nie znaleziono użytkownika o tym adresie e-mail.', 404);
         }
 
         try {
@@ -114,7 +114,7 @@ class ProjectService {
 
             log_activity($user_id, 'project_add_member', "Added $email to project $project_id");
         } catch (PDOException $e) {
-            throw new \Exception('Ten użytkownik jest już członkiem projektu.', 400);
+            throw new \RuntimeException('Ten użytkownik jest już członkiem projektu.', 400);
         }
     }
 }

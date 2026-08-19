@@ -79,7 +79,7 @@ class ProjectController {
                         echo json_encode(['error' => 'Błędne zapytanie']);
                         break;
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $code = $e->getCode();
                 if (!$code || $code < 100 || $code > 599) { $code = 400; }
                 http_response_code($code);
