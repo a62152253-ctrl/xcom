@@ -85,8 +85,8 @@ class ProjectController {
                         break;
                 }
             } catch (Exception $e) {
-                $code = $e->getCode() ?: 400;
-                if ($code < 100 || $code > 599) $code = 400;
+                $code = $e->getCode();
+                if (!$code || $code < 100 || $code > 599) { $code = 400; }
                 http_response_code($code);
                 echo json_encode(['error' => $e->getMessage()]);
             }
