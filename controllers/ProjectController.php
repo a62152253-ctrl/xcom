@@ -14,16 +14,11 @@ class ProjectController {
         $user_id = $_SESSION['user_id'];
         $user_role = $_SESSION['user_role'] ?? 'Member';
 
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            if ($action === 'list') { // Modified original API that returned all without action, to be explicit if needed, but original used action='' for list
-                $projects = $this->projectService->getAllProjects($user_id);
-                echo json_encode(['projects' => $projects]);
-                exit;
-            } else {
-                $projects = $this->projectService->getAllProjects($user_id);
-                echo json_encode(['projects' => $projects]);
-                exit;
-            }
+                if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            // Returns all projects accessible to the user
+            $projects = $this->projectService->getAllProjects($user_id);
+            echo json_encode(['projects' => $projects]);
+            die;
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -84,17 +79,17 @@ class ProjectController {
                         echo json_encode(['error' => 'Błędne zapytanie']);
                         break;
                 }
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $code = $e->getCode();
                 if (!$code || $code < 100 || $code > 599) { $code = 400; }
                 http_response_code($code);
                 echo json_encode(['error' => $e->getMessage()]);
             }
-            exit;
+            die;
         }
 
         http_response_code(400);
         echo json_encode(['error' => 'Błędne zapytanie']);
-        exit;
+        die;
     }
 }
