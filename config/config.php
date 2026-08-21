@@ -6,11 +6,11 @@ define('APP_NAME', 'TaskManager Pro');
 define('APP_VERSION', '1.0.0');
 
 // Database Configuration
-define('DB_HOST', 'localhost');
+define('DB_HOST', '127.0.0.1');
 define('DB_USER', 'root');
 define('DB_PASS', 'root');
 define('DB_NAME', 'xcom');
-define('DB_PORT', '3307');
+define('DB_PORT', '3306');
 
 // Session Settings
 define('SESSION_LIFETIME', 1800); // 30 minutes in seconds
