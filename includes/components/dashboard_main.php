@@ -16,7 +16,7 @@
 
         <?php if (count($tasks_today) > 0): ?>
             <?php foreach ($tasks_today as $t): ?>
-            <div class="task-premium" onclick="window.location.href='/pages/tasks.php?task_id=<?= $t['id'] ?>'">
+            <div class="task-premium" onclick="window.location.href='/pages/tasks.php?task_id=<?= (int)$t['id'] ?>'">
                 <div class="task-check"><i class="fa-regular fa-circle"></i></div>
                 <div class="task-premium-body">
                     <div class="task-premium-name"><?= sanitize($t['name']) ?></div>
@@ -59,8 +59,8 @@
             foreach ($top_projects as $proj):
                 $pct = $proj['total'] > 0 ? round($proj['done']/$proj['total']*100) : 0;
         ?>
-        <div class="proj-card-premium" style="--proj-color:<?= $proj['color'] ?>"
-             onclick="window.location.href='/pages/tasks.php?project_id=<?= $proj['id'] ?>'">
+        <div class="proj-card-premium" style="--proj-color:<?= htmlspecialchars($proj['color'], ENT_QUOTES) ?>"
+             onclick="window.location.href='/pages/tasks.php?project_id=<?= (int)$proj['id'] ?>'">
             <div class="proj-card-top">
                 <div class="proj-color-dot" style="background:<?= $proj['color'] ?>22;color:<?= $proj['color'] ?>">
                     <i class="fa-solid fa-folder"></i>

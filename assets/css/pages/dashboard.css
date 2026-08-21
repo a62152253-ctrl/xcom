@@ -33,6 +33,38 @@
     flex-wrap: wrap;
 }
 
+/* Dashboard KPI Card Themes */
+.pkpi-card-projects {
+    --pkpi-color: #6366f1;
+    --pkpi-light: rgba(99,102,241,.1);
+    --pkpi-grad: linear-gradient(90deg,#6366f1,#8b5cf6);
+    --pkpi-glow: rgba(99,102,241,.1);
+}
+.pkpi-card-tasks {
+    --pkpi-color: #06b6d4;
+    --pkpi-light: rgba(6,182,212,.1);
+    --pkpi-grad: linear-gradient(90deg,#06b6d4,#0ea5e9);
+    --pkpi-glow: rgba(6,182,212,.1);
+}
+.pkpi-card-done {
+    --pkpi-color: #22c55e;
+    --pkpi-light: rgba(34,197,94,.1);
+    --pkpi-grad: linear-gradient(90deg,#22c55e,#10b981);
+    --pkpi-glow: rgba(34,197,94,.1);
+}
+.pkpi-card-overdue {
+    --pkpi-color: #ef4444;
+    --pkpi-light: rgba(239,68,68,.1);
+    --pkpi-grad: linear-gradient(90deg,#ef4444,#dc2626);
+    --pkpi-glow: rgba(239,68,68,.08);
+}
+.pkpi-card-ok {
+    --pkpi-color: #10b981;
+    --pkpi-light: rgba(16,185,129,.1);
+    --pkpi-grad: linear-gradient(90deg,#22c55e,#10b981);
+    --pkpi-glow: rgba(16,185,129,.08);
+}
+
 .kpi-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

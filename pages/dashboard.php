@@ -12,4 +12,3 @@ require_once __DIR__ . '/../includes/components/dashboard_kpis.php';
 require_once __DIR__ . '/../includes/components/dashboard_main.php';
 
 require_once __DIR__ . '/../includes/footer.php';
-?>

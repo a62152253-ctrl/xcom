@@ -31,7 +31,11 @@ class DashboardController {
         $stmt_pri->execute([$user_id, $user_id]);
         $priorities_data = $stmt_pri->fetchAll();
         $priorities_json = ['Low' => 0, 'Medium' => 0, 'High' => 0, 'Critical' => 0];
-        foreach ($priorities_data as $pd) if (isset($priorities_json[$pd['priority']])) $priorities_json[$pd['priority']] = (int)$pd['qty'];
+        foreach ($priorities_data as $pd) {
+            if (isset($priorities_json[$pd['priority']])) {
+                $priorities_json[$pd['priority']] = (int)$pd['qty'];
+            }
+        }
 
         $stmt_logs = $db->prepare("SELECT l.*, u.full_name FROM activity_logs l LEFT JOIN users u ON l.user_id = u.id ORDER BY l.created_at DESC LIMIT 10");
         $stmt_logs->execute();
@@ -50,7 +54,13 @@ class DashboardController {
         $top_projects = $stmt_top_proj->fetchAll();
 
         $hour = (int)date('H');
-        $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wieczór');
+        if ($hour < 12) {
+            $greeting = 'Dzień dobry';
+        } elseif ($hour < 18) {
+            $greeting = 'Cześć';
+        } else {
+            $greeting = 'Dobry wieczór';
+        }
 
         $all_tasks_total = (int)$db->query("SELECT COUNT(*) FROM tasks")->fetchColumn();
         $all_tasks_done  = (int)$db->query("SELECT COUNT(*) FROM tasks WHERE status='Done'")->fetchColumn();
