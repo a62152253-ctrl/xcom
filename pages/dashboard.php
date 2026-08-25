@@ -328,8 +328,20 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
 <!-- ═══ PREMIUM HERO ═══════════════════════════════════════════════════════════ -->
 <div class="premium-hero">
     <div class="hero-left">
-        <div class="hero-greeting"><?= $greeting ?>, 👋</div>
-        <div class="hero-name"><?= sanitize($user_name) ?>!</div>
+        <div class="hero-greeting"><?= $greeting ?> 👋</div>
+        <div class="hero-name">Witaj <?= sanitize($user_name) ?>!</div>
+
+        <?php if ($projects_count === 0 && count($tasks_today) === 0 && $done_count === 0): ?>
+        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+            <h4 style="margin: 0 0 0.5rem 0;">Zacznijmy od konfiguracji:</h4>
+            <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem;">
+                <li style="margin-bottom: 0.25rem;"><i class="fa-regular <?= $projects_count > 0 ? 'fa-square-check' : 'fa-square' ?>"></i> Utwórz pierwszy projekt</li>
+                <li style="margin-bottom: 0.25rem;"><i class="fa-regular <?= $active_tasks_count > 0 ? 'fa-square-check' : 'fa-square' ?>"></i> Dodaj pierwsze zadanie</li>
+                <li style="margin-bottom: 0.25rem;"><i class="fa-regular fa-square"></i> Ustaw profil</li>
+                <li><i class="fa-regular fa-square"></i> Zaproś członka zespołu</li>
+            </ul>
+        </div>
+        <?php endif; ?>
         <div class="hero-stats">
             <span class="hero-stat"><i class="fa-solid fa-list-check"></i> <?= count($tasks_today) ?> zadań na dziś</span>
             <?php if ($overdue_count > 0): ?>
@@ -504,10 +516,10 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         </div>
         <?php endforeach; else: ?>
         <div class="empty-state-premium">
-            <div class="es-icon">📁</div>
-            <div class="es-title">Brak projektów</div>
-            <div class="es-sub">Stwórz pierwszy projekt i zaproś zespół do pracy.</div>
-            <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Nowy projekt</a>
+            <div class="es-icon">🚀</div>
+            <div class="es-title">Nie masz jeszcze projektów</div>
+            <div class="es-sub">Stwórz pierwszy projekt i zacznij organizować swoją pracę.</div>
+            <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Utwórz projekt</a>
         </div>
         <?php endif; ?>
     </div>
@@ -550,6 +562,33 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             Live
         </span>
     </div>
+
+    <div style="display:flex; gap:2rem; margin-bottom: 1.5rem; background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color);">
+        <div style="flex:1;">
+            <div style="color:var(--text-secondary); font-size: 0.9rem; margin-bottom:0.25rem;">Produktywność</div>
+            <div style="display:flex; align-items:center; gap: 1rem;">
+                <div style="flex:1; height: 8px; background: var(--bg-tertiary); border-radius: 4px; overflow:hidden;">
+                    <div style="width: <?= $ws_pct ?>%; height: 100%; background: var(--primary);"></div>
+                </div>
+                <div style="font-weight:700; color:var(--text-primary);"><?= $ws_pct ?>%</div>
+            </div>
+        </div>
+        <div style="display:flex; gap: 2rem;">
+            <div>
+                <div style="color:var(--text-secondary); font-size: 0.9rem;">Ukończone zadania:</div>
+                <div style="font-size: 1.25rem; font-weight:700;"><?= $done_count ?></div>
+            </div>
+            <div>
+                <div style="color:var(--text-secondary); font-size: 0.9rem;">Aktywne projekty:</div>
+                <div style="font-size: 1.25rem; font-weight:700;"><?= $projects_count ?></div>
+            </div>
+            <div>
+                <div style="color:var(--text-secondary); font-size: 0.9rem;">Czas pracy:</div>
+                <div style="font-size: 1.25rem; font-weight:700;">42h</div>
+            </div>
+        </div>
+    </div>
+
     <canvas id="trendChart" style="max-height:280px"></canvas>
 </div>
 

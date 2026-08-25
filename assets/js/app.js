@@ -408,22 +408,80 @@ function closeCommandPalette() {
     if (pal) pal.classList.remove('open');
 }
 
-function filterCmdItems(q) {
-    q = q.trim().toLowerCase();
-    document.querySelectorAll('#cmdBody .cmd-item').forEach(item => {
-        const searchText = (item.dataset.search || '') + ' ' + (item.querySelector('.cmd-item-text')?.textContent || '');
-        item.style.display = (!q || searchText.toLowerCase().includes(q)) ? 'flex' : 'none';
-    });
-    // Hide empty sections
-    document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => {
-        let next = label.nextElementSibling;
-        let hasVisible = false;
-        while (next && !next.classList.contains('cmd-section-label')) {
-            if (next.style.display !== 'none') hasVisible = true;
-            next = next.nextElementSibling;
+async function filterCmdItems(q) {
+    q = q.trim();
+    if (!q) {
+        document.querySelectorAll('#cmdBody .cmd-item').forEach(item => item.style.display = 'flex');
+        document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => label.style.display = '');
+        cmdSelectedIdx = -1;
+
+        // Remove old dynamic results if any
+        document.querySelectorAll('.cmd-dynamic-result').forEach(el => el.remove());
+        return;
+    }
+
+    // Hide default items
+    document.querySelectorAll('#cmdBody .cmd-item').forEach(item => item.style.display = 'none');
+    document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => label.style.display = 'none');
+
+    // Remove old dynamic results if any
+    document.querySelectorAll('.cmd-dynamic-result').forEach(el => el.remove());
+
+    if (q.length < 2) return;
+
+    try {
+        const response = await fetch('/api/search.php?q=' + encodeURIComponent(q));
+        if (!response.ok) return;
+        const data = await response.json();
+
+        const cmdBody = document.getElementById('cmdBody');
+
+        if (data.results && data.results.length > 0) {
+            const dynamicLabel = document.createElement('div');
+            dynamicLabel.className = 'cmd-section-label cmd-dynamic-result';
+            dynamicLabel.textContent = 'Wyniki wyszukiwania';
+            cmdBody.appendChild(dynamicLabel);
+
+            data.results.forEach(res => {
+                const item = document.createElement('div');
+                item.className = 'cmd-item cmd-dynamic-result';
+                item.onclick = () => window.location.href = res.url;
+
+                let iconClass = 'fa-file';
+                let iconColor = 'inherit';
+                if (res.type === 'task') {
+                    iconClass = 'fa-list-check';
+                    iconColor = 'var(--success)';
+                } else if (res.type === 'project') {
+                    iconClass = 'fa-folder';
+                    iconColor = res.color || 'var(--primary)';
+                } else if (res.type === 'note') {
+                    iconClass = 'fa-note-sticky';
+                    iconColor = 'var(--warning)';
+                }
+
+                item.innerHTML = `
+                    <div class="cmd-item-icon" style="color: ${iconColor}"><i class="fa-solid ${iconClass}"></i></div>
+                    <div>
+                        <div class="cmd-item-text">${res.title}</div>
+                        <div class="cmd-item-sub">${res.subtitle || ''}</div>
+                    </div>
+                `;
+                cmdBody.appendChild(item);
+            });
+        } else {
+            const item = document.createElement('div');
+            item.className = 'cmd-item cmd-dynamic-result';
+            item.innerHTML = `
+                <div class="cmd-item-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <div><div class="cmd-item-text">Brak wyników</div><div class="cmd-item-sub">Nie znaleziono pasujących danych.</div></div>
+            `;
+            cmdBody.appendChild(item);
         }
-        label.style.display = hasVisible ? '' : 'none';
-    });
+    } catch (e) {
+        console.error("Command palette search failed", e);
+    }
+
     cmdSelectedIdx = -1;
 }
 
