@@ -22,7 +22,7 @@
                 <label class="form-label">Kolor</label>
                 <div class="color-picker-row">
                     <?php foreach ($note_colors as $c): ?>
-                    <div class="color-chip" data-color="<?= $c ?>" style="background:<?= $c ?>" onclick="selectColor('<?= $c ?>')" tabindex="0" role="button" aria-label="Select color <?= $c ?>" onkeydown="if(event.key==='Enter'||event.key===' ') selectColor('<?= $c ?>')"></div>
+                    <div class="color-chip" data-color="<?= htmlspecialchars($c, ENT_QUOTES, 'UTF-8') ?>" style="background:<?= htmlspecialchars($c, ENT_QUOTES, 'UTF-8') ?>" onclick="selectColor('<?= htmlspecialchars($c, ENT_QUOTES, 'UTF-8') ?>')" tabindex="0" role="button" aria-label="Select color <?= htmlspecialchars($c, ENT_QUOTES, 'UTF-8') ?>" onkeydown="if(event.key==='Enter'||event.key===' ') selectColor('<?= htmlspecialchars($c, ENT_QUOTES, 'UTF-8') ?>')"></div>
                     <?php endforeach; ?>
                 </div>
                 <input type="hidden" id="note-color" value="#3b82f6">
