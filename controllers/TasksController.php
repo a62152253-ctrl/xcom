@@ -49,5 +49,5 @@ if ($open_task_id) {
 
 $columns = ['To Do' => [], 'In Progress' => [], 'Review' => [], 'Done' => []];
 foreach ($all_tasks as $t) {
-    if (isset($columns[$t['status']])) $columns[$t['status']][] = $t;
+    if (isset($columns[$t['status']])) { $columns[$t['status']][] = $t; }
 }
