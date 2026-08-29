@@ -6,21 +6,21 @@
         </div>
         <div class="modal-body">
             <div class="form-group">
-                <label class="form-label">Nazwa projektu *</label>
+                <label class="form-label" for="project-name">Nazwa projektu *</label>
                 <input class="form-control" type="text" id="project-name" placeholder="np. Redesign strony www" maxlength="255">
             </div>
             <div class="form-group">
-                <label class="form-label">Opis projektu</label>
+                <label class="form-label" for="project-desc">Opis projektu</label>
                 <textarea class="form-control" id="project-desc" rows="3" placeholder="Krótki opis celów projektu..." maxlength="1000"></textarea>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">Kolor identyfikacyjny</label>
-                    <input class="form-control" type="color" id="project-color" value="#3b82f6" style="height:44px;padding:.15rem;cursor:pointer">
+                    <label class="form-label" for="project-color">Kolor identyfikacyjny</label>
+                <input class="form-control" type="color" id="project-color" value="#3b82f6" style="height:44px;padding:.15rem;cursor:pointer">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Termin zakończenia</label>
-                    <input class="form-control" type="date" id="project-deadline">
+                    <label class="form-label" for="project-deadline">Termin zakończenia</label>
+                <input class="form-control" type="date" id="project-deadline">
                 </div>
             </div>
         </div>

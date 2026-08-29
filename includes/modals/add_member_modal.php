@@ -7,11 +7,11 @@
         <div class="modal-body">
             <input type="hidden" id="member-project-id">
             <div class="form-group">
-                <label class="form-label">Adres e-mail użytkownika</label>
+                <label class="form-label" for="member-email">Adres e-mail użytkownika</label>
                 <input class="form-control" type="email" id="member-email" placeholder="np. kolega@firma.pl" maxlength="255">
             </div>
             <div class="form-group">
-                <label class="form-label">Rola w projekcie</label>
+                <label class="form-label" for="member-role">Rola w projekcie</label>
                 <select class="form-control" id="member-role">
                     <option value="Member">Member</option>
                     <option value="Administrator">Administrator</option>
