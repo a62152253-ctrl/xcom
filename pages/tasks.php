@@ -371,6 +371,13 @@ foreach ($all_tasks as $t) {
             <span class="kanban-count" id="count-<?= str_replace(' ', '-', strtolower($status)) ?>"><?= count($cards) ?></span>
         </div>
 
+        <?php if (empty($cards)): ?>
+        <div class="empty-state" style="padding: 2rem 1rem; text-align: center;">
+            <i class="fa-solid fa-ghost" style="font-size: 2rem; color: var(--text-muted); opacity: 0.3; margin-bottom: 0.5rem; display: block;"></i>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Brak zadań</p>
+        </div>
+        <?php endif; ?>
+
         <?php foreach ($cards as $c): ?>
         <div class="kanban-card" draggable="true" id="task-<?= (int)$c['id'] ?>"
              data-id="<?= (int)$c['id'] ?>" data-status="<?= sanitize($c['status']) ?>"
