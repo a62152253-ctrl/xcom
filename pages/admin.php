@@ -123,15 +123,23 @@ $admin_users    = count(array_filter($users, fn($u) => in_array($u['role'], ['Ow
 <div class="card">
     <h2 class="card-title"><i class="fa-solid fa-shield-halved"></i> Logi systemowe</h2>
     <div style="max-height: 400px; overflow-y: auto; font-family: monospace; font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem; background: var(--bg-primary); padding: 1rem; border-radius: var(--radius-md);">
-        <?php foreach ($all_logs as $log): ?>
-            <div>
-                <span style="color: var(--text-muted);">[<?php echo date('Y-m-d H:i:s', strtotime($log['created_at'])); ?>]</span>
-                <span style="color: var(--primary); font-weight: 600;">[IP: <?php echo sanitize($log['ip_address'] ?? '127.0.0.1'); ?>]</span>
-                <span style="color: var(--success);">[<?php echo sanitize($log['user_name'] ?? 'System'); ?>]</span>
-                <strong><?php echo sanitize($log['action']); ?></strong>:
-                <span style="color: var(--text-secondary);"><?php echo sanitize($log['details']); ?></span>
+        <?php if (empty($all_logs)): ?>
+            <div class="empty-state-premium" style="max-width:400px;margin:20px auto;text-align:center">
+                <i class="fa-solid fa-ghost" style="font-size:3rem;color:var(--text-muted);opacity:0.5;margin-bottom:1rem;display:block"></i>
+                <h3 style="color:var(--text-primary);margin-bottom:0.5rem">Brak logów systemowych</h3>
+                <p style="color:var(--text-muted)">Nie zarejestrowano jeszcze żadnej aktywności w systemie.</p>
             </div>
-        <?php endforeach; ?>
+        <?php else: ?>
+            <?php foreach ($all_logs as $log): ?>
+                <div>
+                    <span style="color: var(--text-muted);">[<?php echo date('Y-m-d H:i:s', strtotime($log['created_at'])); ?>]</span>
+                    <span style="color: var(--primary); font-weight: 600;">[IP: <?php echo sanitize($log['ip_address'] ?? '127.0.0.1'); ?>]</span>
+                    <span style="color: var(--success);">[<?php echo sanitize($log['user_name'] ?? 'System'); ?>]</span>
+                    <strong><?php echo sanitize($log['action']); ?></strong>:
+                    <span style="color: var(--text-secondary);"><?php echo sanitize($log['details']); ?></span>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 </div>
 
