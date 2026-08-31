@@ -77,10 +77,15 @@ function file_icon($name) {
 
 <!-- Files grid -->
 <?php if (empty($files)): ?>
-<div class="empty-state">
-    <i class="fa-solid fa-folder-open"></i>
-    <h3>Brak plików</h3>
-    <p>Pliki pojawią się tutaj po dodaniu załączników do zadań.</p>
+<div class="empty-state-premium" style="max-width:400px;margin:40px auto;grid-column:1/-1">
+    <div class="es-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">
+        <i class="fa-solid fa-folder-open"></i>
+    </div>
+    <div class="es-title">Brak plików</div>
+    <div class="es-sub">Pliki pojawią się tutaj po dodaniu załączników do zadań w zakładce Tablica Kanban.</div>
+    <a href="/pages/tasks.php" class="btn btn-primary es-btn">
+        <i class="fa-solid fa-arrow-right"></i> Przejdź do zadań
+    </a>
 </div>
 <?php else: ?>
 <div class="files-grid">
