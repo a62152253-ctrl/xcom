@@ -335,10 +335,6 @@ img{max-width:100%;display:block}
 .skeleton-item{display:flex;align-items:center;gap:.875rem;padding:.75rem 0;border-bottom:1px solid var(--border-color)}
 
 /* ─── Empty State ─────────────────────────────────────────── */
-.empty-state{text-align:center;padding:5rem 2rem;color:var(--text-muted)}
-.empty-state i{font-size:3.5rem;display:block;margin-bottom:1rem;opacity:.25}
-.empty-state h3{font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:.5rem}
-.empty-state p{font-size:.875rem;max-width:340px;margin:0 auto;line-height:1.6}
 
 /* ─── Projects Page ───────────────────────────────────────── */
 .projects-toolbar{display:flex;flex-wrap:wrap;gap:.875rem;align-items:center;margin-bottom:1.5rem;padding:1rem 1.25rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-lg)}
