@@ -7,7 +7,7 @@
             <div class="pkpi-icon"><i class="fa-solid fa-folder-open"></i></div>
             <span class="pkpi-trend flat"><i class="fa-solid fa-minus"></i> aktywne</span>
         </div>
-        <div class="pkpi-value" data-counter="<?= $projects_count ?>"><?= $projects_count ?></div>
+        <div class="pkpi-value" data-counter="<?php echo $projects_count; ?>"><?php echo $projects_count; ?></div>
         <div class="pkpi-label">Projekty</div>
         <div class="pkpi-sub">Kliknij aby zobaczyć wszystkie →</div>
     </div>
@@ -22,9 +22,9 @@
             <span class="pkpi-trend flat"><i class="fa-solid fa-check"></i> brak</span>
             <?php endif; ?>
         </div>
-        <div class="pkpi-value" data-counter="<?= $active_tasks_count ?>"><?= $active_tasks_count ?></div>
+        <div class="pkpi-value" data-counter="<?php echo $active_tasks_count; ?>"><?php echo $active_tasks_count; ?></div>
         <div class="pkpi-label">Aktywne zadania</div>
-        <div class="pkpi-sub"><?= $done_count ?> ukończonych łącznie</div>
+        <div class="pkpi-sub"><?php echo $done_count; ?> ukończonych łącznie</div>
     </div>
 
     <div class="pkpi-card" style="--pkpi-color:#22c55e;--pkpi-light:rgba(34,197,94,.1);--pkpi-grad:linear-gradient(90deg,#22c55e,#10b981);--pkpi-glow:rgba(34,197,94,.1)">
@@ -32,12 +32,12 @@
             <div class="pkpi-icon"><i class="fa-solid fa-circle-check"></i></div>
             <span class="pkpi-trend up"><i class="fa-solid fa-arrow-up"></i> ukończone</span>
         </div>
-        <div class="pkpi-value" data-counter="<?= $done_count ?>"><?= $done_count ?></div>
+        <div class="pkpi-value" data-counter="<?php echo $done_count; ?>"><?php echo $done_count; ?></div>
         <div class="pkpi-label">Ukończone</div>
-        <div class="pkpi-sub"><?= $ws_pct ?>% wszystkich zadań</div>
+        <div class="pkpi-sub"><?php echo $ws_pct; ?>% wszystkich zadań</div>
     </div>
 
-    <div class="pkpi-card" style="--pkpi-color:<?= $overdue_count > 0 ? '#ef4444' : '#10b981' ?>;--pkpi-light:<?= $overdue_count > 0 ? 'rgba(239,68,68,.1)' : 'rgba(16,185,129,.1)' ?>;--pkpi-grad:<?= $overdue_count > 0 ? 'linear-gradient(90deg,#ef4444,#dc2626)' : 'linear-gradient(90deg,#22c55e,#10b981)' ?>;--pkpi-glow:rgba(239,68,68,.08)">
+    <div class="pkpi-card" style="--pkpi-color:<?php echo $overdue_count > 0 ? '#ef4444' : '#10b981'; ?>;--pkpi-light:<?php echo $overdue_count > 0 ? 'rgba(239,68,68,.1)' : 'rgba(16,185,129,.1)'; ?>;--pkpi-grad:<?php echo $overdue_count > 0 ? 'linear-gradient(90deg,#ef4444,#dc2626)' : 'linear-gradient(90deg,#22c55e,#10b981)'; ?>;--pkpi-glow:rgba(239,68,68,.08)">
         <div class="pkpi-top">
             <div class="pkpi-icon"><i class="fa-solid fa-clock"></i></div>
             <?php if ($overdue_count > 0): ?>
@@ -46,9 +46,9 @@
             <span class="pkpi-trend up"><i class="fa-solid fa-check"></i> ok</span>
             <?php endif; ?>
         </div>
-        <div class="pkpi-value" data-counter="<?= $overdue_count ?>"><?= $overdue_count ?></div>
+        <div class="pkpi-value" data-counter="<?php echo $overdue_count; ?>"><?php echo $overdue_count; ?></div>
         <div class="pkpi-label">Po terminie</div>
-        <div class="pkpi-sub"><?= count($tasks_today) ?> zadań na dziś</div>
+        <div class="pkpi-sub"><?php echo count($tasks_today); ?> zadań na dziś</div>
     </div>
 
 </div>

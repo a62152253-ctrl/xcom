@@ -16,7 +16,7 @@
 
         <?php if (count($tasks_today) > 0): ?>
             <?php foreach ($tasks_today as $t): ?>
-            <div class="task-premium" onclick="window.location.href='/pages/tasks.php?task_id=<?= $t['id'] ?>'">
+            <div class="task-premium" onclick="window.location.href='/pages/tasks.php?task_id=<?php echo htmlspecialchars($t['id'], ENT_QUOTES, 'UTF-8'); ?>'">
                 <div class="task-check"><i class="fa-regular fa-circle"></i></div>
                 <div class="task-premium-body">
                     <div class="task-premium-name"><?= sanitize($t['name']) ?></div>

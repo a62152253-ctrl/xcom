@@ -12,10 +12,10 @@
             foreach ($top_projects as $proj):
                 $pct = $proj['total'] > 0 ? round($proj['done']/$proj['total']*100) : 0;
         ?>
-        <div class="proj-card-premium" style="--proj-color:<?= $proj['color'] ?>"
-             onclick="window.location.href='/pages/tasks.php?project_id=<?= $proj['id'] ?>'">
+        <div class="proj-card-premium" style="--proj-color:<?php echo htmlspecialchars($proj['color'], ENT_QUOTES, 'UTF-8'); ?>"
+             onclick="window.location.href='/pages/tasks.php?project_id=<?php echo htmlspecialchars($proj['id'], ENT_QUOTES, 'UTF-8'); ?>'">
             <div class="proj-card-top">
-                <div class="proj-color-dot" style="background:<?= $proj['color'] ?>22;color:<?= $proj['color'] ?>">
+                <div class="proj-color-dot" style="background:<?php echo htmlspecialchars($proj['color'], ENT_QUOTES, 'UTF-8'); ?>22;color:<?php echo htmlspecialchars($proj['color'], ENT_QUOTES, 'UTF-8'); ?>">
                     <i class="fa-solid fa-folder"></i>
                 </div>
                 <div style="flex:1;min-width:0">
@@ -25,10 +25,10 @@
                         <span><i class="fa-solid fa-users"></i> <?= $proj['member_count'] ?? 0 ?></span>
                     </div>
                 </div>
-                <span style="font-size:13px;font-weight:800;color:<?= $proj['color'] ?>"><?= $pct ?>%</span>
+                <span style="font-size:13px;font-weight:800;color:<?php echo htmlspecialchars($proj['color'], ENT_QUOTES, 'UTF-8'); ?>"><?= $pct ?>%</span>
             </div>
             <div class="progress-bar-track">
-                <div class="progress-bar-fill" style="width:<?= $pct ?>%;background:<?= $proj['color'] ?>"></div>
+                <div class="progress-bar-fill" style="width:<?= $pct ?>%;background:<?php echo htmlspecialchars($proj['color'], ENT_QUOTES, 'UTF-8'); ?>"></div>
             </div>
         </div>
         <?php endforeach; else: ?>
