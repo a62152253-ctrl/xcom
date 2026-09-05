@@ -12,7 +12,7 @@
             foreach ($top_projects as $proj):
                 $pct = $proj['total'] > 0 ? round($proj['done']/$proj['total']*100) : 0;
         ?>
-        <div class="proj-card-premium" style="--proj-color:<?php echo htmlspecialchars($proj['color'], ENT_QUOTES, 'UTF-8'); ?>" onclick="window.location.href='/pages/tasks.php?project_id=<?php echo htmlspecialchars($proj['id'], ENT_QUOTES, 'UTF-8'); ?>'">
+        <div class="proj-card-premium" style="--proj-color:<?php echo htmlspecialchars($proj['color'], ENT_QUOTES, 'UTF-8'); ?>" onclick="window.location.href='/pages/tasks.php?project_id=<?php echo htmlspecialchars($proj['id'], ENT_QUOTES, 'UTF-8'); ?>'" onkeydown="if(event.key==='Enter') window.location.href='/pages/tasks.php?project_id=<?php echo htmlspecialchars($proj['id'], ENT_QUOTES, 'UTF-8'); ?>'" tabindex="0" role="button">
             <div class="proj-card-top">
                 <div class="proj-color-dot" style="background:<?php echo htmlspecialchars($proj['color'], ENT_QUOTES, 'UTF-8'); ?>22;color:<?php echo htmlspecialchars($proj['color'], ENT_QUOTES, 'UTF-8'); ?>">
                     <i class="fa-solid fa-folder"></i>

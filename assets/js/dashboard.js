@@ -1,7 +1,7 @@
 // Priority Chart
 const ctxPriority = document.getElementById('priorityChart')?.getContext('2d');
 if (ctxPriority && window.dashboardPriorities) {
-    const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+    const isDarkTheme = document.documentElement.dataset.theme === 'dark';
     const tc = isDarkTheme ? '#9ca3af' : '#6b7280';
     new Chart(ctxPriority, {
         type: 'doughnut',
@@ -35,7 +35,7 @@ async function loadTrend() {
         if (!data?.trend) return;
         const labels = data.trend.map(d => d.day);
         const values = data.trend.map(d => d.count);
-        const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+        const isDarkTheme = document.documentElement.dataset.theme === 'dark';
         const gridColor = isDarkTheme ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.06)';
         const textColor = isDarkTheme ? '#9ca3af' : '#6b7280';
         const ctx = document.getElementById('trendChart')?.getContext('2d');
@@ -81,6 +81,6 @@ async function loadTrend() {
 document.addEventListener("DOMContentLoaded", () => { loadTrend(); setInterval(loadTrend, 60000); });
 
 document.querySelectorAll('[data-counter]').forEach(el => {
-    const target = parseInt(el.dataset.counter, 10);
-    if (!isNaN(target) && typeof animateCounter === 'function') animateCounter(el, target);
+    const target = Number.parseInt(el.dataset.counter, 10);
+    if (!Number.isNaN(target) && typeof animateCounter === 'function') animateCounter(el, target);
 });
