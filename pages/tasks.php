@@ -1,17 +1,13 @@
 <?php
 require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../models/Task.php';
+require_once __DIR__ . '/../models/Project.php';
+
 
 $db = Database::getInstance()->getConnection();
 $user_id = $_SESSION['user_id'];
 
-$stmt_projs = $db->prepare("
-    SELECT DISTINCT p.id, p.name, p.color FROM projects p
-    LEFT JOIN project_members pm ON p.id = pm.project_id
-    WHERE (p.created_by = ? OR pm.user_id = ?) AND p.is_archived = 0
-    ORDER BY p.name ASC
-");
-$stmt_projs->execute([$user_id, $user_id]);
-$user_projects = $stmt_projs->fetchAll();
+$user_projects = Project::getActiveProjects($db, $user_id);
 
 $stmt_users = $db->query("SELECT id, full_name, email FROM users WHERE status='Active' ORDER BY full_name ASC");
 $all_users = $stmt_users->fetchAll();
@@ -19,28 +15,7 @@ $all_users = $stmt_users->fetchAll();
 $open_task_id = (int)($_GET['task_id'] ?? 0);
 $filter_project = (int)($_GET['project_id'] ?? 0);
 
-$base_query = "
-    SELECT t.*, p.name as project_name, p.color as project_color,
-           u.full_name as assigned_name
-    FROM tasks t
-    INNER JOIN projects p ON t.project_id = p.id
-    LEFT JOIN project_members pm ON p.id = pm.project_id
-    LEFT JOIN users u ON t.assigned_to = u.id
-    WHERE (p.created_by = ? OR pm.user_id = ?) AND p.is_archived = 0
-";
-
-$params = [$user_id, $user_id];
-
-if ($filter_project) {
-    $base_query .= " AND t.project_id = ?";
-    $params[] = $filter_project;
-}
-
-$base_query .= " ORDER BY FIELD(t.priority,'Critical','High','Medium','Low'), t.deadline ASC";
-
-$stmt_tasks = $db->prepare($base_query);
-$stmt_tasks->execute($params);
-$all_tasks = $stmt_tasks->fetchAll();
+$all_tasks = Task::getTasksForUser($db, $user_id, $filter_project);
 
 $open_task = null;
 if ($open_task_id) {
@@ -415,121 +390,10 @@ foreach ($all_tasks as $t) {
 </div>
 
 <!-- Create Project Modal -->
-<div class="modal-overlay" id="project-modal">
-    <div class="modal-window" style="max-width: 500px;">
-        <div class="modal-header">
-            <h2 class="modal-title">Nowy projekt</h2>
-            <button class="modal-close" onclick="closeCreateProjectModal()">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label class="form-label">Nazwa projektu *</label>
-                <input class="form-control" type="text" id="project-name" placeholder="Nazwa" maxlength="255">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Opis</label>
-                <textarea class="form-control" id="project-description" rows="2" placeholder="Krótki opis..." maxlength="1000"></textarea>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Kolor</label>
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    <?php $colors = ['#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#f97316']; ?>
-                    <?php foreach ($colors as $c): ?>
-                    <div style="width: 40px; height: 40px; background: <?= $c ?>; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;" onclick="selectProjectColor('<?= $c ?>')" id="color-<?= md5($c) ?>"></div>
-                    <?php endforeach; ?>
-                    <input type="hidden" id="project-color" value="#3b82f6">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Termin (opcjonalnie)</label>
-                <input class="form-control" type="date" id="project-deadline">
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeCreateProjectModal()">Anuluj</button>
-            <button class="btn btn-primary" onclick="saveNewProject()"><i class="fa-solid fa-plus"></i> Utwórz</button>
-        </div>
-    </div>
-</div>
+<?php require_once __DIR__ . '/../includes/modals/project-modal.php'; ?>
 
 <!-- Task Modal -->
-<div class="modal-overlay" id="task-modal">
-    <div class="modal-window" style="max-width: 640px;">
-        <div class="modal-header">
-            <h2 class="modal-title" id="task-modal-title">Nowe zadanie</h2>
-            <button class="modal-close" onclick="closeTaskModal()">&times;</button>
-        </div>
-        <div class="modal-body">
-            <input type="hidden" id="task-id">
-            <div class="form-group">
-                <label class="form-label">Tytuł zadania *</label>
-                <input class="form-control" type="text" id="task-name" placeholder="Co trzeba zrobić?" maxlength="255">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Opis</label>
-                <textarea class="form-control" id="task-desc" rows="3" placeholder="Szczegóły, wymagania..." maxlength="5000"></textarea>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group">
-                    <label class="form-label">Projekt *</label>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <select class="form-control" id="task-project" style="flex: 1;">
-                            <option value="">-- Wybierz projekt --</option>
-                            <?php foreach ($user_projects as $p): ?>
-                            <option value="<?= (int)$p['id'] ?>" <?= $filter_project == $p['id'] ? 'selected' : '' ?>><?= sanitize($p['name']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <button type="button" class="btn btn-secondary" onclick="openCreateProjectModal()" style="padding: 0.75rem 1rem; font-size: 0.9rem;">
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Przypisz do</label>
-                    <select class="form-control" id="task-assign">
-                        <option value="">-- Nieprzypisany --</option>
-                        <?php foreach ($all_users as $u): ?>
-                        <option value="<?= (int)$u['id'] ?>"><?= sanitize($u['full_name']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group">
-                    <label class="form-label">Priorytet</label>
-                    <select class="form-control" id="task-priority">
-                        <option value="Low">🟢 Niski</option>
-                        <option value="Medium" selected>🔵 Średni</option>
-                        <option value="High">🟡 Wysoki</option>
-                        <option value="Critical">🔴 Krytyczny</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Status</label>
-                    <select class="form-control" id="task-status">
-                        <option value="To Do">To Do</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Review">Review</option>
-                        <option value="Done">Done</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Termin (deadline)</label>
-                <input class="form-control" type="date" id="task-deadline">
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-danger" id="task-delete-btn" onclick="deleteCurrentTask()" style="display: none;">
-                <i class="fa-solid fa-trash"></i> Usuń
-            </button>
-            <button class="btn btn-secondary" onclick="closeTaskModal()">Anuluj</button>
-            <button class="btn btn-primary" onclick="saveTask()" id="task-save-btn">
-                <i class="fa-solid fa-floppy-disk"></i> Zapisz
-            </button>
-        </div>
-    </div>
-</div>
+<?php require_once __DIR__ . '/../includes/modals/task-modal.php'; ?>
 
 <script>
 let draggedId = null;
