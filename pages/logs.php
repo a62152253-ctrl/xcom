@@ -528,9 +528,11 @@ function get_action_icon_color($action) {
     <!-- Main Logs -->
     <div class="logs-main">
         <?php if (empty($logs)): ?>
-        <div class="empty-state-logs">
-            <i class="fa-regular fa-inbox"></i>
-            <p>Brak logów do wyświetlenia</p>
+        <div class="empty-state-premium">
+            <div class="es-icon"><i class="fa-regular fa-inbox"></i></div>
+            <div class="es-title">Brak logów</div>
+            <div class="es-sub">Brak logów do wyświetlenia przy użyciu obecnych filtrów.</div>
+            <a href="/pages/dashboard.php" class="es-btn"><i class="fa-solid fa-home"></i> Wróć na stronę główną</a>
         </div>
         <?php else: ?>
         <div class="logs-timeline">
