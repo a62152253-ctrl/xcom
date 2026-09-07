@@ -2,6 +2,8 @@
 // api/tasks.php - Fixed API with proper validation & error handling
 require_once __DIR__ . '/../includes/middleware.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../models/Task.php';
+
 
 require_auth_api();
 

@@ -1,51 +1,29 @@
 <?php
 require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../models/Dashboard.php';
+
 
 $db = Database::getInstance()->getConnection();
 $user_id = $_SESSION['user_id'];
 
 // Stats
-$stmt_projects = $db->prepare("SELECT COUNT(DISTINCT p.id) FROM projects p LEFT JOIN project_members pm ON p.id = pm.project_id WHERE (p.created_by = ? OR pm.user_id = ?) AND p.is_archived = 0");
-$stmt_projects->execute([$user_id, $user_id]);
-$projects_count = (int)$stmt_projects->fetchColumn();
+$projects_count = Dashboard::getProjectsCount($db, $user_id);
 
-$stmt_tasks = $db->prepare("SELECT COUNT(*) FROM tasks t INNER JOIN projects p ON t.project_id = p.id LEFT JOIN project_members pm ON p.id = pm.project_id WHERE (p.created_by = ? OR pm.user_id = ?) AND t.status != 'Done' AND p.is_archived = 0");
-$stmt_tasks->execute([$user_id, $user_id]);
-$active_tasks_count = (int)$stmt_tasks->fetchColumn();
+$active_tasks_count = Dashboard::getActiveTasksCount($db, $user_id);
 
-$stmt_today = $db->prepare("SELECT t.*, p.name as project_name, p.color FROM tasks t INNER JOIN projects p ON t.project_id = p.id LEFT JOIN project_members pm ON p.id = pm.project_id WHERE (p.created_by = ? OR pm.user_id = ?) AND t.deadline = CURDATE() AND t.status != 'Done' AND p.is_archived = 0");
-$stmt_today->execute([$user_id, $user_id]);
-$tasks_today = $stmt_today->fetchAll();
+$tasks_today = Dashboard::getTasksToday($db, $user_id);
 
-$stmt_overdue = $db->prepare("SELECT COUNT(*) FROM tasks t INNER JOIN projects p ON t.project_id = p.id LEFT JOIN project_members pm ON p.id = pm.project_id WHERE (p.created_by = ? OR pm.user_id = ?) AND t.deadline < CURDATE() AND t.status != 'Done' AND p.is_archived = 0");
-$stmt_overdue->execute([$user_id, $user_id]);
-$overdue_count = (int)$stmt_overdue->fetchColumn();
+$overdue_count = Dashboard::getOverdueCount($db, $user_id);
 
-$stmt_done = $db->prepare("SELECT COUNT(*) FROM tasks t INNER JOIN projects p ON t.project_id = p.id LEFT JOIN project_members pm ON p.id = pm.project_id WHERE (p.created_by = ? OR pm.user_id = ?) AND t.status = 'Done' AND p.is_archived = 0");
-$stmt_done->execute([$user_id, $user_id]);
-$done_count = (int)$stmt_done->fetchColumn();
+$done_count = Dashboard::getDoneCount($db, $user_id);
 
-$stmt_pri = $db->prepare("SELECT t.priority, COUNT(*) as qty FROM tasks t INNER JOIN projects p ON t.project_id = p.id LEFT JOIN project_members pm ON p.id = pm.project_id WHERE (p.created_by = ? OR pm.user_id = ?) AND p.is_archived = 0 GROUP BY t.priority");
-$stmt_pri->execute([$user_id, $user_id]);
-$priorities_data = $stmt_pri->fetchAll();
+$priorities_data = Dashboard::getPrioritiesData($db, $user_id);
 $priorities_json = ['Low' => 0, 'Medium' => 0, 'High' => 0, 'Critical' => 0];
 foreach ($priorities_data as $pd) if (isset($priorities_json[$pd['priority']])) $priorities_json[$pd['priority']] = (int)$pd['qty'];
 
-$stmt_logs = $db->prepare("SELECT l.*, u.full_name FROM activity_logs l LEFT JOIN users u ON l.user_id = u.id ORDER BY l.created_at DESC LIMIT 10");
-$stmt_logs->execute();
-$activity_logs = $stmt_logs->fetchAll();
+$activity_logs = Dashboard::getActivityLogs($db);
 
-$stmt_top_proj = $db->prepare("
-    SELECT DISTINCT p.id, p.name, p.color,
-        (SELECT COUNT(*) FROM tasks WHERE project_id = p.id) as total,
-        (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status='Done') as done,
-        (SELECT COUNT(DISTINCT user_id) FROM project_members WHERE project_id = p.id) as member_count
-    FROM projects p LEFT JOIN project_members pm ON p.id = pm.project_id
-    WHERE (p.created_by = ? OR pm.user_id = ?) AND p.is_archived = 0
-    LIMIT 5
-");
-$stmt_top_proj->execute([$user_id, $user_id]);
-$top_projects = $stmt_top_proj->fetchAll();
+$top_projects = Dashboard::getTopProjects($db, $user_id);
 
 $hour = (int)date('H');
 $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wieczór');

@@ -2,6 +2,8 @@
 // api/projects.php
 require_once __DIR__ . '/../includes/middleware.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../models/Project.php';
+
 
 require_auth_api();
 
@@ -14,15 +16,7 @@ $action = $_GET['action'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // Get all accessible projects
-    $stmt = $db->prepare("
-        SELECT DISTINCT p.*, u.full_name as creator_name 
-        FROM projects p 
-        LEFT JOIN project_members pm ON p.id = pm.project_id 
-        LEFT JOIN users u ON p.created_by = u.id
-        WHERE p.created_by = ? OR pm.user_id = ?
-    ");
-    $stmt->execute([$user_id, $user_id]);
-    $projects = $stmt->fetchAll();
+    $projects = Project::getAllProjects($db, $user_id);
     
     echo json_encode(['projects' => $projects]);
     exit;
