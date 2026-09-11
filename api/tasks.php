@@ -165,7 +165,63 @@ try {
             exit;
         }
         
-        // 2. Update Task Status (Kanban DND)
+        // 2. Update Task
+        if ($action === 'update') {
+            $task_id = (int)($input['id'] ?? 0);
+            $project_id = (int)($input['project_id'] ?? 0);
+            $name = trim($input['name'] ?? '');
+            $description = trim($input['description'] ?? '');
+            $deadline = trim($input['deadline'] ?? '');
+            $priority = $input['priority'] ?? 'Medium';
+            $status = $input['status'] ?? 'To Do';
+            $assigned_to = (int)($input['assigned_to'] ?? 0) ?: null;
+
+            if (!$task_id || !$project_id || !has_project_access($project_id, 'Member')) {
+                http_response_code(403);
+                echo json_encode(['error' => 'Brak uprawnień do edycji zadania.']);
+                exit;
+            }
+
+            $stmt_check = $db->prepare("SELECT project_id FROM tasks WHERE id = ?");
+            $stmt_check->execute([$task_id]);
+            $task = $stmt_check->fetch();
+            if (!$task || !has_project_access($task['project_id'], 'Member')) {
+                http_response_code(403);
+                echo json_encode(['error' => 'Brak dostępu do edycji tego zadania.']);
+                exit;
+            }
+
+            if (empty($name) || strlen($name) > 255) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Nazwa zadania jest wymagana i musi być krótsza niż 255 znaków.']);
+                exit;
+            }
+
+            if (!in_array($priority, ['Low', 'Medium', 'High', 'Critical'])) {
+                $priority = 'Medium';
+            }
+
+            $allowed_statuses = ['To Do', 'In Progress', 'Review', 'Done'];
+            if (!in_array($status, $allowed_statuses)) {
+                $status = 'To Do';
+            }
+
+            // Validate deadline if provided
+            if ($deadline && !strtotime($deadline)) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Niepoprawny format daty.']);
+                exit;
+            }
+
+            $stmt = $db->prepare("UPDATE tasks SET project_id = ?, name = ?, description = ?, deadline = ?, priority = ?, status = ?, assigned_to = ? WHERE id = ?");
+            $stmt->execute([$project_id, $name, $description, $deadline ?: null, $priority, $status, $assigned_to, $task_id]);
+
+            log_activity($user_id, 'task_update', "Updated task ID $task_id ('$name')");
+            echo json_encode(['success' => true]);
+            exit;
+        }
+
+        // 3. Update Task Status (Kanban DND)
         if ($action === 'update_status') {
             $task_id = (int)($input['task_id'] ?? 0);
             $status = $input['status'] ?? '';
