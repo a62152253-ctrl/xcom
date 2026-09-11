@@ -435,7 +435,7 @@ foreach ($all_tasks as $t) {
                 <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                     <?php $colors = ['#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#f97316']; ?>
                     <?php foreach ($colors as $c): ?>
-                    <div style="width: 40px; height: 40px; background: <?= $c ?>; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;" onclick="selectProjectColor('<?= $c ?>')" id="color-<?= md5($c) ?>"></div>
+                    <div style="width: 40px; height: 40px; background: <?= $c ?>; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;" onclick="selectProjectColor('<?= $c ?>')" id="color-<?= ltrim($c, '#') ?>"></div>
                     <?php endforeach; ?>
                     <input type="hidden" id="project-color" value="#3b82f6">
                 </div>
@@ -708,7 +708,7 @@ function openCreateProjectModal() {
     document.getElementById('project-color').value = '#3b82f6';
     document.getElementById('project-deadline').value = '';
     document.querySelectorAll('[id^="color-"]').forEach(c => c.style.borderColor = 'transparent');
-    document.getElementById('color-' + '<?php echo md5("#3b82f6"); ?>').style.borderColor = 'var(--primary)';
+    document.getElementById('color-' + '<?php echo ltrim("#3b82f6", '#'); ?>').style.borderColor = 'var(--primary)';
     document.getElementById('project-modal').classList.add('active');
     document.getElementById('project-name').focus();
 }
@@ -720,8 +720,11 @@ function closeCreateProjectModal() {
 function selectProjectColor(color) {
     document.getElementById('project-color').value = color;
     document.querySelectorAll('[id^="color-"]').forEach(c => c.style.borderColor = 'transparent');
-    document.getElementById('color-' + crypto.subtle ? btoa(color).replace(/[^a-z0-9]/gi,'').substr(0,10) : 'default').style.borderColor = 'var(--primary)';
-    document.getElementById('color-' + md5(color)).style.borderColor = 'var(--primary)';
+    const colorId = 'color-' + color.replace('#', '');
+    const el = document.getElementById(colorId);
+    if (el) {
+        el.style.borderColor = 'var(--primary)';
+    }
 }
 
 async function saveNewProject() {
