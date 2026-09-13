@@ -15,7 +15,7 @@
                 <textarea class="form-control" id="project-description" rows="2" placeholder="Krótki opis..." maxlength="1000"></textarea>
             </div>
             <div class="form-group">
-                <label class="form-label">Kolor</label>
+                <fieldset><legend class="form-label">Kolor</legend>
                 <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                     <?php $colors = ['#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#f97316']; ?>
                     <?php foreach ($colors as $c): ?>
@@ -23,6 +23,7 @@
                     <?php endforeach; ?>
                     <input type="hidden" id="project-color" value="#3b82f6">
                 </div>
+                </fieldset>
             </div>
             <div class="form-group">
                 <label class="form-label" for="project-deadline">Termin (opcjonalnie)</label>
