@@ -44,8 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt_update = $db->prepare("UPDATE users SET password_reset_token = ?, password_reset_expires = ? WHERE id = ?");
                     $stmt_update->execute([$reset_token, $expires_at, $user['id']]);
                     
-                    // TODO: Send email with reset link
-                    // send_email($email, 'Reset hasła', "Kliknij: /auth/forgot-password.php?step=reset&token=$reset_token");
+                    require_once __DIR__ . '/../config/env.php';
+                    $app_url = rtrim(env('APP_URL', 'http://localhost:3000'), '/');
+                    $reset_link = "$app_url/auth/forgot-password.php?step=reset&token=$reset_token";
+                    send_email($email, 'Reset hasła', "Kliknij, aby zresetować hasło: $reset_link");
                     
                     log_activity($user['id'], 'password_reset_request', 'Password reset requested');
                     $success = 'Jeśli konto istnieje, wyślemy Ci link do resetowania hasła.';
