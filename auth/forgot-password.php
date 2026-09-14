@@ -44,8 +44,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt_update = $db->prepare("UPDATE users SET password_reset_token = ?, password_reset_expires = ? WHERE id = ?");
                     $stmt_update->execute([$reset_token, $expires_at, $user['id']]);
                     
-                    // TODO: Send email with reset link
-                    // send_email($email, 'Reset hasła', "Kliknij: /auth/forgot-password.php?step=reset&token=$reset_token");
+                    $app_url = env('APP_URL');
+                    $reset_url = rtrim($app_url, '/') . "/auth/forgot-password.php?step=reset&token=" . urlencode($reset_token);
+
+                    $email_body = "Witaj,<br><br>Otrzymaliśmy prośbę o reset hasła do Twojego konta.<br>";
+                    $email_body .= "Kliknij w poniższy link, aby ustawić nowe hasło:<br>";
+                    $email_body .= "<a href=\"$reset_url\">$reset_url</a><br><br>";
+                    $email_body .= "Jeśli to nie Ty prosiłeś o zmianę, zignoruj tę wiadomość.<br>";
+
+                    send_email($email, 'Reset hasła - TaskManager Pro', $email_body);
                     
                     log_activity($user['id'], 'password_reset_request', 'Password reset requested');
                     $success = 'Jeśli konto istnieje, wyślemy Ci link do resetowania hasła.';
