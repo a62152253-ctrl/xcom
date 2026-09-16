@@ -144,9 +144,11 @@ $max_heat = max(max($heat_days), 1);
         <h2 class="card-title"><i class="fa-solid fa-list-ul"></i> Historia aktywności</h2>
         <div style="display:flex;flex-direction:column;gap:0">
             <?php if (empty($logs)): ?>
-            <div class="empty-state" style="padding:2rem">
-                <i class="fa-solid fa-history"></i>
-                <p>Brak zapisanej aktywności.</p>
+            <div class="empty-state-premium" style="padding:2rem">
+                <div class="es-icon"><i class="fa-solid fa-history"></i></div>
+                <div class="es-title">Brak zapisanej aktywności</div>
+                <div class="es-sub">Kiedy zaczniesz korzystać z aplikacji, Twoja historia akcji pojawi się tutaj.</div>
+                <a href="/pages/tasks.php" class="es-btn"><i class="fa-solid fa-list-check"></i> Przejdź do zadań</a>
             </div>
             <?php else: ?>
             <?php foreach ($logs as $log): ?>
