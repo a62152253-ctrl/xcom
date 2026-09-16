@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt_update->execute([$reset_token, $expires_at, $user['id']]);
                     
                     require_once __DIR__ . '/../config/env.php';
-                    $app_url = env('APP_URL', 'http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost'));
+                    $app_url = rtrim(env('APP_URL', 'http://localhost'), '/');
                     $reset_link = $app_url . "/auth/forgot-password.php?step=reset&token=" . urlencode($reset_token);
 
                     $email_body = "Kliknij poniższy link, aby zresetować hasło:<br><br>";
