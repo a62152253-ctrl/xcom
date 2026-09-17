@@ -157,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label class="form-label" for="email">E-mail</label>
                     <input class="form-control" type="email" id="email" name="email" placeholder="twoj@email.com" required
                     value="<?= htmlspecialchars($_POST['email'] ?? ($invite_data['email'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"
-                    <?php echo $invite_data ? 'readonly style="background:var(--bg-tertiary)"' : ''; ?>" maxlength="255">
+                    <?php echo $invite_data ? 'readonly style="background:var(--bg-tertiary)"' : ''; ?> maxlength="255">
                 </div>
 
                 <div class="form-group">
