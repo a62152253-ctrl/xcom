@@ -408,23 +408,6 @@ function get_action_icon_color($action) {
     font-weight: 600;
 }
 
-.empty-state-logs {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--text-muted);
-}
-
-.empty-state-logs i {
-    font-size: 3.5rem;
-    opacity: 0.2;
-    margin-bottom: 1rem;
-    display: block;
-}
-
-.empty-state-logs p {
-    font-size: 1rem;
-    margin: 0;
-}
 
 @media (max-width: 1024px) {
     .logs-container {
@@ -528,9 +511,11 @@ function get_action_icon_color($action) {
     <!-- Main Logs -->
     <div class="logs-main">
         <?php if (empty($logs)): ?>
-        <div class="empty-state-logs">
-            <i class="fa-regular fa-inbox"></i>
-            <p>Brak logów do wyświetlenia</p>
+        <div class="empty-state-premium" style="max-width:400px;margin:40px auto">
+            <div class="es-icon">📋</div>
+            <div class="es-title">Brak logów</div>
+            <div class="es-sub">Nie znaleziono żadnych wpisów pasujących do podanych kryteriów.</div>
+            <a href="/pages/logs.php" class="es-btn"><i class="fa-solid fa-rotate"></i> Wyczyść filtry</a>
         </div>
         <?php else: ?>
         <div class="logs-timeline">
