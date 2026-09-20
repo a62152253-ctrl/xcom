@@ -28,7 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Zbyt wiele prób logowania. Spróbuj ponownie za 5 minut.';
     }
     
-    if (!$error && !validate_csrf($csrf_token)) {
+    require_once __DIR__ . '/../security/Csrf.php';
+    if (!$error && !Csrf::validateToken($csrf_token)) {
         $error = 'Błąd weryfikacji tokenu CSRF.';
     } else if (
         !$error &&
@@ -115,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST" action="login.php">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>">
+                <?php require_once __DIR__ . '/../security/Csrf.php'; echo Csrf::getTokenField(); ?>
                 
                 <div class="form-group">
                     <label class="form-label" for="email">E-mail</label>

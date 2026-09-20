@@ -38,6 +38,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo APP_NAME; ?></title>
     <!-- Stylesheets -->
+    <link rel="stylesheet" href="/assets/css/variables.css">
+    <link rel="stylesheet" href="/assets/css/buttons.css">
+    <link rel="stylesheet" href="/assets/css/cards.css">
+    <link rel="stylesheet" href="/assets/css/forms.css">
+    <link rel="stylesheet" href="/assets/css/animations.css">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/premium.css">
     <!-- FontAwesome -->
@@ -258,6 +263,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <div class="cmd-item-icon"><i class="fa-solid fa-note-sticky"></i></div>
                         <div><div class="cmd-item-text">Nowa notatka</div><div class="cmd-item-sub">Stwórz prywatną notatkę</div></div>
                     </div>
+
+                    <!-- Dynamic Search Results Container -->
+                    <div id="cmdDynamicResults" style="display: none;"></div>
 
                     <!-- Navigation -->
                     <div class="cmd-section-label">🧭 Nawigacja</div>

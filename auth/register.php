@@ -46,7 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirm_password = trim($_POST['confirm_password'] ?? '');
     $csrf_token = $_POST['csrf_token'] ?? '';
     
-    if (!validate_csrf($csrf_token)) {
+    require_once __DIR__ . '/../security/Csrf.php';
+    if (!Csrf::validateToken($csrf_token)) {
         $error = 'Błąd weryfikacji tokenu CSRF.';
     } else if (empty($full_name) || empty($email) || empty($password) || empty($confirm_password)) {
         $error = 'Wszystkie pola są wymagane.';
@@ -56,15 +57,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Niepoprawny format adresu e-mail.';
     } else if (strlen($email) > 255) {
         $error = 'Adres e-mail jest za długi.';
-    } else if (strlen($password) < 8) {
-        $error = 'Hasło musi mieć co najmniej 8 znaków.';
-    } else if (strlen($password) > 255) {
-        $error = 'Hasło jest za długie.';
-    } else if ($password !== $confirm_password) {
-        $error = 'Hasła nie pasują do siebie.';
     } else {
-        try {
-            $db = Database::getInstance()->getConnection();
+        require_once __DIR__ . '/../security/SecurityAudit.php';
+        if (!SecurityAudit::verifyPasswordStrength($password)) {
+            $error = 'Hasło musi mieć co najmniej 8 znaków.';
+        } else if (strlen($password) > 255) {
+            $error = 'Hasło jest za długie.';
+        } else if ($password !== $confirm_password) {
+            $error = 'Hasła nie pasują do siebie.';
+        } else {
+            try {
+                $db = Database::getInstance()->getConnection();
             
             // Check if user already exists
             $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
@@ -102,10 +105,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $success = 'Konto zostało pomyślnie utworzone! Możesz się teraz zalogować.';
                 log_activity($user_id, 'register', 'New user registered');
             }
-        } catch (Exception $e) {
-            $db->rollBack();
-            error_log("Registration error: " . $e->getMessage());
-            $error = 'Wystąpił błąd podczas rejestracji. Spróbuj ponownie.';
+            } catch (Exception $e) {
+                $db->rollBack();
+                error_log("Registration error: " . $e->getMessage());
+                $error = 'Wystąpił błąd podczas rejestracji.';
+            }
         }
     }
 }
@@ -146,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST" action="register.php">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>">
+                <?php require_once __DIR__ . '/../security/Csrf.php'; echo Csrf::getTokenField(); ?>
                 
                 <div class="form-group">
                     <label class="form-label" for="full_name">Imię i nazwisko</label>
