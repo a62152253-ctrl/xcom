@@ -370,6 +370,19 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
 <!-- ═══ PREMIUM KPI CARDS ════════════════════════════════════════════════════════ -->
 <div class="pkpi-grid">
 
+    <div class="pkpi-card" style="--pkpi-color:#22c55e;--pkpi-light:rgba(34,197,94,.1);--pkpi-grad:linear-gradient(90deg,#22c55e,#10b981);--pkpi-glow:rgba(34,197,94,.1)"
+         onclick="window.location.href='/pages/reports.php'">
+        <div class="pkpi-top">
+            <div class="pkpi-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <span class="pkpi-trend up"><i class="fa-solid fa-arrow-up"></i> cel</span>
+        </div>
+        <div class="pkpi-value" style="display:flex; align-items: baseline; gap: 4px;">
+            <div style="font-size: 14px; letter-spacing: -2px;">████████</div> 80%
+        </div>
+        <div class="pkpi-label">Produktywność</div>
+        <div class="pkpi-sub">Czas pracy: 42h</div>
+    </div>
+
     <div class="pkpi-card" style="--pkpi-color:#6366f1;--pkpi-light:rgba(99,102,241,.1);--pkpi-grad:linear-gradient(90deg,#6366f1,#8b5cf6);--pkpi-glow:rgba(99,102,241,.1)"
          onclick="window.location.href='/pages/projects.php'">
         <div class="pkpi-top">
@@ -377,7 +390,7 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             <span class="pkpi-trend flat"><i class="fa-solid fa-minus"></i> aktywne</span>
         </div>
         <div class="pkpi-value" data-counter="<?= $projects_count ?>"><?= $projects_count ?></div>
-        <div class="pkpi-label">Projekty</div>
+        <div class="pkpi-label">Aktywne Projekty</div>
         <div class="pkpi-sub">Kliknij aby zobaczyć wszystkie →</div>
     </div>
 
@@ -503,11 +516,22 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             </div>
         </div>
         <?php endforeach; else: ?>
-        <div class="empty-state-premium">
-            <div class="es-icon">📁</div>
-            <div class="es-title">Brak projektów</div>
-            <div class="es-sub">Stwórz pierwszy projekt i zaproś zespół do pracy.</div>
-            <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Nowy projekt</a>
+        <div class="empty-state-premium" style="text-align: left; align-items: flex-start; padding: 24px;">
+            <div class="es-icon" style="margin: 0 auto 16px;">👋</div>
+            <div class="es-title" style="font-size: 18px; margin: 0 auto 12px; text-align: center;">Witaj <?= sanitize($user_name) ?>! Zacznijmy od konfiguracji:</div>
+
+            <ul style="list-style: none; padding: 0; margin: 0 auto 20px; width: 100%; max-width: 300px;">
+                <li style="margin-bottom: 8px; font-size: 14px;"><i class="fa-regular fa-square-check" style="color: var(--primary);"></i> Utwórz pierwszy projekt</li>
+                <li style="margin-bottom: 8px; font-size: 14px;"><i class="fa-regular fa-square" style="color: var(--text-muted);"></i> Dodaj pierwsze zadanie</li>
+                <li style="margin-bottom: 8px; font-size: 14px;"><i class="fa-regular fa-square" style="color: var(--text-muted);"></i> Ustaw profil</li>
+                <li style="margin-bottom: 8px; font-size: 14px;"><i class="fa-regular fa-square" style="color: var(--text-muted);"></i> Zaproś członka zespołu</li>
+            </ul>
+
+            <div style="text-align: center; width: 100%;">
+                <div class="es-title">🚀 Nie masz jeszcze projektów</div>
+                <div class="es-sub" style="margin: 0 auto 20px;">Stwórz pierwszy projekt i zacznij organizować swoją pracę.</div>
+                <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Utwórz projekt</a>
+            </div>
         </div>
         <?php endif; ?>
     </div>
@@ -518,16 +542,17 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             <h3 class="section-title-premium"><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary)"></i> Aktywność</h3>
         </div>
         <?php if (!empty($activity_logs)): ?>
+        <div class="notif-group-date">Dzisiaj</div>
         <div class="activity-feed">
         <?php foreach (array_slice($activity_logs, 0, 7) as $log): ?>
         <div class="af-item">
-            <div class="af-dot" style="background:var(--primary-light);color:var(--primary);font-weight:700;font-size:11px">
-                <?= strtoupper(substr($log['full_name'] ?? 'S', 0, 1)) ?>
+            <div class="af-dot" style="background:var(--success-light);color:var(--success);font-weight:700;font-size:11px">
+                <i class="fa-solid fa-check"></i>
             </div>
             <div class="af-content">
                 <div class="af-who"><?= sanitize($log['full_name'] ?? 'System') ?></div>
                 <div class="af-what"><?= sanitize($log['action']) ?></div>
-                <div class="af-when"><?= date('d.m H:i', strtotime($log['created_at'])) ?></div>
+                <div class="af-when"><?= date('H:i', strtotime($log['created_at'])) ?></div>
             </div>
         </div>
         <?php endforeach; ?>

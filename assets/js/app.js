@@ -410,15 +410,64 @@ function closeCommandPalette() {
 
 function filterCmdItems(q) {
     q = q.trim().toLowerCase();
-    document.querySelectorAll('#cmdBody .cmd-item').forEach(item => {
+
+    // Remote search integration for global search
+    if (q.length >= 2) {
+        fetch('/api/search.php?q=' + encodeURIComponent(q))
+            .then(res => res.json())
+            .then(data => {
+                const dynamicSection = document.getElementById('cmdDynamicResults');
+                if (dynamicSection) {
+                    if (data.results && data.results.length > 0) {
+                        let html = '<div class="cmd-section-label">🌐 Wyniki Globalne</div>';
+                        data.results.forEach(item => {
+                            let icon = '<i class="fa-solid fa-file"></i>';
+                            let url = '#';
+                            if (item.type === 'task') {
+                                icon = '<i class="fa-solid fa-list-check"></i>';
+                                url = `/pages/tasks.php?task_id=${item.id}`;
+                            } else if (item.type === 'project') {
+                                icon = '<i class="fa-solid fa-folder"></i>';
+                                url = `/pages/tasks.php?project_id=${item.id}`;
+                            } else if (item.type === 'note') {
+                                icon = '<i class="fa-solid fa-note-sticky"></i>';
+                                url = `/pages/notes.php`;
+                            }
+                            html += `
+                                <div class="cmd-item" onclick="window.location.href='${url}'">
+                                    <div class="cmd-item-icon">${icon}</div>
+                                    <div>
+                                        <div class="cmd-item-text">${item.title}</div>
+                                        <div class="cmd-item-sub">${item.subtitle || ''}</div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        dynamicSection.innerHTML = html;
+                        dynamicSection.style.display = 'block';
+                    } else {
+                        dynamicSection.innerHTML = '';
+                        dynamicSection.style.display = 'none';
+                    }
+                }
+            }).catch(console.error);
+    } else {
+        const dynamicSection = document.getElementById('cmdDynamicResults');
+        if (dynamicSection) {
+            dynamicSection.innerHTML = '';
+            dynamicSection.style.display = 'none';
+        }
+    }
+
+    document.querySelectorAll('#cmdBody .cmd-item:not(#cmdDynamicResults .cmd-item)').forEach(item => {
         const searchText = (item.dataset.search || '') + ' ' + (item.querySelector('.cmd-item-text')?.textContent || '');
         item.style.display = (!q || searchText.toLowerCase().includes(q)) ? 'flex' : 'none';
     });
     // Hide empty sections
-    document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => {
+    document.querySelectorAll('#cmdBody > .cmd-section-label').forEach(label => {
         let next = label.nextElementSibling;
         let hasVisible = false;
-        while (next && !next.classList.contains('cmd-section-label')) {
+        while (next && !next.classList.contains('cmd-section-label') && next.id !== 'cmdDynamicResults') {
             if (next.style.display !== 'none') hasVisible = true;
             next = next.nextElementSibling;
         }
