@@ -332,10 +332,12 @@ foreach ($events as $e) {
         usort($upcoming, function($a, $b) { return strtotime($a['event_date']) - strtotime($b['event_date']); });
 
         if (empty($upcoming)): ?>
-            <div class="empty-events">
-                <i class="fa-regular fa-calendar"></i>
-                <p>Brak zaplanowanych wydarzeń.</p>
-            </div>
+            <div class="empty-state-premium" style="grid-column:1/-1">
+    <div class="es-icon">📅</div>
+    <div class="es-title">Brak zaplanowanych wydarzeń</div>
+    <div class="es-sub">Nie masz żadnych nadchodzących wydarzeń w swoim kalendarzu.</div>
+    <button class="es-btn" onclick="openEventModal()"><i class="fa-solid fa-plus"></i> Dodaj wydarzenie</button>
+</div>
         <?php else: ?>
             <?php foreach (array_slice($upcoming, 0, 10) as $e): ?>
             <div class="event-item" onclick="editEvent(<?= (int)$e['id'] ?>)">
