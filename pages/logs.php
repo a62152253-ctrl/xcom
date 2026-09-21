@@ -528,10 +528,11 @@ function get_action_icon_color($action) {
     <!-- Main Logs -->
     <div class="logs-main">
         <?php if (empty($logs)): ?>
-        <div class="empty-state-logs">
-            <i class="fa-regular fa-inbox"></i>
-            <p>Brak logów do wyświetlenia</p>
-        </div>
+        <div class="empty-state-premium" style="grid-column:1/-1">
+    <div class="es-icon">📥</div>
+    <div class="es-title">Brak logów do wyświetlenia</div>
+    <div class="es-sub">System nie zarejestrował jeszcze żadnej aktywności w tej kategorii.</div>
+</div>
         <?php else: ?>
         <div class="logs-timeline">
             <?php foreach ($logs as $log):
