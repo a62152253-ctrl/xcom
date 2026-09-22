@@ -6,12 +6,21 @@ require_once __DIR__ . '/../config/database.php';
 // Ensure secure session is running
 start_secure_session();
 
+require_once __DIR__ . '/../security/Csrf.php';
+// Force generate CSRF token for the session so it's available in templates
+Csrf::generateToken();
+
 function require_auth_api() {
     if (!is_logged_in()) {
         header('Content-Type: application/json; charset=utf-8');
         http_response_code(401);
         echo json_encode(['error' => 'Unauthorized. Please log in.']);
         exit;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        require_once __DIR__ . '/../security/Csrf.php';
+        Csrf::requireValidToken();
     }
 }
 

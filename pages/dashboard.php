@@ -326,6 +326,36 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
 </style>
 
 <!-- ═══ PREMIUM HERO ═══════════════════════════════════════════════════════════ -->
+<?php if ($projects_count === 0 && $all_tasks_total === 0): ?>
+<div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);">
+    <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">👋 Witaj <?= sanitize($user_name) ?>!</div>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Zacznijmy od konfiguracji Twojego środowiska pracy:</p>
+
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <label style="display: flex; align-items: center; gap: 0.75rem; font-size: 1.05rem; cursor: pointer;">
+            <input type="checkbox" disabled style="width: 1.25rem; height: 1.25rem;">
+            <span>Utwórz pierwszy projekt</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 0.75rem; font-size: 1.05rem; cursor: pointer;">
+            <input type="checkbox" disabled style="width: 1.25rem; height: 1.25rem;">
+            <span>Dodaj pierwsze zadanie</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 0.75rem; font-size: 1.05rem; cursor: pointer;">
+            <input type="checkbox" checked disabled style="width: 1.25rem; height: 1.25rem;">
+            <span style="text-decoration: line-through; color: var(--text-muted)">Ustaw profil</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 0.75rem; font-size: 1.05rem; cursor: pointer;">
+            <input type="checkbox" disabled style="width: 1.25rem; height: 1.25rem;">
+            <span>Zaproś członka zespołu</span>
+        </label>
+    </div>
+
+    <div style="margin-top: 2rem;">
+        <button class="btn btn-primary" onclick="window.location.href='/pages/projects.php'"><i class="fa-solid fa-rocket"></i> Utwórz projekt</button>
+    </div>
+</div>
+<?php endif; ?>
+
 <div class="premium-hero">
     <div class="hero-left">
         <div class="hero-greeting"><?= $greeting ?>, 👋</div>
