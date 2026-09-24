@@ -408,12 +408,68 @@ function closeCommandPalette() {
     if (pal) pal.classList.remove('open');
 }
 
-function filterCmdItems(q) {
+async function filterCmdItems(q) {
     q = q.trim().toLowerCase();
-    document.querySelectorAll('#cmdBody .cmd-item').forEach(item => {
+
+    // Original filtering logic
+    document.querySelectorAll('#cmdBody .cmd-item:not(.api-search-result)').forEach(item => {
         const searchText = (item.dataset.search || '') + ' ' + (item.querySelector('.cmd-item-text')?.textContent || '');
         item.style.display = (!q || searchText.toLowerCase().includes(q)) ? 'flex' : 'none';
     });
+
+    // Clear previous dynamic API results
+    document.querySelectorAll('#cmdBody .api-search-result').forEach(el => el.remove());
+    document.getElementById('cmdSearchLabel')?.remove();
+
+    if (q.length > 0) {
+        try {
+            const res = await fetch(`/api/search.php?q=${encodeURIComponent(q)}`);
+            const data = await res.json();
+
+            if (data.results && data.results.length > 0) {
+                const cmdBody = document.getElementById('cmdBody');
+
+                const label = document.createElement('div');
+                label.className = 'cmd-section-label';
+                label.id = 'cmdSearchLabel';
+                label.textContent = '🔍 Wyniki wyszukiwania bazy danych';
+                cmdBody.appendChild(label);
+
+                data.results.forEach(item => {
+                    let icon = 'fa-file';
+                    if (item.type === 'project') icon = 'fa-folder';
+                    if (item.type === 'task') icon = 'fa-check-circle';
+
+                    let url = '#';
+                    if (item.type === 'project') url = `/pages/tasks.php?project_id=${item.id}`;
+                    if (item.type === 'task') url = `/pages/tasks.php?task_id=${item.id}`;
+
+                    const el = document.createElement('div');
+                    el.className = 'cmd-item api-search-result';
+                    el.onclick = () => window.location.href = url;
+                    const escapeHTML = str => str.replace(/[&<>'"]/g, tag => ({
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        "'": '&#39;',
+                        '"': '&quot;'
+                    }[tag]));
+
+                    el.innerHTML = `
+                        <div class="cmd-item-icon"><i class="fa-solid ${icon}"></i></div>
+                        <div>
+                            <div class="cmd-item-text">${escapeHTML(String(item.title))}</div>
+                            <div class="cmd-item-sub">${escapeHTML(String(item.type)).toUpperCase()}</div>
+                        </div>
+                    `;
+                    cmdBody.appendChild(el);
+                });
+            }
+        } catch (err) {
+            console.error('API Search Error:', err);
+        }
+    }
+
     // Hide empty sections
     document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => {
         let next = label.nextElementSibling;
