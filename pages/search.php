@@ -95,10 +95,11 @@ function highlight($text, $q) {
 </div>
 
 <?php if (empty($results)): ?>
-<div class="empty-state">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <h3>Brak wyników</h3>
-    <p>Spróbuj innych słów kluczowych lub zmień filtr.</p>
+<div class="empty-state-premium">
+    <div class="es-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+    <h3 class="es-title">Brak wyników</h3>
+    <p class="es-sub">Spróbuj innych słów kluczowych lub zmień filtr.</p>
+    <a href="/pages/search.php" class="es-btn">Wyczyść filtry</a>
 </div>
 <?php else: ?>
 <div class="search-results-list">
