@@ -36,8 +36,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?php echo $_SESSION['csrf_token'] ?? ''; ?>">
     <title><?php echo APP_NAME; ?></title>
     <!-- Stylesheets -->
+    <link rel="stylesheet" href="/assets/css/variables.css">
+    <link rel="stylesheet" href="/assets/css/buttons.css">
+    <link rel="stylesheet" href="/assets/css/cards.css">
+    <link rel="stylesheet" href="/assets/css/forms.css">
+    <link rel="stylesheet" href="/assets/css/animations.css">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/premium.css">
     <!-- FontAwesome -->
@@ -77,6 +83,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
     </style>
 </head>
 <body>
+
+
     <div class="app-wrapper">
         <!-- ═══ SIDEBAR ══════════════════════════════════════════════════════ -->
         <aside class="sidebar">
