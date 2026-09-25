@@ -7,16 +7,16 @@
         <div class="modal-body">
             <input type="hidden" id="task-id">
             <div class="form-group">
-                <label class="form-label">Tytuł zadania *</label>
+                <label class="form-label" for="task-name">Tytuł zadania *</label>
                 <input class="form-control" type="text" id="task-name" placeholder="Co trzeba zrobić?" maxlength="255">
             </div>
             <div class="form-group">
-                <label class="form-label">Opis</label>
+                <label class="form-label" for="task-desc">Opis</label>
                 <textarea class="form-control" id="task-desc" rows="3" placeholder="Szczegóły, wymagania..." maxlength="5000"></textarea>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label class="form-label">Projekt *</label>
+                    <label class="form-label" for="task-project">Projekt *</label>
                     <div style="display: flex; gap: 0.5rem;">
                         <select class="form-control" id="task-project" style="flex: 1;">
                             <option value="">-- Wybierz projekt --</option>
@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Przypisz do</label>
+                    <label class="form-label" for="task-assign">Przypisz do</label>
                     <select class="form-control" id="task-assign">
                         <option value="">-- Nieprzypisany --</option>
                         <?php foreach ($all_users as $u): ?>
@@ -41,7 +41,7 @@
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label class="form-label">Priorytet</label>
+                    <label class="form-label" for="task-priority">Priorytet</label>
                     <select class="form-control" id="task-priority">
                         <option value="Low">🟢 Niski</option>
                         <option value="Medium" selected>🔵 Średni</option>
@@ -50,7 +50,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Status</label>
+                    <label class="form-label" for="task-status">Status</label>
                     <select class="form-control" id="task-status">
                         <option value="To Do">To Do</option>
                         <option value="In Progress">In Progress</option>
@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="form-label">Termin (deadline)</label>
+                <label class="form-label" for="task-deadline">Termin (deadline)</label>
                 <input class="form-control" type="date" id="task-deadline">
             </div>
         </div>
