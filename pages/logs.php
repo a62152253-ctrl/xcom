@@ -528,9 +528,11 @@ function get_action_icon_color($action) {
     <!-- Main Logs -->
     <div class="logs-main">
         <?php if (empty($logs)): ?>
-        <div class="empty-state-logs">
-            <i class="fa-regular fa-inbox"></i>
-            <p>Brak logów do wyświetlenia</p>
+        <div class="empty-state-premium" style="max-width:420px;margin:40px auto">
+            <div class="es-icon">📥</div>
+            <div class="es-title">Brak logów do wyświetlenia</div>
+            <div class="es-sub">Nie znaleźliśmy żadnych logów aktywności spełniających podane kryteria filtrowania.</div>
+            <a href="/pages/logs.php" class="es-btn"><i class="fa-solid fa-redo"></i> Resetuj filtry</a>
         </div>
         <?php else: ?>
         <div class="logs-timeline">
