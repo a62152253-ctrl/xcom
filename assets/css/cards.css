@@ -88,9 +88,9 @@
     padding: 3px 8px;
     border-radius: 99px;
 }
-.pkpi-trend.up { background: rgba(34,197,94,.12); color: #16a34a; }
-.pkpi-trend.down { background: rgba(239,68,68,.12); color: #dc2626; }
-.pkpi-trend.flat { background: rgba(148,163,184,.12); color: #64748b; }
+.pkpi-trend-up { background: rgba(34,197,94,.12); color: #16a34a; }
+.pkpi-trend-down { background: rgba(239,68,68,.12); color: #dc2626; }
+.pkpi-trend-flat { background: rgba(148,163,184,.12); color: #64748b; }
 .pkpi-value {
     font-size: 38px;
     font-weight: 900;
@@ -159,7 +159,7 @@
     border: 2px solid var(--bg-secondary);
     margin-left: -6px;
     background: linear-gradient(135deg, #6366f1, #06b6d4);
-    color: #fff;
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;

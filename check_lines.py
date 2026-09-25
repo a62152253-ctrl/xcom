@@ -1,9 +1,6 @@
 files_and_lines = {
-    "includes/modals/task_modal.php": [10, 19, 21, 33, 34, 44, 45, 53, 54, 63, 64],
-    "includes/modals/project_modal.php": [9, 10, 13, 14, 17, 21, 28],
-    "assets/css/cards.css": [86, 87, 157, 166, 175],
-    "assets/css/buttons.css": [15, 35, 57],
-    "assets/css/forms.css": [10, 14],
+    "includes/modals/project_modal.php": [21],
+    "assets/css/cards.css": [91, 92, 93, 162],
     "assets/js/components/ajax_helper.js": [21, 22, 23]
 }
 

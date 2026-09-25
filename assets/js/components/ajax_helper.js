@@ -19,6 +19,7 @@ async function apiGet(url) {
         const res = await fetch(url);
         return await res.json();
     } catch (e) {
+        console.error('API Error:', e);
         return null;
     }
 }
