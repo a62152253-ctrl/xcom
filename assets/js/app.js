@@ -5,6 +5,19 @@
 
 'use strict';
 
+function escapeHTML(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/[&<>'"]/g,
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag])
+    );
+}
+
 // ─── Toast Notification System ────────────────────────────────────────────────
 const Toast = {
     container: null,
@@ -234,7 +247,7 @@ const GlobalSearch = {
         if (!data) { this.hide(); return; }
 
         if (!data.results || data.results.length === 0) {
-            this.results.innerHTML = '<div class="search-empty">Brak wyników dla "<strong>' + q + '</strong>"</div>';
+            this.results.innerHTML = '<div class="search-empty">Brak wyników dla "<strong>' + escapeHTML(q) + '</strong>"</div>';
             return;
         }
 
