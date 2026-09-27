@@ -1,0 +1,14 @@
+/* ─── Buttons ────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.625rem 1.25rem;border-radius:var(--radius-md);font-weight:600;font-size:.875rem;border:none;cursor:pointer;transition:var(--transition)}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 2px 8px var(--primary-glow)}
+.btn-primary:hover{background:var(--primary-hover);box-shadow:0 4px 16px var(--primary-glow);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+.btn-secondary{background:var(--bg-tertiary);color:var(--text-primary);border:1.5px solid var(--border-color)}
+.btn-secondary:hover{background:var(--border-color);border-color:transparent}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--danger);border:1.5px solid rgba(239,68,68,.2)}
+.btn-danger:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+.btn-ghost{background:transparent;color:var(--text-secondary);border:none}
+.btn-ghost:hover{background:var(--bg-tertiary);color:var(--text-primary)}
+.btn-sm{padding:.35rem .75rem;font-size:.78rem}
+.btn-icon{width:36px;height:36px;padding:0;border-radius:var(--radius-md);font-size:.9rem}
+.btn-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);animation:ripple .6s ease-out forwards;pointer-events:none}
