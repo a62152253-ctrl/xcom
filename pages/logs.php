@@ -528,9 +528,11 @@ function get_action_icon_color($action) {
     <!-- Main Logs -->
     <div class="logs-main">
         <?php if (empty($logs)): ?>
-        <div class="empty-state-logs">
-            <i class="fa-regular fa-inbox"></i>
-            <p>Brak logów do wyświetlenia</p>
+        <div class="empty-state-premium" style="margin-top:2rem">
+            <div class="es-icon">📜</div>
+            <div class="es-title">Brak logów do wyświetlenia</div>
+            <div class="es-sub">Zacznij działać w aplikacji, aby zobaczyć tutaj historię zdarzeń.</div>
+            <a href="/pages/dashboard.php" class="es-btn"><i class="fa-solid fa-house"></i> Wróć do dashboardu</a>
         </div>
         <?php else: ?>
         <div class="logs-timeline">
