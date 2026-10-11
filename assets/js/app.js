@@ -172,7 +172,7 @@ const NotifPoller = {
     },
 
     async poll() {
-        const data = await apiGet('/api/notifications.php?action=count');
+        const data = await apiGet('/api/notifications.php?action=unread_count');
         if (!data) return;
 
         const count = data.unread_count || 0;
@@ -322,7 +322,7 @@ async function toggleNotificationsDropdown() {
         const container = document.getElementById('notif-list-container');
         if (container) {
             skeletonLoad(container, 3);
-            const data = await apiGet('/api/notifications.php');
+            const data = await apiGet('/api/notifications.php?action=list');
             if (data?.notifications) {
                 if (data.notifications.length === 0) {
                     container.innerHTML = '<div style="padding:1.5rem;text-align:center;color:var(--text-muted);font-size:.85rem"><i class="fa-solid fa-bell-slash" style="font-size:1.5rem;display:block;margin-bottom:.5rem;opacity:.4"></i>Brak nowych powiadomień</div>';
@@ -506,11 +506,11 @@ function escapeHTML(str) {
 
 function setThemeDark() {
     document.documentElement.setAttribute('data-theme','dark');
-    fetch('/api/profile.php?action=update_theme', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme:'dark'})}).catch(()=>{});
+    apiPost('/api/profile.php?action=theme', {theme:'dark'}).catch(()=>{});
 }
 function setThemeLight() {
     document.documentElement.setAttribute('data-theme','light');
-    fetch('/api/profile.php?action=update_theme', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme:'light'})}).catch(()=>{});
+    apiPost('/api/profile.php?action=theme', {theme:'light'}).catch(()=>{});
 }
 
 // ─── Initialize all on DOMContentLoaded ──────────────────────────────────────

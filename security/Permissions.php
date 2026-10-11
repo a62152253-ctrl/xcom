@@ -4,6 +4,9 @@ require_once __DIR__ . '/../config/database.php';
 
 class Permissions {
     public static function hasProjectAccess($user_id, $project_id, $minimum_role = 'Member') {
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != $user_id) {
+            return false;
+        }
         $project_id = (int)$project_id;
         if ($project_id <= 0) {
             return false;
