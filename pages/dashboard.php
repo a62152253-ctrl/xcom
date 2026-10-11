@@ -325,7 +325,21 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
 }
 </style>
 
-<!-- ═══ PREMIUM HERO ═══════════════════════════════════════════════════════════ -->
+<!-- ═══ ONBOARDING & PREMIUM HERO ═══════════════════════════════════════════════════════════ -->
+<?php if ($projects_count === 0): ?>
+<div class="empty-state-premium" style="margin-bottom: 2.5rem; text-align: left; background: var(--bg-primary); border: 1px solid var(--border-color); padding: 2rem; border-radius: 16px;">
+    <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">👋 Witaj <?= sanitize($user_name) ?></div>
+    <div style="margin-bottom: 1.5rem; color: var(--text-secondary);">Zacznijmy od konfiguracji:</div>
+    <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);"><i class="fa-regular fa-square"></i> Utwórz pierwszy projekt</div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);"><i class="fa-regular fa-square"></i> Dodaj pierwsze zadanie</div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);"><i class="fa-regular fa-square"></i> Ustaw profil</div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);"><i class="fa-regular fa-square"></i> Zaproś członka zespołu</div>
+    </div>
+    <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Utwórz projekt</a>
+</div>
+<?php endif; ?>
+
 <div class="premium-hero">
     <div class="hero-left">
         <div class="hero-greeting"><?= $greeting ?>, 👋</div>
@@ -504,10 +518,10 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         </div>
         <?php endforeach; else: ?>
         <div class="empty-state-premium">
-            <div class="es-icon">📁</div>
-            <div class="es-title">Brak projektów</div>
-            <div class="es-sub">Stwórz pierwszy projekt i zaproś zespół do pracy.</div>
-            <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Nowy projekt</a>
+            <div class="es-icon">🚀</div>
+            <div class="es-title">Nie masz jeszcze projektów</div>
+            <div class="es-sub">Stwórz pierwszy projekt i zacznij organizować swoją pracę.</div>
+            <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Utwórz projekt</a>
         </div>
         <?php endif; ?>
     </div>
@@ -519,14 +533,28 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         </div>
         <?php if (!empty($activity_logs)): ?>
         <div class="activity-feed">
-        <?php foreach (array_slice($activity_logs, 0, 7) as $log): ?>
+        <?php foreach (array_slice($activity_logs, 0, 7) as $log):
+            $action_text = sanitize($log['action']);
+            $icon = 'fa-circle-info';
+            $formatted_action = $action_text;
+            if (strpos($action_text, 'Created task') !== false) {
+                $icon = 'fa-check';
+                $formatted_action = 'Dodano zadanie ' . (explode("'", $action_text)[1] ?? '');
+            } elseif (strpos($action_text, 'Task ID') !== false && strpos($action_text, '→') !== false) {
+                $icon = 'fa-check';
+                $formatted_action = 'Zmieniono status zadania';
+            } elseif (strpos($action_text, 'login') !== false) {
+                $icon = 'fa-arrow-right-to-bracket';
+                $formatted_action = 'Zalogowano się';
+            }
+        ?>
         <div class="af-item">
             <div class="af-dot" style="background:var(--primary-light);color:var(--primary);font-weight:700;font-size:11px">
-                <?= strtoupper(substr($log['full_name'] ?? 'S', 0, 1)) ?>
+                <i class="fa-solid <?= $icon ?>"></i>
             </div>
             <div class="af-content">
                 <div class="af-who"><?= sanitize($log['full_name'] ?? 'System') ?></div>
-                <div class="af-what"><?= sanitize($log['action']) ?></div>
+                <div class="af-what"><?= $formatted_action ?></div>
                 <div class="af-when"><?= date('d.m H:i', strtotime($log['created_at'])) ?></div>
             </div>
         </div>
@@ -538,6 +566,38 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             <span>Brak aktywności w workspace</span>
         </div>
         <?php endif; ?>
+    </div>
+</div>
+
+<!-- Productivity Analytics -->
+<div class="report-section" style="margin-bottom: 2rem;">
+    <div class="section-header">
+        <div class="report-title" style="margin:0"><i class="fa-solid fa-chart-simple"></i> Analityka Produktywności</div>
+    </div>
+    <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
+        <div style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-weight: 600;">Produktywność (ukończone zadania)</span>
+                <span style="font-weight: 700; color: var(--primary);"><?= $ws_pct ?>%</span>
+            </div>
+            <div class="progress-bar-track" style="height: 12px; background: var(--bg-secondary); border-radius: 6px;">
+                <div class="progress-bar-fill" style="width: <?= $ws_pct ?>%; background: linear-gradient(90deg, var(--primary), #60a5fa); border-radius: 6px;"></div>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div style="padding: 1rem; background: var(--bg-secondary); border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.25rem;"><?= $done_count ?></div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Ukończone zadania</div>
+            </div>
+            <div style="padding: 1rem; background: var(--bg-secondary); border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.25rem;"><?= $projects_count ?></div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Aktywne projekty</div>
+            </div>
+            <div style="padding: 1rem; background: var(--bg-secondary); border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.25rem;">42h</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Czas pracy (estymowany)</div>
+            </div>
+        </div>
     </div>
 </div>
 

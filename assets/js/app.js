@@ -408,23 +408,100 @@ function closeCommandPalette() {
     if (pal) pal.classList.remove('open');
 }
 
+let searchTimeout;
 function filterCmdItems(q) {
     q = q.trim().toLowerCase();
-    document.querySelectorAll('#cmdBody .cmd-item').forEach(item => {
-        const searchText = (item.dataset.search || '') + ' ' + (item.querySelector('.cmd-item-text')?.textContent || '');
-        item.style.display = (!q || searchText.toLowerCase().includes(q)) ? 'flex' : 'none';
+
+    // Check if we have standard static items, if so, we can preserve them if q is empty
+    if (!q) {
+        document.querySelectorAll('#cmdBody .cmd-item').forEach(item => {
+            item.style.display = 'flex';
+        });
+        document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => {
+            label.style.display = '';
+        });
+        const dyn = document.querySelectorAll('#cmdBody .cmd-dynamic');
+        dyn.forEach(e => e.remove());
+        cmdSelectedIdx = -1;
+        return;
+    }
+
+    // Hide static items
+    document.querySelectorAll('#cmdBody .cmd-item:not(.cmd-dynamic)').forEach(item => {
+        item.style.display = 'none';
     });
-    // Hide empty sections
-    document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => {
-        let next = label.nextElementSibling;
-        let hasVisible = false;
-        while (next && !next.classList.contains('cmd-section-label')) {
-            if (next.style.display !== 'none') hasVisible = true;
-            next = next.nextElementSibling;
+    document.querySelectorAll('#cmdBody .cmd-section-label:not(.cmd-dynamic-label)').forEach(label => {
+        label.style.display = 'none';
+    });
+
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        try {
+            const resp = await fetch('/api/search.php?q=' + encodeURIComponent(q));
+            const data = await resp.json();
+
+            // Remove previous dynamic items
+            document.querySelectorAll('#cmdBody .cmd-dynamic, #cmdBody .cmd-dynamic-label').forEach(e => e.remove());
+
+            const cmdBody = document.getElementById('cmdBody');
+
+            if (data.results && data.results.length > 0) {
+                const label = document.createElement('div');
+                label.className = 'cmd-section-label cmd-dynamic-label';
+                label.textContent = '🔍 Wyniki wyszukiwania';
+                cmdBody.appendChild(label);
+
+                data.results.forEach(res => {
+                    const item = document.createElement('div');
+                    item.className = 'cmd-item cmd-dynamic';
+                    item.style.display = 'flex';
+                    item.onclick = () => window.location.href = res.url;
+
+                    let iconHtml = '';
+                    if (res.type === 'project') {
+                        iconHtml = '<i class="fa-solid fa-folder"></i>';
+                    } else if (res.type === 'task') {
+                        iconHtml = '<i class="fa-solid fa-check"></i>';
+                    } else {
+                        iconHtml = '<i class="fa-solid fa-note-sticky"></i>';
+                    }
+
+                    item.innerHTML = `
+                        <div class="cmd-item-icon" style="${res.color ? 'color: ' + escapeHTML(res.color) : ''}">${iconHtml}</div>
+                        <div>
+                            <div class="cmd-item-text">${escapeHTML(res.title)}</div>
+                            <div class="cmd-item-sub">${escapeHTML(res.subtitle || '')}</div>
+                        </div>
+                    `;
+                    cmdBody.appendChild(item);
+                });
+            } else {
+                const empty = document.createElement('div');
+                empty.className = 'cmd-item cmd-dynamic';
+                empty.style.display = 'flex';
+                empty.style.justifyContent = 'center';
+                empty.style.pointerEvents = 'none';
+                empty.innerHTML = `<div class="cmd-item-text" style="color: var(--text-muted);">Brak wyników</div>`;
+                cmdBody.appendChild(empty);
+            }
+            cmdSelectedIdx = -1;
+        } catch (e) {
+            console.error('Search error', e);
         }
-        label.style.display = hasVisible ? '' : 'none';
-    });
-    cmdSelectedIdx = -1;
+    }, 250);
+}
+
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g,
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
 }
 
 function setThemeDark() {
