@@ -308,7 +308,7 @@ function toggleTheme() {
     if (btn) btn.innerHTML = `<i class="fa-solid ${next === 'dark' ? 'fa-sun' : 'fa-moon'}"></i>`;
 
     // Persist via API
-    apiPost('/api/profile.php?action=theme', { theme: next });
+    apiPost('/api/profile.php?action=theme', { theme: next }).catch(e => console.error(e));
 }
 
 // ─── Notification Dropdown ────────────────────────────────────────────────────
@@ -361,7 +361,7 @@ document.addEventListener('click', (e) => {
 
 // ─── Global Search handler (for header) ────────────────────────────────────
 function handleGlobalSearch(val) {
-    GlobalSearch.search(val);
+    GlobalSearch.search(val).catch(e => console.error(e));
 }
 
 // ─── Input Auto-grow for textareas ───────────────────────────────────────────
