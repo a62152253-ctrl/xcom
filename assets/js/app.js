@@ -172,7 +172,7 @@ const NotifPoller = {
     },
 
     async poll() {
-        const data = await apiGet('/api/notifications.php?action=count');
+        const data = await apiGet('/api/notifications.php?action=unread_count');
         if (!data) return;
 
         const count = data.unread_count || 0;
@@ -308,7 +308,7 @@ function toggleTheme() {
     if (btn) btn.innerHTML = `<i class="fa-solid ${next === 'dark' ? 'fa-sun' : 'fa-moon'}"></i>`;
 
     // Persist via API
-    apiPost('/api/profile.php?action=theme', { theme: next });
+    apiPost('/api/profile.php?action=theme', { theme: next }).catch(e => console.error(e));
 }
 
 // ─── Notification Dropdown ────────────────────────────────────────────────────
@@ -322,7 +322,7 @@ async function toggleNotificationsDropdown() {
         const container = document.getElementById('notif-list-container');
         if (container) {
             skeletonLoad(container, 3);
-            const data = await apiGet('/api/notifications.php');
+            const data = await apiGet('/api/notifications.php?action=list');
             if (data?.notifications) {
                 if (data.notifications.length === 0) {
                     container.innerHTML = '<div style="padding:1.5rem;text-align:center;color:var(--text-muted);font-size:.85rem"><i class="fa-solid fa-bell-slash" style="font-size:1.5rem;display:block;margin-bottom:.5rem;opacity:.4"></i>Brak nowych powiadomień</div>';
@@ -361,7 +361,7 @@ document.addEventListener('click', (e) => {
 
 // ─── Global Search handler (for header) ────────────────────────────────────
 function handleGlobalSearch(val) {
-    GlobalSearch.search(val);
+    GlobalSearch.search(val).catch(e => console.error(e));
 }
 
 // ─── Input Auto-grow for textareas ───────────────────────────────────────────
@@ -408,32 +408,109 @@ function closeCommandPalette() {
     if (pal) pal.classList.remove('open');
 }
 
+let searchTimeout;
 function filterCmdItems(q) {
     q = q.trim().toLowerCase();
-    document.querySelectorAll('#cmdBody .cmd-item').forEach(item => {
-        const searchText = (item.dataset.search || '') + ' ' + (item.querySelector('.cmd-item-text')?.textContent || '');
-        item.style.display = (!q || searchText.toLowerCase().includes(q)) ? 'flex' : 'none';
+
+    // Check if we have standard static items, if so, we can preserve them if q is empty
+    if (!q) {
+        document.querySelectorAll('#cmdBody .cmd-item').forEach(item => {
+            item.style.display = 'flex';
+        });
+        document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => {
+            label.style.display = '';
+        });
+        const dyn = document.querySelectorAll('#cmdBody .cmd-dynamic');
+        dyn.forEach(e => e.remove());
+        cmdSelectedIdx = -1;
+        return;
+    }
+
+    // Hide static items
+    document.querySelectorAll('#cmdBody .cmd-item:not(.cmd-dynamic)').forEach(item => {
+        item.style.display = 'none';
     });
-    // Hide empty sections
-    document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => {
-        let next = label.nextElementSibling;
-        let hasVisible = false;
-        while (next && !next.classList.contains('cmd-section-label')) {
-            if (next.style.display !== 'none') hasVisible = true;
-            next = next.nextElementSibling;
+    document.querySelectorAll('#cmdBody .cmd-section-label:not(.cmd-dynamic-label)').forEach(label => {
+        label.style.display = 'none';
+    });
+
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        try {
+            const resp = await fetch('/api/search.php?q=' + encodeURIComponent(q));
+            const data = await resp.json();
+
+            // Remove previous dynamic items
+            document.querySelectorAll('#cmdBody .cmd-dynamic, #cmdBody .cmd-dynamic-label').forEach(e => e.remove());
+
+            const cmdBody = document.getElementById('cmdBody');
+
+            if (data.results && data.results.length > 0) {
+                const label = document.createElement('div');
+                label.className = 'cmd-section-label cmd-dynamic-label';
+                label.textContent = '🔍 Wyniki wyszukiwania';
+                cmdBody.appendChild(label);
+
+                data.results.forEach(res => {
+                    const item = document.createElement('div');
+                    item.className = 'cmd-item cmd-dynamic';
+                    item.style.display = 'flex';
+                    item.onclick = () => window.location.href = res.url;
+
+                    let iconHtml = '';
+                    if (res.type === 'project') {
+                        iconHtml = '<i class="fa-solid fa-folder"></i>';
+                    } else if (res.type === 'task') {
+                        iconHtml = '<i class="fa-solid fa-check"></i>';
+                    } else {
+                        iconHtml = '<i class="fa-solid fa-note-sticky"></i>';
+                    }
+
+                    item.innerHTML = `
+                        <div class="cmd-item-icon" style="${res.color ? 'color: ' + escapeHTML(res.color) : ''}">${iconHtml}</div>
+                        <div>
+                            <div class="cmd-item-text">${escapeHTML(res.title)}</div>
+                            <div class="cmd-item-sub">${escapeHTML(res.subtitle || '')}</div>
+                        </div>
+                    `;
+                    cmdBody.appendChild(item);
+                });
+            } else {
+                const empty = document.createElement('div');
+                empty.className = 'cmd-item cmd-dynamic';
+                empty.style.display = 'flex';
+                empty.style.justifyContent = 'center';
+                empty.style.pointerEvents = 'none';
+                empty.innerHTML = `<div class="cmd-item-text" style="color: var(--text-muted);">Brak wyników</div>`;
+                cmdBody.appendChild(empty);
+            }
+            cmdSelectedIdx = -1;
+        } catch (e) {
+            console.error('Search error', e);
         }
-        label.style.display = hasVisible ? '' : 'none';
-    });
-    cmdSelectedIdx = -1;
+    }, 250);
+}
+
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g,
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
 }
 
 function setThemeDark() {
     document.documentElement.setAttribute('data-theme','dark');
-    fetch('/api/profile.php?action=update_theme', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme:'dark'})}).catch(()=>{});
+    apiPost('/api/profile.php?action=theme', {theme:'dark'}).catch(()=>{});
 }
 function setThemeLight() {
     document.documentElement.setAttribute('data-theme','light');
-    fetch('/api/profile.php?action=update_theme', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme:'light'})}).catch(()=>{});
+    apiPost('/api/profile.php?action=theme', {theme:'light'}).catch(()=>{});
 }
 
 // ─── Initialize all on DOMContentLoaded ──────────────────────────────────────

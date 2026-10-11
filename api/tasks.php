@@ -2,6 +2,7 @@
 // api/tasks.php - Fixed API with proper validation & error handling
 require_once __DIR__ . '/../includes/middleware.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../notifications/NotificationService.php';
 
 require_auth_api();
 
@@ -157,7 +158,7 @@ try {
             $task_id = $db->lastInsertId();
             
             if ($assigned_to && $assigned_to != $user_id) {
-                create_notification($assigned_to, 'Przypisano nowe zadanie', "Zostałeś przypisany do zadania: $name", 'task_assign');
+                NotificationService::send($assigned_to, 'Przypisano nowe zadanie', "Zostałeś przypisany do zadania: $name", 'task_assign');
             }
             
             log_activity($user_id, 'task_create', "Created task '$name' in project $project_id");
@@ -191,7 +192,7 @@ try {
                 $db->prepare("UPDATE tasks SET status = ? WHERE id = ?")->execute([$status, $task_id]);
                 
                 if ($task['assigned_to'] && $task['assigned_to'] != $user_id) {
-                    create_notification($task['assigned_to'], 'Status zmieniony', "Zadanie '{$task['name']}' zmieniono na: $status", 'status_change');
+                    NotificationService::send($task['assigned_to'], 'Status zmieniony', "Zadanie '{$task['name']}' zmieniono na: $status", 'status_change');
                 }
                 
                 log_activity($user_id, 'task_status_update', "Task ID $task_id → $status");
@@ -226,7 +227,7 @@ try {
             $stmt->execute([$task_id, $user_id, $comment]);
             
             if ($task['assigned_to'] && $task['assigned_to'] != $user_id) {
-                create_notification($task['assigned_to'], 'Nowy komentarz', "Dodano komentarz do: {$task['name']}", 'comment');
+                NotificationService::send($task['assigned_to'], 'Nowy komentarz', "Dodano komentarz do: {$task['name']}", 'comment');
             }
             
             log_activity($user_id, 'task_comment', "Comment added to task ID $task_id");
