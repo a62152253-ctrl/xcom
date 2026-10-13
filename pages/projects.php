@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../services/ProjectService.php';
 
 $db = Database::getInstance()->getConnection();
 $user_id = $_SESSION['user_id'];
@@ -15,27 +16,15 @@ if (!in_array($filter, ['all', 'mine', 'shared'])) {
     $filter = 'all';
 }
 
-$sort_sql = match($sort) {
-    'deadline' => 'p.deadline ASC NULLS LAST',
-    'created'  => 'p.created_at DESC',
-    default    => 'p.name ASC'
-};
+$all_projects = ProjectService::getUserProjects($user_id);
 
-$stmt = $db->prepare("
-    SELECT DISTINCT p.*, u.full_name as creator_name,
-        pm_me.role as user_project_role,
-        (SELECT COUNT(*) FROM project_members WHERE project_id = p.id) as member_count,
-        (SELECT COUNT(*) FROM tasks WHERE project_id = p.id) as total_tasks,
-        (SELECT COUNT(*) FROM tasks WHERE project_id = p.id AND status='Done') as done_tasks
-    FROM projects p
-    LEFT JOIN project_members pm ON p.id = pm.project_id
-    LEFT JOIN project_members pm_me ON p.id = pm_me.project_id AND pm_me.user_id = ?
-    LEFT JOIN users u ON p.created_by = u.id
-    WHERE (p.created_by = ? OR pm.user_id = ?) AND p.is_archived = 0
-    ORDER BY $sort_sql
-");
-$stmt->execute([$user_id, $user_id, $user_id]);
-$all_projects = $stmt->fetchAll();
+if ($sort === 'deadline') {
+    usort($all_projects, fn($a, $b) => strcmp($a['deadline'] ?? '9999-12-31', $b['deadline'] ?? '9999-12-31'));
+} elseif ($sort === 'created') {
+    usort($all_projects, fn($a, $b) => strcmp($b['created_at'] ?? '', $a['created_at'] ?? ''));
+} else {
+    usort($all_projects, fn($a, $b) => strcmp($a['name'], $b['name']));
+}
 
 // Filter
 $projects = match($filter) {

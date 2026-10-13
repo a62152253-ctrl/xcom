@@ -48,6 +48,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = $stmt->fetch();
             
             if ($user && password_verify($password, $user['password_hash'])) {
+
+                // Rehash password if it's not using the current ARGON2ID options
+                $options = ['memory_cost' => 65536, 'time_cost' => 4, 'threads' => 3];
+                if (password_needs_rehash($user['password_hash'], PASSWORD_ARGON2ID, $options)) {
+                    $new_hash = password_hash($password, PASSWORD_ARGON2ID, $options);
+                    $db->prepare("UPDATE users SET password_hash = ? WHERE id = ?")->execute([$new_hash, $user['id']]);
+                }
+
                 if ($user['status'] === 'Blocked') {
                     $error = 'Twoje konto zostało zablokowane. Skontaktuj się z administratorem.';
                 } else if ($user['status'] === 'Pending') {
@@ -92,6 +100,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Logowanie | TaskManager Pro</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/auth.css">
+    <link rel="stylesheet" href="/assets/css/variables.css">
+    <link rel="stylesheet" href="/assets/css/buttons.css">
+    <link rel="stylesheet" href="/assets/css/cards.css">
+    <link rel="stylesheet" href="/assets/css/forms.css">
+    <link rel="stylesheet" href="/assets/css/animations.css">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="/assets/js/auth.js" defer></script>

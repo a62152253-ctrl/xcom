@@ -34,7 +34,7 @@ foreach ($stmt_tasks->fetchAll() as $r) {
     $results[] = [
         'type'     => 'task',
         'id'       => $r['id'],
-        'title'    => $r['title'],
+        'title'    => '✅ Task: ' . $r['title'],
         'subtitle' => $r['project_name'] . ' · ' . $r['status'],
         'priority' => $r['priority'],
         'url'      => '/pages/tasks.php?task_id=' . $r['id'],
@@ -54,7 +54,7 @@ foreach ($stmt_proj->fetchAll() as $r) {
     $results[] = [
         'type'     => 'project',
         'id'       => $r['id'],
-        'title'    => $r['title'],
+        'title'    => '📁 Projekt ' . $r['title'],
         'subtitle' => 'Projekt',
         'color'    => $r['color'],
         'url'      => '/pages/tasks.php?project_id=' . $r['id'],
@@ -68,7 +68,7 @@ foreach ($stmt_notes->fetchAll() as $r) {
     $results[] = [
         'type'     => 'note',
         'id'       => $r['id'],
-        'title'    => $r['title'],
+        'title'    => '📝 Note: ' . $r['title'],
         'subtitle' => 'Notatka',
         'url'      => '/pages/notes.php',
     ];

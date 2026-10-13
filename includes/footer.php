@@ -10,6 +10,14 @@
 
     <!-- Global App JS (loads after page content) -->
     <script src="/assets/js/app.js"></script>
-
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
