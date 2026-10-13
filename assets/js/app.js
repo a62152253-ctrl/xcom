@@ -52,9 +52,16 @@ const Toast = {
 // ─── AJAX Helper ──────────────────────────────────────────────────────────────
 async function apiPost(url, data = {}) {
     try {
+        if (!data.csrf_token && window.csrfToken) {
+            data.csrf_token = window.csrfToken;
+        }
+
         const res = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': window.csrfToken || ''
+            },
             body: JSON.stringify(data)
         });
         const json = await res.json();

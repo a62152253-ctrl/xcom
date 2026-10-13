@@ -328,41 +328,60 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
 <!-- ═══ PREMIUM HERO ═══════════════════════════════════════════════════════════ -->
 <div class="premium-hero">
     <div class="hero-left">
-        <div class="hero-greeting"><?= $greeting ?>, 👋</div>
-        <div class="hero-name"><?= sanitize($user_name) ?>!</div>
-        <div class="hero-stats">
-            <span class="hero-stat"><i class="fa-solid fa-list-check"></i> <?= count($tasks_today) ?> zadań na dziś</span>
-            <?php if ($overdue_count > 0): ?>
-            <span class="hero-stat" style="background:rgba(239,68,68,.25)"><i class="fa-solid fa-clock"></i> <?= $overdue_count ?> po terminie</span>
-            <?php endif; ?>
-            <span class="hero-stat"><i class="fa-solid fa-circle-check"></i> <?= $done_count ?> ukończonych</span>
-        </div>
-        <div class="hero-actions">
-            <button class="hero-btn hero-btn-primary" onclick="window.location.href='/pages/tasks.php'">
-                <i class="fa-solid fa-plus"></i> Nowe zadanie
-            </button>
-            <button class="hero-btn hero-btn-ghost" onclick="window.location.href='/pages/projects.php'">
-                <i class="fa-solid fa-folder-plus"></i> Nowy projekt
-            </button>
-            <button class="hero-btn hero-btn-ghost" onclick="openCommandPalette()">
-                <i class="fa-solid fa-terminal"></i> Komendy
-                <kbd style="background:rgba(255,255,255,.15);border-radius:4px;padding:1px 5px;font-size:10px;border:1px solid rgba(255,255,255,.2)">Ctrl+K</kbd>
-            </button>
-        </div>
+        <div class="hero-greeting">👋 Witaj <?= sanitize(explode(' ', $user_name)[0]) ?>!</div>
+
+        <?php if ($projects_count === 0 && count($activity_logs) === 0): ?>
+            <!-- Dashboard Onboarding -->
+            <div class="hero-name">Zacznijmy od konfiguracji:</div>
+            <div class="onboarding-checklist" style="margin-top: 1rem; font-size: 1.1rem; line-height: 1.8;">
+                <div><i class="fa-regular fa-square"></i> Utwórz pierwszy projekt</div>
+                <div><i class="fa-regular fa-square"></i> Dodaj pierwsze zadanie</div>
+                <div><i class="fa-regular fa-square-check"></i> Ustaw profil</div>
+                <div><i class="fa-regular fa-square"></i> Zaproś członka zespołu</div>
+            </div>
+            <div class="hero-actions" style="margin-top: 1.5rem;">
+                <button class="hero-btn hero-btn-primary" onclick="window.location.href='/pages/projects.php'">
+                    <i class="fa-solid fa-folder-plus"></i> Utwórz projekt
+                </button>
+            </div>
+        <?php else: ?>
+            <div class="hero-name">Jak leci praca?</div>
+            <div class="hero-stats">
+                <span class="hero-stat"><i class="fa-solid fa-list-check"></i> <?= count($tasks_today) ?> zadań na dziś</span>
+                <?php if ($overdue_count > 0): ?>
+                <span class="hero-stat" style="background:rgba(239,68,68,.25)"><i class="fa-solid fa-clock"></i> <?= $overdue_count ?> po terminie</span>
+                <?php endif; ?>
+                <span class="hero-stat"><i class="fa-solid fa-circle-check"></i> <?= $done_count ?> ukończonych</span>
+            </div>
+            <div class="hero-actions">
+                <button class="hero-btn hero-btn-primary" onclick="window.location.href='/pages/tasks.php'">
+                    <i class="fa-solid fa-plus"></i> Nowe zadanie
+                </button>
+                <button class="hero-btn hero-btn-ghost" onclick="window.location.href='/pages/projects.php'">
+                    <i class="fa-solid fa-folder-plus"></i> Nowy projekt
+                </button>
+                <button class="hero-btn hero-btn-ghost" onclick="openCommandPalette()">
+                    <i class="fa-solid fa-terminal"></i> Komendy
+                    <kbd style="background:rgba(255,255,255,.15);border-radius:4px;padding:1px 5px;font-size:10px;border:1px solid rgba(255,255,255,.2)">Ctrl+K</kbd>
+                </button>
+            </div>
+        <?php endif; ?>
     </div>
 
     <!-- Workspace card -->
     <div class="hero-workspace-card">
-        <div class="hero-ws-label">Workspace</div>
+        <div class="hero-ws-label">Produktywność</div>
         <div class="hero-ws-name"><?= sanitize($user_name) ?>'s Team</div>
-        <div class="hero-ws-row"><span><i class="fa-solid fa-users"></i> Członkowie</span><strong><?= $ws_members ?></strong></div>
-        <div class="hero-ws-row"><span><i class="fa-solid fa-folder"></i> Projekty</span><strong><?= $ws_projects ?></strong></div>
         <?php
             $all_tasks_total = (int)$db->query("SELECT COUNT(*) FROM tasks")->fetchColumn();
             $all_tasks_done  = (int)$db->query("SELECT COUNT(*) FROM tasks WHERE status='Done'")->fetchColumn();
             $ws_pct = $all_tasks_total > 0 ? round($all_tasks_done / $all_tasks_total * 100) : 0;
+            $work_time = $all_tasks_done * 2; // Dummy calc
         ?>
-        <div class="hero-ws-row"><span><i class="fa-solid fa-chart-pie"></i> Ukończenie</span><strong><?= $ws_pct ?>%</strong></div>
+        <div class="hero-ws-row"><span><i class="fa-solid fa-check"></i> Ukończone zadania</span><strong><?= $all_tasks_done ?></strong></div>
+        <div class="hero-ws-row"><span><i class="fa-solid fa-folder-open"></i> Aktywne projekty</span><strong><?= $ws_projects ?></strong></div>
+        <div class="hero-ws-row"><span><i class="fa-solid fa-clock"></i> Czas pracy (szac.)</span><strong><?= $work_time ?>h</strong></div>
+        <div class="hero-ws-row" style="margin-top: 1rem;"><span><i class="fa-solid fa-chart-pie"></i> Postęp</span><strong><?= $ws_pct ?>%</strong></div>
         <div class="hero-ws-bar"><div class="hero-ws-fill" style="width:<?= $ws_pct ?>%"></div></div>
     </div>
 </div>
@@ -519,15 +538,26 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         </div>
         <?php if (!empty($activity_logs)): ?>
         <div class="activity-feed">
+        <div class="notif-group-date">Dzisiaj</div>
         <?php foreach (array_slice($activity_logs, 0, 7) as $log): ?>
         <div class="af-item">
             <div class="af-dot" style="background:var(--primary-light);color:var(--primary);font-weight:700;font-size:11px">
                 <?= strtoupper(substr($log['full_name'] ?? 'S', 0, 1)) ?>
             </div>
             <div class="af-content">
-                <div class="af-who"><?= sanitize($log['full_name'] ?? 'System') ?></div>
-                <div class="af-what"><?= sanitize($log['action']) ?></div>
-                <div class="af-when"><?= date('d.m H:i', strtotime($log['created_at'])) ?></div>
+                <div class="af-what">
+                    <?php
+                    $action_map = [
+                        'task_create' => '✓ Dodano zadanie',
+                        'project_create' => '✓ Utworzono projekt',
+                        'task_status_update' => '✓ Zmieniono status zadania',
+                        'login' => '✓ Zalogowano się',
+                        'project_add_member' => '✓ Zaproszono członka'
+                    ];
+                    echo sanitize($action_map[$log['action']] ?? '✓ ' . ucfirst(str_replace('_', ' ', $log['action'])));
+                    ?>
+                </div>
+                <div class="af-when"><?= date('H:i', strtotime($log['created_at'])) ?> · <?= sanitize($log['full_name'] ?? 'System') ?></div>
             </div>
         </div>
         <?php endforeach; ?>
