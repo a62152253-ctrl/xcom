@@ -325,11 +325,23 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
 }
 </style>
 
-<!-- ═══ PREMIUM HERO ═══════════════════════════════════════════════════════════ -->
+<!-- ═══ PREMIUM HERO & ONBOARDING ═══════════════════════════════════════════════════════════ -->
 <div class="premium-hero">
     <div class="hero-left">
         <div class="hero-greeting"><?= $greeting ?>, 👋</div>
         <div class="hero-name"><?= sanitize($user_name) ?>!</div>
+
+        <?php if ($projects_count === 0 && $done_count === 0): ?>
+        <div style="margin-top: 1rem; background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 8px;">
+            <div style="font-weight: 600; margin-bottom: 0.5rem; font-size: 1.1rem;">Zacznijmy od konfiguracji:</div>
+            <ul style="list-style: none; padding: 0; margin: 0; line-height: 1.8;">
+                <li><i class="fa-regular fa-square" style="margin-right: 8px;"></i> Utwórz pierwszy projekt</li>
+                <li><i class="fa-regular fa-square" style="margin-right: 8px;"></i> Dodaj pierwsze zadanie</li>
+                <li><i class="fa-regular fa-check-square" style="margin-right: 8px;"></i> Ustaw profil</li>
+            </ul>
+        </div>
+        <?php endif; ?>
+
         <div class="hero-stats">
             <span class="hero-stat"><i class="fa-solid fa-list-check"></i> <?= count($tasks_today) ?> zadań na dziś</span>
             <?php if ($overdue_count > 0): ?>
@@ -533,24 +545,57 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         <?php endforeach; ?>
         </div>
         <?php else: ?>
-        <div class="empty-inline">
-            <div class="empty-inline-icon">🔔</div>
-            <span>Brak aktywności w workspace</span>
+        <div class="empty-state-premium">
+            <div class="es-icon">🔔</div>
+            <div class="es-title">Brak aktywności</div>
+            <div class="es-sub">Zacznij działać w projektach, aby zobaczyć tutaj historię zdarzeń.</div>
+            <a href="/pages/tasks.php" class="es-btn"><i class="fa-solid fa-list-check"></i> Przejdź do zadań</a>
         </div>
         <?php endif; ?>
     </div>
 </div>
 
-<!-- Productivity Trend -->
+<!-- Productivity Trend & Analytics -->
 <div class="report-section">
     <div class="section-header">
-        <div class="report-title" style="margin:0"><i class="fa-solid fa-chart-line"></i> Trend Produktywności (7 dni)</div>
+        <div class="report-title" style="margin:0"><i class="fa-solid fa-chart-line"></i> Analityka (Live)</div>
         <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--success)">
             <span style="width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 2s infinite;display:inline-block"></span>
             Live
         </span>
     </div>
-    <canvas id="trendChart" style="max-height:280px"></canvas>
+
+    <div style="display:grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-top: 1rem;">
+        <div class="analytics-sidebar">
+            <div style="margin-bottom: 1.5rem;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem">
+                    <strong>Produktywność</strong>
+                    <span style="color:var(--success);font-weight:bold;">80%</span>
+                </div>
+                <div style="background:var(--bg-secondary);border-radius:8px;height:12px;overflow:hidden">
+                    <div style="background:var(--success);width:80%;height:100%;border-radius:8px"></div>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div style="background:var(--bg-secondary);padding:1rem;border-radius:8px;text-align:center">
+                    <div style="font-size:1.5rem;font-weight:bold;color:var(--primary)"><?= $done_count ?></div>
+                    <div style="font-size:0.85rem;color:var(--text-muted)">Ukończone zadania</div>
+                </div>
+                <div style="background:var(--bg-secondary);padding:1rem;border-radius:8px;text-align:center">
+                    <div style="font-size:1.5rem;font-weight:bold;color:var(--primary)"><?= $projects_count ?></div>
+                    <div style="font-size:0.85rem;color:var(--text-muted)">Aktywne projekty</div>
+                </div>
+                <div style="background:var(--bg-secondary);padding:1rem;border-radius:8px;text-align:center;grid-column: span 2">
+                    <div style="font-size:1.5rem;font-weight:bold;color:var(--primary)">42h</div>
+                    <div style="font-size:0.85rem;color:var(--text-muted)">Czas pracy (estymowany)</div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <canvas id="trendChart" style="max-height:280px"></canvas>
+        </div>
+    </div>
 </div>
 
 <script>

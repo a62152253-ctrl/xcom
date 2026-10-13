@@ -2,6 +2,7 @@
 // api/tasks.php - Fixed API with proper validation & error handling
 require_once __DIR__ . '/../includes/middleware.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../controllers/TaskController.php';
 
 require_auth_api();
 
@@ -24,15 +25,7 @@ try {
                 exit;
             }
             
-            $stmt = $db->prepare("
-                SELECT t.*, u.full_name as assigned_name, u.avatar as assigned_avatar
-                FROM tasks t
-                LEFT JOIN users u ON t.assigned_to = u.id
-                WHERE t.project_id = ?
-                ORDER BY t.created_at DESC
-            ");
-            $stmt->execute([$project_id]);
-            $tasks = $stmt->fetchAll();
+            $tasks = TaskController::listProjectTasks($db, $project_id);
             echo json_encode(['tasks' => $tasks]);
             exit;
         }
@@ -152,15 +145,16 @@ try {
                 exit;
             }
             
-            $stmt = $db->prepare("INSERT INTO tasks (project_id, name, description, deadline, priority, status, assigned_to, created_by) VALUES (?, ?, ?, ?, ?, 'To Do', ?, ?)");
-            $stmt->execute([$project_id, $name, $description, $deadline ?: null, $priority, $assigned_to, $user_id]);
-            $task_id = $db->lastInsertId();
+            $task_id = TaskController::create($db, $project_id, $name, $description, $deadline ?: null, $priority, $assigned_to, $user_id);
             
             if ($assigned_to && $assigned_to != $user_id) {
-                create_notification($assigned_to, 'Przypisano nowe zadanie', "Zostałeś przypisany do zadania: $name", 'task_assign');
+                require_once __DIR__ . '/../notifications/NotificationCenter.php';
+                $nc = new \Notifications\NotificationCenter($db);
+                $nc->notifyNewTask($assigned_to, $name);
             }
             
-            log_activity($user_id, 'task_create', "Created task '$name' in project $project_id");
+            require_once __DIR__ . '/../security/SecurityAudit.php';
+            \Security\SecurityAudit::logActivity($db, $user_id, 'task_create', "Created task '$name' in project $project_id");
             echo json_encode(['success' => true, 'task_id' => $task_id]);
             exit;
         }
