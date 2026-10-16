@@ -187,7 +187,6 @@ img{max-width:100%;display:block}
 .search-see-all{display:block;padding:.625rem 1rem;text-align:center;font-size:.8rem;font-weight:600;color:var(--primary);background:var(--primary-light);border-top:1px solid var(--border-color)}
 .search-see-all:hover{background:var(--primary);color:#fff}
 .search-loading{padding:1rem;text-align:center;color:var(--text-muted);font-size:.825rem}
-.search-empty{padding:1rem;text-align:center;color:var(--text-muted);font-size:.825rem}
 
 /* Top actions */
 .top-actions{display:flex;align-items:center;gap:.875rem;flex-shrink:0}
@@ -334,12 +333,6 @@ img{max-width:100%;display:block}
 .skeleton-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0}
 .skeleton-item{display:flex;align-items:center;gap:.875rem;padding:.75rem 0;border-bottom:1px solid var(--border-color)}
 
-/* ─── Empty State ─────────────────────────────────────────── */
-.empty-state{text-align:center;padding:5rem 2rem;color:var(--text-muted)}
-.empty-state i{font-size:3.5rem;display:block;margin-bottom:1rem;opacity:.25}
-.empty-state h3{font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:.5rem}
-.empty-state p{font-size:.875rem;max-width:340px;margin:0 auto;line-height:1.6}
-
 /* ─── Projects Page ───────────────────────────────────────── */
 .projects-toolbar{display:flex;flex-wrap:wrap;gap:.875rem;align-items:center;margin-bottom:1.5rem;padding:1rem 1.25rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-lg)}
 .projects-search-wrap{position:relative}
@@ -442,8 +435,6 @@ img{max-width:100%;display:block}
 .notes-search-wrap i{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted)}
 .notes-search{padding-left:2.5rem !important}
 .notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.25rem;margin-bottom:1.25rem}
-.notes-empty{grid-column:1/-1;text-align:center;padding:4rem;color:var(--text-muted)}
-.notes-empty i{font-size:3rem;display:block;margin-bottom:1rem;opacity:.3}
 .note-card{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:1.25rem;position:relative;transition:var(--transition);display:flex;flex-direction:column;animation:slideUp .3s ease;min-height:220px}
 .note-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
 .note-pin{position:absolute;top:.875rem;right:.875rem;color:var(--warning);font-size:.85rem}
