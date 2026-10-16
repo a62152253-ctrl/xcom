@@ -284,6 +284,17 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
     transition: width 0.4s ease;
 }
 
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    opacity: 0.3;
+    margin-bottom: 0.75rem;
+}
 
 @media (max-width: 768px) {
     .dashboard-hero {
@@ -442,7 +453,7 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <div class="empty-state-premium" style="max-width:300px;margin:20px auto">
+            <div class="empty-state-premium">
                 <div class="es-icon">☀️</div>
                 <div class="es-title">Brak zadań na dziś!</div>
                 <div class="es-sub">Masz wolny dzień albo już wszystko ukończone. Świetna robota!</div>
@@ -492,7 +503,7 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             </div>
         </div>
         <?php endforeach; else: ?>
-        <div class="empty-state-premium" style="max-width:300px;margin:20px auto">
+        <div class="empty-state-premium">
             <div class="es-icon">📁</div>
             <div class="es-title">Brak projektów</div>
             <div class="es-sub">Stwórz pierwszy projekt i zaproś zespół do pracy.</div>
@@ -522,11 +533,9 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         <?php endforeach; ?>
         </div>
         <?php else: ?>
-        <div class="empty-state-premium" style="max-width:300px;margin:20px auto">
-            <div class="es-icon">🔔</div>
-            <div class="es-title">Brak aktywności</div>
-            <div class="es-sub">Zacznij współpracę i śledź najnowsze akcje w workspace.</div>
-            <a href="/pages/tasks.php" class="es-btn"><i class="fa-solid fa-list-check"></i> Moje zadania</a>
+        <div class="empty-inline">
+            <div class="empty-inline-icon">🔔</div>
+            <span>Brak aktywności w workspace</span>
         </div>
         <?php endif; ?>
     </div>
