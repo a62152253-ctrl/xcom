@@ -323,7 +323,7 @@ async function toggleNotificationsDropdown() {
         if (container) {
             skeletonLoad(container, 3);
             const data = await apiGet('/api/notifications.php');
-            if (data?.notifications) {
+            if (data && data.notifications) {
                 if (data.notifications.length === 0) {
                     container.innerHTML = '<div style="padding:1.5rem;text-align:center;color:var(--text-muted);font-size:.85rem"><i class="fa-solid fa-bell-slash" style="font-size:1.5rem;display:block;margin-bottom:.5rem;opacity:.4"></i>Brak nowych powiadomień</div>';
                 } else {
@@ -336,7 +336,7 @@ async function toggleNotificationsDropdown() {
                 }
             }
             // Mark all read
-            if (data?.unread_count > 0) {
+            if (data && data.unread_count > 0) {
                 await apiPost('/api/notifications.php?action=mark_all_read');
                 const badge = document.getElementById('notif-count');
                 if (badge) badge.textContent = 0;
@@ -365,7 +365,7 @@ function handleGlobalSearch(val) {
 }
 
 // ─── Input Auto-grow for textareas ───────────────────────────────────────────
-document.querySelectorAll('textarea[data-autogrow]')?.forEach(el => {
+document.querySelectorAll('textarea[data-autogrow]').forEach(el => {
     el.addEventListener('input', () => {
         el.style.height = 'auto';
         el.style.height = el.scrollHeight + 'px';
