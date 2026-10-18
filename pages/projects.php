@@ -79,10 +79,10 @@ $projects = array_values($projects);
 <div class="projects-grid" id="projects-grid">
     <?php if (empty($projects)): ?>
     <div class="empty-state-premium" style="grid-column:1/-1">
-        <div class="es-icon">📁</div>
-        <div class="es-title">Brak projektów</div>
-        <div class="es-sub">Zacznij od stworzenia swojego pierwszego projektu i zaproś do niego team.</div>
-        <button class="es-btn" onclick="openCreateProjectModal()"><i class="fa-solid fa-plus"></i> Stwórz projekt</button>
+        <div class="es-icon">🚀</div>
+        <div class="es-title">Nie masz jeszcze projektów</div>
+        <div class="es-sub">Stwórz pierwszy projekt i zacznij organizować swoją pracę.</div>
+        <button class="es-btn" onclick="openCreateProjectModal()"><i class="fa-solid fa-plus"></i> Utwórz projekt</button>
     </div>
     <?php else: ?>
     <?php foreach ($projects as $p):

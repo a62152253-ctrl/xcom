@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($error)) {
             $db->beginTransaction();
             
             // Hash new password
-            $new_hash = password_hash($password, PASSWORD_DEFAULT);
+            $new_hash = password_hash($password, PASSWORD_ARGON2ID, ['memory_cost' => 65536, 'time_cost' => 4, 'threads' => 3]);
             
             // Update password
             $stmt_update = $db->prepare("UPDATE users SET password_hash = ? WHERE email = ?");
