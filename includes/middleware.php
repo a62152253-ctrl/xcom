@@ -18,11 +18,28 @@ function require_auth_api() {
 }
 
 function require_csrf_token() {
-    Csrf::require_csrf_token();
+    try {
+        Csrf::require_csrf_token();
+    } catch (Exception $e) {
+        http_response_code($e->getCode() ?: 403);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => $e->getMessage()]);
+        exit;
+    }
 }
 
 function require_role($roles) {
-    Permissions::require_role($roles);
+    try {
+        Permissions::require_role($roles);
+    } catch (Exception $e) {
+        http_response_code($e->getCode() ?: 403);
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            echo json_encode(['error' => $e->getMessage()]);
+        } else {
+            header("Location: /pages/dashboard.php?error=unauthorized");
+        }
+        exit;
+    }
 }
 
 function has_project_access($project_id, $minimum_role = 'Member') {
@@ -30,5 +47,15 @@ function has_project_access($project_id, $minimum_role = 'Member') {
 }
 
 function require_project_access($project_id, $minimum_role = 'Member') {
-    Permissions::require_project_access($project_id, $minimum_role);
+    try {
+        Permissions::require_project_access($project_id, $minimum_role);
+    } catch (Exception $e) {
+        http_response_code($e->getCode() ?: 403);
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            echo json_encode(['error' => $e->getMessage()]);
+        } else {
+            header("Location: /pages/dashboard.php?error=project_access_denied");
+        }
+        exit;
+    }
 }
