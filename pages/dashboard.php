@@ -420,6 +420,31 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         <div class="pkpi-sub"><?= count($tasks_today) ?> zadań na dziś</div>
     </div>
 
+    <!-- Analytics Dashboard Mock Data -->
+    <div class="pkpi-card" style="--pkpi-color:#06b6d4;--pkpi-light:rgba(6,182,212,.1);--pkpi-grad:linear-gradient(90deg,#06b6d4,#22d3ee);--pkpi-glow:rgba(6,182,212,.1)">
+        <div class="pkpi-top">
+            <div class="pkpi-icon"><i class="fa-solid fa-clock"></i></div>
+            <span class="pkpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +2h</span>
+        </div>
+        <div class="pkpi-value">42h</div>
+        <div class="pkpi-label">Czas pracy</div>
+        <div class="pkpi-sub">W bieżącym tygodniu</div>
+    </div>
+
+    <div class="pkpi-card" style="--pkpi-color:#8b5cf6;--pkpi-light:rgba(139,92,246,.1);--pkpi-grad:linear-gradient(90deg,#8b5cf6,#a78bfa);--pkpi-glow:rgba(139,92,246,.1)">
+        <div class="pkpi-top">
+            <div class="pkpi-icon"><i class="fa-solid fa-bolt"></i></div>
+            <span class="pkpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> rośnie</span>
+        </div>
+        <div class="pkpi-value">80%</div>
+        <div class="pkpi-label">Produktywność</div>
+        <div class="pkpi-sub">
+            <div class="progress-bar-track" style="margin-top:4px;height:4px">
+                <div class="progress-bar-fill" style="width:80%;background:var(--pkpi-color)"></div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <!-- ═══ MAIN GRID ═════════════════════════════════════════════════════════════════ -->
@@ -454,9 +479,23 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             <?php endforeach; ?>
         <?php else: ?>
             <div class="empty-state-premium">
-                <div class="es-icon">☀️</div>
-                <div class="es-title">Brak zadań na dziś!</div>
-                <div class="es-sub">Masz wolny dzień albo już wszystko ukończone. Świetna robota!</div>
+                <div class="es-icon">👋</div>
+                <div class="es-title">Witaj <?= sanitize(explode(' ', $user_name)[0]) ?></div>
+                <div class="es-sub">Zacznijmy od konfiguracji:</div>
+                <div style="text-align: left; margin: 15px auto; max-width: 250px; font-size: 14px;">
+                    <div style="margin-bottom: 8px;">
+                        <i class="fa-regular <?= $projects_count > 0 ? 'fa-square-check' : 'fa-square' ?>" style="color: <?= $projects_count > 0 ? 'var(--success)' : 'var(--text-muted)' ?>"></i> Utwórz pierwszy projekt
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <i class="fa-regular <?= ($active_tasks_count + $done_count) > 0 ? 'fa-square-check' : 'fa-square' ?>" style="color: <?= ($active_tasks_count + $done_count) > 0 ? 'var(--success)' : 'var(--text-muted)' ?>"></i> Dodaj pierwsze zadanie
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <i class="fa-regular fa-square-check" style="color: var(--success)"></i> Ustaw profil
+                    </div>
+                    <div>
+                        <i class="fa-regular fa-square" style="color: var(--text-muted)"></i> Zaproś członka zespołu
+                    </div>
+                </div>
                 <a href="/pages/tasks.php" class="es-btn"><i class="fa-solid fa-plus"></i> Utwórz zadanie</a>
             </div>
         <?php endif; ?>
