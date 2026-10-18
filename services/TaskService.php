@@ -11,8 +11,7 @@ class TaskService {
     public static function listTasks($db, $project_id) {
         if (!$project_id || !Permissions::has_project_access($project_id)) {
             http_response_code(403);
-            echo json_encode(['error' => 'Brak dostępu do projektu.']);
-            exit;
+            return ['error' => 'Brak dostępu do projektu.'];
         }
         return Task::getTasksByProject($db, $project_id);
     }
@@ -27,14 +26,12 @@ class TaskService {
     public static function getTask($db, $task_id) {
         if (!$task_id) {
             http_response_code(400);
-            echo json_encode(['error' => 'Brak ID zadania.']);
-            exit;
+            return ['error' => 'Brak ID zadania.'];
         }
         $task = Task::getTaskById($db, $task_id);
         if (!$task || !Permissions::has_project_access($task['project_id'])) {
             http_response_code(403);
-            echo json_encode(['error' => 'Brak dostępu.']);
-            exit;
+            return ['error' => 'Brak dostępu.'];
         }
         return $task;
     }
@@ -42,16 +39,14 @@ class TaskService {
     public static function getTaskDetails($db, $task_id) {
         if (!$task_id) {
             http_response_code(400);
-            echo json_encode(['error' => 'Brak ID zadania.']);
-            exit;
+            return ['error' => 'Brak ID zadania.'];
         }
 
         $details = Task::getTaskDetails($db, $task_id);
 
         if (!$details || !Permissions::has_project_access($details['task']['project_id'])) {
             http_response_code(403);
-            echo json_encode(['error' => 'Brak dostępu.']);
-            exit;
+            return ['error' => 'Brak dostępu.'];
         }
 
         return $details;
@@ -66,15 +61,11 @@ class TaskService {
         $assigned_to = (int)($data['assigned_to'] ?? 0) ?: null;
 
         if (!$project_id || !Permissions::has_project_access($project_id, 'Member')) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Brak uprawnień do dodawania zadań.']);
-            exit;
+            throw new Exception('Brak uprawnień do dodawania zadań.', 403);
         }
 
         if (empty($name) || strlen($name) > 255) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Nazwa zadania jest wymagana i musi być krótsza niż 255 znaków.']);
-            exit;
+            throw new Exception('Nazwa zadania jest wymagana i musi być krótsza niż 255 znaków.', 400);
         }
 
         if (!in_array($priority, ['Low', 'Medium', 'High', 'Critical'])) {
@@ -82,9 +73,7 @@ class TaskService {
         }
 
         if ($deadline && !strtotime($deadline)) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Niepoprawny format daty.']);
-            exit;
+            throw new Exception('Niepoprawny format daty.', 400);
         }
 
         $task_id = Task::create($db, $project_id, $name, $description, $deadline, $priority, $assigned_to, $user_id);
@@ -103,9 +92,7 @@ class TaskService {
         $allowed_statuses = ['To Do', 'In Progress', 'Review', 'Done'];
 
         if (!$task_id || !in_array($status, $allowed_statuses)) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Brak wymaganych danych.']);
-            exit;
+            throw new Exception('Brak wymaganych danych.', 400);
         }
 
         $stmt_check = $db->prepare("SELECT project_id, name, status, assigned_to FROM tasks WHERE id = ?");
@@ -113,9 +100,7 @@ class TaskService {
         $task = $stmt_check->fetch();
 
         if (!$task || !Permissions::has_project_access($task['project_id'], 'Member')) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Brak uprawnień.']);
-            exit;
+            throw new Exception('Brak uprawnień.', 403);
         }
 
         if ($task['status'] !== $status) {
@@ -134,9 +119,7 @@ class TaskService {
         $comment = trim($data['comment'] ?? '');
 
         if (!$task_id || empty($comment) || strlen($comment) > 5000) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Komentarz jest wymagany i musi być krótsza niż 5000 znaków.']);
-            exit;
+            throw new Exception('Komentarz jest wymagany i musi być krótsza niż 5000 znaków.', 400);
         }
 
         $stmt_check = $db->prepare("SELECT project_id, name, assigned_to FROM tasks WHERE id = ?");
@@ -144,9 +127,7 @@ class TaskService {
         $task = $stmt_check->fetch();
 
         if (!$task || !Permissions::has_project_access($task['project_id'], 'Member')) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Brak dostępu.']);
-            exit;
+            throw new Exception('Brak dostępu.', 403);
         }
 
         Task::addComment($db, $task_id, $user_id, $comment);
@@ -161,9 +142,7 @@ class TaskService {
     public static function deleteTask($db, $user_id, $data) {
         $task_id = (int)($data['task_id'] ?? 0);
         if (!$task_id) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Brak ID zadania.']);
-            exit;
+            throw new Exception('Brak ID zadania.', 400);
         }
 
         $stmt_check = $db->prepare("SELECT project_id, name FROM tasks WHERE id = ?");
@@ -171,9 +150,7 @@ class TaskService {
         $task = $stmt_check->fetch();
 
         if (!$task || !Permissions::has_project_access($task['project_id'], 'Administrator')) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Brak uprawnień do usunięcia.']);
-            exit;
+            throw new Exception('Brak uprawnień do usunięcia.', 403);
         }
 
         Task::delete($db, $task_id);

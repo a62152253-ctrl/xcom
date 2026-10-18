@@ -52,31 +52,38 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $input = json_decode(file_get_contents('php://input'), true) ?? [];
         
-        // 1. Create Task
-        if ($action === 'create') {
-            $task_id = TaskService::createTask($db, $user_id, $input);
-            echo json_encode(['success' => true, 'task_id' => $task_id]);
-            exit;
-        }
-        
-        // 2. Update Task Status (Kanban DND)
-        if ($action === 'update_status') {
-            TaskService::updateTaskStatus($db, $user_id, $input);
-            echo json_encode(['success' => true]);
-            exit;
-        }
-        
-        // 3. Add comment
-        if ($action === 'add_comment') {
-            TaskService::addTaskComment($db, $user_id, $input);
-            echo json_encode(['success' => true]);
-            exit;
-        }
-        
-        // 4. Delete Task
-        if ($action === 'delete') {
-            TaskService::deleteTask($db, $user_id, $input);
-            echo json_encode(['success' => true]);
+        try {
+            // 1. Create Task
+            if ($action === 'create') {
+                $task_id = TaskService::createTask($db, $user_id, $input);
+                echo json_encode(['success' => true, 'task_id' => $task_id]);
+                exit;
+            }
+
+            // 2. Update Task Status (Kanban DND)
+            if ($action === 'update_status') {
+                TaskService::updateTaskStatus($db, $user_id, $input);
+                echo json_encode(['success' => true]);
+                exit;
+            }
+
+            // 3. Add comment
+            if ($action === 'add_comment') {
+                TaskService::addTaskComment($db, $user_id, $input);
+                echo json_encode(['success' => true]);
+                exit;
+            }
+
+            // 4. Delete Task
+            if ($action === 'delete') {
+                TaskService::deleteTask($db, $user_id, $input);
+                echo json_encode(['success' => true]);
+                exit;
+            }
+        } catch (Exception $ex) {
+            $code = $ex->getCode() ?: 400;
+            http_response_code($code);
+            echo json_encode(['error' => $ex->getMessage()]);
             exit;
         }
     }

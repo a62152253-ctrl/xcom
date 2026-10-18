@@ -39,7 +39,7 @@ if ($proj_id > 0) {
 $stmt_member = $db->prepare("INSERT INTO project_members (project_id, user_id, role) VALUES (?, ?, 'Owner')");
 $stmt_member->execute([$proj_id, 1]);
 
-$count = $db->query("SELECT COUNT(*) FROM project_members WHERE project_id = $proj_id")->fetchColumn();
+$count = $db->query("SELECT COUNT(*) FROM project_members WHERE project_id = " . (int)$proj_id)->fetchColumn();
 if ($count > 0) {
     echo "[PASS] Member added successfully.\n";
 } else {

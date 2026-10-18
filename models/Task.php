@@ -15,7 +15,6 @@ class Task {
     }
 
     public static function searchTasks($db, $user_id, $q) {
-        $q_safe = '%' . $db->quote($q) . '%';
         $stmt = $db->prepare("
             SELECT t.id, t.name, t.status, p.name as project_name
             FROM tasks t
@@ -25,7 +24,6 @@ class Task {
               AND (t.name LIKE ? OR t.description LIKE ?)
             LIMIT 10
         ");
-        // Remove quotes from $q_safe since quote() adds them and we manually added '%'
         // Alternative: use standard bound parameters
         $search = '%' . $q . '%';
         $stmt->execute([$user_id, $user_id, $search, $search]);
