@@ -6,7 +6,12 @@ require_once __DIR__ . '/../includes/session.php';
 class Permissions {
     public static function require_role($roles) {
         if (!is_logged_in()) {
-            header("Location: /auth/login.php");
+            http_response_code(401);
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+                echo json_encode(['error' => 'Unauthorized']);
+            } elseif (!headers_sent()) {
+                header("Location: /auth/login.php");
+            }
             exit;
         }
 
@@ -17,7 +22,11 @@ class Permissions {
 
         if (!in_array($user_role, $roles, true)) {
             http_response_code(403);
-            header("Location: /pages/dashboard.php?error=unauthorized");
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+                echo json_encode(['error' => 'Forbidden']);
+            } elseif (!headers_sent()) {
+                header("Location: /pages/dashboard.php?error=unauthorized");
+            }
             exit;
         }
     }
@@ -77,7 +86,11 @@ class Permissions {
     public static function require_project_access($project_id, $minimum_role = 'Member') {
         if (!self::has_project_access($project_id, $minimum_role)) {
             http_response_code(403);
-            header("Location: /pages/dashboard.php?error=project_access_denied");
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+                echo json_encode(['error' => 'Forbidden']);
+            } elseif (!headers_sent()) {
+                header("Location: /pages/dashboard.php?error=project_access_denied");
+            }
             exit;
         }
     }

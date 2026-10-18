@@ -10,8 +10,7 @@ class TaskService {
 
     public static function listTasks($db, $project_id) {
         if (!$project_id || !Permissions::has_project_access($project_id)) {
-            http_response_code(403);
-            return ['error' => 'Brak dostępu do projektu.'];
+            throw new Exception('Brak dostępu do projektu.', 403);
         }
         return Task::getTasksByProject($db, $project_id);
     }
@@ -25,28 +24,24 @@ class TaskService {
 
     public static function getTask($db, $task_id) {
         if (!$task_id) {
-            http_response_code(400);
-            return ['error' => 'Brak ID zadania.'];
+            throw new Exception('Brak ID zadania.', 400);
         }
         $task = Task::getTaskById($db, $task_id);
         if (!$task || !Permissions::has_project_access($task['project_id'])) {
-            http_response_code(403);
-            return ['error' => 'Brak dostępu.'];
+            throw new Exception('Brak dostępu.', 403);
         }
         return $task;
     }
 
     public static function getTaskDetails($db, $task_id) {
         if (!$task_id) {
-            http_response_code(400);
-            return ['error' => 'Brak ID zadania.'];
+            throw new Exception('Brak ID zadania.', 400);
         }
 
         $details = Task::getTaskDetails($db, $task_id);
 
         if (!$details || !Permissions::has_project_access($details['task']['project_id'])) {
-            http_response_code(403);
-            return ['error' => 'Brak dostępu.'];
+            throw new Exception('Brak dostępu.', 403);
         }
 
         return $details;

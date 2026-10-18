@@ -16,35 +16,42 @@ $action = $_GET['action'] ?? '';
 
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        // 1. Fetch tasks
-        if ($action === 'list') {
-            $project_id = (int)($_GET['project_id'] ?? 0);
-            $tasks = TaskService::listTasks($db, $project_id);
-            echo json_encode(['tasks' => $tasks]);
-            exit;
-        }
-        
-        // 2. Search tasks globally
-        if ($action === 'search') {
-            $q = trim($_GET['q'] ?? '');
-            $results = TaskService::searchTasks($db, $user_id, $q);
-            echo json_encode(['results' => $results]);
-            exit;
-        }
+        try {
+            // 1. Fetch tasks
+            if ($action === 'list') {
+                $project_id = (int)($_GET['project_id'] ?? 0);
+                $tasks = TaskService::listTasks($db, $project_id);
+                echo json_encode(['tasks' => $tasks]);
+                exit;
+            }
 
-        // 3. Get single task for edit modal
-        if ($action === 'get') {
-            $task_id = (int)($_GET['id'] ?? 0);
-            $task = TaskService::getTask($db, $task_id);
-            echo json_encode(['task' => $task]);
-            exit;
-        }
-        
-        // 4. Get single task details with subtasks, comments, files
-        if ($action === 'detail') {
-            $task_id = (int)($_GET['task_id'] ?? 0);
-            $details = TaskService::getTaskDetails($db, $task_id);
-            echo json_encode($details);
+            // 2. Search tasks globally
+            if ($action === 'search') {
+                $q = trim($_GET['q'] ?? '');
+                $results = TaskService::searchTasks($db, $user_id, $q);
+                echo json_encode(['results' => $results]);
+                exit;
+            }
+
+            // 3. Get single task for edit modal
+            if ($action === 'get') {
+                $task_id = (int)($_GET['id'] ?? 0);
+                $task = TaskService::getTask($db, $task_id);
+                echo json_encode(['task' => $task]);
+                exit;
+            }
+
+            // 4. Get single task details with subtasks, comments, files
+            if ($action === 'detail') {
+                $task_id = (int)($_GET['task_id'] ?? 0);
+                $details = TaskService::getTaskDetails($db, $task_id);
+                echo json_encode($details);
+                exit;
+            }
+        } catch (Exception $ex) {
+            $code = $ex->getCode() ?: 400;
+            http_response_code($code);
+            echo json_encode(['error' => $ex->getMessage()]);
             exit;
         }
     }

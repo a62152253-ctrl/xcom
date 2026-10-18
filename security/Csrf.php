@@ -9,7 +9,9 @@ class Csrf {
 
         if (!$token || !hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
             http_response_code(403);
-            header('Content-Type: application/json; charset=utf-8');
+            if (!headers_sent()) {
+                header('Content-Type: application/json; charset=utf-8');
+            }
             echo json_encode(['error' => 'CSRF token validation failed']);
             exit;
         }
