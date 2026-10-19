@@ -261,11 +261,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                     <!-- Editor Helpers -->
                     <div class="cmd-section-label">✍️ Pomocnik edytora</div>
-                    <div class="cmd-item" data-search="wstaw datę czas timestamp" onclick="if(document.activeElement && document.activeElement.tagName==='TEXTAREA'){const d=new Date().toLocaleString('pl-PL');const start=document.activeElement.selectionStart;document.activeElement.value=document.activeElement.value.slice(0,start)+' ['+d+'] '+document.activeElement.value.slice(document.activeElement.selectionEnd);}closeCommandPalette()">
+                    <div class="cmd-item" data-search="wstaw datę czas timestamp" onclick="cmdInsertTimestamp()">
                         <div class="cmd-item-icon"><i class="fa-solid fa-clock"></i></div>
                         <div><div class="cmd-item-text">Wstaw aktualną datę/czas</div><div class="cmd-item-sub">Dodaje znacznik czasu do edytowanego pola</div></div>
                     </div>
-                    <div class="cmd-item" data-search="pogrubienie pogrub bold markdown" onclick="if(document.activeElement && document.activeElement.tagName==='TEXTAREA'){const el=document.activeElement;const s=el.selectionStart, e=el.selectionEnd;el.value=el.value.slice(0,s)+'**'+el.value.slice(s,e)+'**'+el.value.slice(e);}closeCommandPalette()">
+                    <div class="cmd-item" data-search="pogrubienie pogrub bold markdown" onclick="cmdFormatBold()">
                         <div class="cmd-item-icon"><i class="fa-solid fa-bold"></i></div>
                         <div><div class="cmd-item-text">Pogrubienie textu (**bold**)</div><div class="cmd-item-sub">Formatuje zaznaczony tekst jako pogrubiony</div></div>
                     </div>
