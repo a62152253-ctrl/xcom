@@ -75,31 +75,31 @@ $note_colors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f9
         <div class="modal-body">
             <input type="hidden" id="note-id">
             <div class="form-group mb-3">
-                <label class="form-label">Tytuł</label>
+                <label class="form-label" for="note-title">Tytuł</label>
                 <input class="form-control form-control-lg" type="text" id="note-title" placeholder="Tytuł notatki...">
             </div>
             <div class="form-group mb-3">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                    <label class="form-label" style="margin:0">Treść</label>
+                    <label class="form-label" for="note-content" style="margin:0">Treść</label>
                     <small style="color:var(--text-muted);font-size:11px">Naciśnij <kbd style="background:var(--bg-tertiary);padding:1px 4px;border-radius:3px">Ctrl /</kbd> aby otworzyć komendy</small>
                 </div>
                 <textarea class="form-control" id="note-content" rows="7" placeholder="Napisz coś wartościowego..."></textarea>
             </div>
             <div class="form-group mb-3">
-                <label class="form-label">Tagi</label>
+                <label class="form-label" for="note-tags">Tagi</label>
                 <input class="form-control" type="text" id="note-tags" placeholder="np. pomysł, ważne, projekt-X">
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-tertiary);padding:10px 14px;border-radius:10px">
                 <div class="form-group mb-0" style="margin:0">
-                    <label class="form-label" style="font-size:12px;margin-bottom:4px;display:block">Akcent kolorystyczny</label>
+                    <span class="form-label" style="font-size:12px;margin-bottom:4px;display:block">Akcent kolorystyczny</span>
                     <div class="color-picker-row" style="gap:8px">
                         <?php foreach ($note_colors as $c): ?>
-                        <div class="color-chip" data-color="<?= $c ?>" style="background:<?= $c ?>;width:22px;height:22px;border-radius:50%;cursor:pointer;transition:transform .15s" onclick="selectColor('<?= $c ?>')"></div>
+                        <button type="button" class="color-chip" data-color="<?= $c ?>" style="background:<?= $c ?>;width:22px;height:22px;border-radius:50%;cursor:pointer;border:none;padding:0;transition:transform .15s" onclick="selectColor('<?= $c ?>')"></button>
                         <?php endforeach; ?>
                     </div>
                     <input type="hidden" id="note-color" value="#3b82f6">
                 </div>
-                <label class="form-check" style="margin:0;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px">
+                <label class="form-check" for="note-pinned" style="margin:0;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px">
                     <input type="checkbox" id="note-pinned" style="width:16px;height:16px"> Przypnij na górze
                 </label>
             </div>
