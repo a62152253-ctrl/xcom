@@ -433,11 +433,11 @@ function filterCmdItems(q) {
 
 function setThemeDark() {
     document.documentElement.setAttribute('data-theme','dark');
-    fetch('/api/profile.php?action=update_theme', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme:'dark'})}).catch(()=>{});
+    apiPost('/api/profile.php?action=update_theme', {theme:'dark'}).catch(()=>{});
 }
 function setThemeLight() {
     document.documentElement.setAttribute('data-theme','light');
-    fetch('/api/profile.php?action=update_theme', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme:'light'})}).catch(()=>{});
+    apiPost('/api/profile.php?action=update_theme', {theme:'light'}).catch(()=>{});
 }
 
 // ─── Initialize all on DOMContentLoaded ──────────────────────────────────────
