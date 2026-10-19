@@ -52,9 +52,13 @@ const Toast = {
 // ─── AJAX Helper ──────────────────────────────────────────────────────────────
 async function apiPost(url, data = {}) {
     try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (window.csrfToken) {
+            headers['X-CSRF-TOKEN'] = window.csrfToken;
+        }
         const res = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: headers,
             body: JSON.stringify(data)
         });
         const json = await res.json();
@@ -308,7 +312,7 @@ function toggleTheme() {
     if (btn) btn.innerHTML = `<i class="fa-solid ${next === 'dark' ? 'fa-sun' : 'fa-moon'}"></i>`;
 
     // Persist via API
-    apiPost('/api/profile.php?action=theme', { theme: next });
+    apiPost('/api/profile.php?action=update_theme', { theme: next }).catch(() => {});
 }
 
 // ─── Notification Dropdown ────────────────────────────────────────────────────
@@ -361,7 +365,7 @@ document.addEventListener('click', (e) => {
 
 // ─── Global Search handler (for header) ────────────────────────────────────
 function handleGlobalSearch(val) {
-    GlobalSearch.search(val);
+    GlobalSearch.search(val).catch(() => {});
 }
 
 // ─── Input Auto-grow for textareas ───────────────────────────────────────────
@@ -429,11 +433,11 @@ function filterCmdItems(q) {
 
 function setThemeDark() {
     document.documentElement.setAttribute('data-theme','dark');
-    fetch('/api/profile.php?action=update_theme', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme:'dark'})}).catch(()=>{});
+    apiPost('/api/profile.php?action=update_theme', {theme:'dark'}).catch(()=>{});
 }
 function setThemeLight() {
     document.documentElement.setAttribute('data-theme','light');
-    fetch('/api/profile.php?action=update_theme', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme:'light'})}).catch(()=>{});
+    apiPost('/api/profile.php?action=update_theme', {theme:'light'}).catch(()=>{});
 }
 
 // ─── Initialize all on DOMContentLoaded ──────────────────────────────────────
