@@ -117,7 +117,7 @@
     inset: 0;
     background: rgba(0,0,0,.6);
     backdrop-filter: blur(6px);
-    z-index: 9999;
+    z-index: 10000;
     align-items: flex-start;
     justify-content: center;
     padding-top: 10vh;
@@ -181,9 +181,10 @@
     transition: background .12s;
     font-size: 14px;
 }
-.cmd-item:hover, .cmd-item.selected {
+.cmd-item:hover, .cmd-item.selected, .cmd-item.cmd-item--selected {
     background: var(--primary-light);
     color: var(--primary);
+    box-shadow: inset 2px 0 0 var(--primary);
 }
 .cmd-item-icon {
     width: 32px;

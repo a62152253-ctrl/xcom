@@ -413,6 +413,7 @@ function filterCmdItems(q) {
     document.querySelectorAll('#cmdBody .cmd-item').forEach(item => {
         const searchText = (item.dataset.search || '') + ' ' + (item.querySelector('.cmd-item-text')?.textContent || '');
         item.style.display = (!q || searchText.toLowerCase().includes(q)) ? 'flex' : 'none';
+        item.classList.remove('selected', 'cmd-item--selected');
     });
     // Hide empty sections
     document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => {
@@ -450,10 +451,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isNaN(target)) animateCounter(el, target);
     });
 
-    // Command Palette keyboard shortcut
+    // Command Palette keyboard shortcut (Ctrl+K or Ctrl+/)
     document.addEventListener('keydown', e => {
-        // Ctrl+K or Cmd+K — open command palette
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        const isK = (e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K');
+        const isSlash = (e.ctrlKey || e.metaKey) && (e.key === '/' || e.code === 'Slash');
+
+        if (isK || isSlash) {
             e.preventDefault();
             const pal = document.getElementById('cmdPalette');
             if (pal && pal.classList.contains('open')) closeCommandPalette();
@@ -477,13 +480,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'ArrowDown') {
             e.preventDefault();
             cmdSelectedIdx = Math.min(cmdSelectedIdx + 1, items.length - 1);
-            items.forEach((it,i) => it.classList.toggle('selected', i === cmdSelectedIdx));
+            items.forEach((it,i) => {
+                const isActive = (i === cmdSelectedIdx);
+                it.classList.toggle('selected', isActive);
+                it.classList.toggle('cmd-item--selected', isActive);
+            });
             items[cmdSelectedIdx]?.scrollIntoView({block:'nearest'});
         }
         if (e.key === 'ArrowUp') {
             e.preventDefault();
             cmdSelectedIdx = Math.max(cmdSelectedIdx - 1, 0);
-            items.forEach((it,i) => it.classList.toggle('selected', i === cmdSelectedIdx));
+            items.forEach((it,i) => {
+                const isActive = (i === cmdSelectedIdx);
+                it.classList.toggle('selected', isActive);
+                it.classList.toggle('cmd-item--selected', isActive);
+            });
             items[cmdSelectedIdx]?.scrollIntoView({block:'nearest'});
         }
         if (e.key === 'Enter') {

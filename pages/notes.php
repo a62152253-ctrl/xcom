@@ -74,30 +74,33 @@ $note_colors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f9
         </div>
         <div class="modal-body">
             <input type="hidden" id="note-id">
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label class="form-label">Tytuł</label>
-                <input class="form-control" type="text" id="note-title" placeholder="np. Pomysł na feature...">
+                <input class="form-control form-control-lg" type="text" id="note-title" placeholder="Tytuł notatki...">
             </div>
-            <div class="form-group">
-                <label class="form-label">Treść</label>
-                <textarea class="form-control" id="note-content" rows="6" placeholder="Wpisz notatke..."></textarea>
+            <div class="form-group mb-3">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                    <label class="form-label" style="margin:0">Treść</label>
+                    <small style="color:var(--text-muted);font-size:11px">Naciśnij <kbd style="background:var(--bg-tertiary);padding:1px 4px;border-radius:3px">Ctrl /</kbd> aby otworzyć komendy</small>
+                </div>
+                <textarea class="form-control" id="note-content" rows="7" placeholder="Napisz coś wartościowego..."></textarea>
             </div>
-            <div class="form-group">
-                <label class="form-label">Tagi (oddziel przecinkami)</label>
+            <div class="form-group mb-3">
+                <label class="form-label">Tagi</label>
                 <input class="form-control" type="text" id="note-tags" placeholder="np. pomysł, ważne, projekt-X">
             </div>
-            <div class="form-group">
-                <label class="form-label">Kolor</label>
-                <div class="color-picker-row">
-                    <?php foreach ($note_colors as $c): ?>
-                    <div class="color-chip" data-color="<?= $c ?>" style="background:<?= $c ?>" onclick="selectColor('<?= $c ?>')"></div>
-                    <?php endforeach; ?>
+            <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-tertiary);padding:10px 14px;border-radius:10px">
+                <div class="form-group mb-0" style="margin:0">
+                    <label class="form-label" style="font-size:12px;margin-bottom:4px;display:block">Akcent kolorystyczny</label>
+                    <div class="color-picker-row" style="gap:8px">
+                        <?php foreach ($note_colors as $c): ?>
+                        <div class="color-chip" data-color="<?= $c ?>" style="background:<?= $c ?>;width:22px;height:22px;border-radius:50%;cursor:pointer;transition:transform .15s" onclick="selectColor('<?= $c ?>')"></div>
+                        <?php endforeach; ?>
+                    </div>
+                    <input type="hidden" id="note-color" value="#3b82f6">
                 </div>
-                <input type="hidden" id="note-color" value="#3b82f6">
-            </div>
-            <div class="form-group">
-                <label class="form-check">
-                    <input type="checkbox" id="note-pinned"> Przypnij notatkę na górze
+                <label class="form-check" style="margin:0;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px">
+                    <input type="checkbox" id="note-pinned" style="width:16px;height:16px"> Przypnij na górze
                 </label>
             </div>
         </div>
@@ -187,7 +190,18 @@ function filterNotes(q) {
     });
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNoteModal(); });
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeNoteModal();
+});
+
+document.getElementById('note-content')?.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === '/' || e.code === 'Slash')) {
+        e.preventDefault();
+        if (typeof openCommandPalette === 'function') {
+            openCommandPalette();
+        }
+    }
+});
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
