@@ -28,7 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Zbyt wiele prób logowania. Spróbuj ponownie za 5 minut.';
     }
     
-    if (!$error && !validate_csrf($csrf_token)) {
+    require_once __DIR__ . '/../security/Csrf.php';
+    if (!$error && !\Security\Csrf::validateToken($csrf_token)) {
         $error = 'Błąd weryfikacji tokenu CSRF.';
     } else if (
         !$error &&
@@ -48,6 +49,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = $stmt->fetch();
             
             if ($user && password_verify($password, $user['password_hash'])) {
+                if (password_needs_rehash($user['password_hash'], PASSWORD_ARGON2ID, ['memory_cost' => 65536, 'time_cost' => 4, 'threads' => 3])) {
+                    $newHash = password_hash($password, PASSWORD_ARGON2ID, ['memory_cost' => 65536, 'time_cost' => 4, 'threads' => 3]);
+                    $db->prepare("UPDATE users SET password_hash = ? WHERE id = ?")->execute([$newHash, $user['id']]);
+                }
+
                 if ($user['status'] === 'Blocked') {
                     $error = 'Twoje konto zostało zablokowane. Skontaktuj się z administratorem.';
                 } else if ($user['status'] === 'Pending') {
