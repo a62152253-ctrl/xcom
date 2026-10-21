@@ -34,8 +34,7 @@ function start_secure_session() {
         $_SESSION['last_activity'] = $now;
 
         // Generate fresh CSRF token
-        require_once __DIR__ . '/../security/Csrf.php';
-        Csrf::generateToken();
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
         return true;
     }
@@ -46,15 +45,13 @@ function start_secure_session() {
     // --- 3. Regenerate session ID every 15 minutes ---
     if (!isset($_SESSION['created_at'])) {
         $_SESSION['created_at'] = $now;
-        require_once __DIR__ . '/../security/Csrf.php';
-        Csrf::generateToken();
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     } else if ($now - $_SESSION['created_at'] > 900) {
         session_regenerate_id(true);
         $_SESSION['created_at'] = $now;
 
         // Regenerate CSRF token after session ID change
-        require_once __DIR__ . '/../security/Csrf.php';
-        Csrf::generateToken();
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
 
     // --- 4. Verify session fingerprint (optional extra layer) ---
@@ -76,8 +73,7 @@ function start_secure_session() {
 
     // --- 5. Generate CSRF token if missing ---
     if (empty($_SESSION['csrf_token'])) {
-        require_once __DIR__ . '/../security/Csrf.php';
-        Csrf::generateToken();
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
 
     return true;

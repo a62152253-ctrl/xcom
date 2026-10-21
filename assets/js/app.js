@@ -409,8 +409,21 @@ function closeCommandPalette() {
 }
 
 let searchTimeout;
+let originalCmdBodyHtml = null;
+
 function filterCmdItems(q) {
     q = q.trim().toLowerCase();
+
+    if (originalCmdBodyHtml === null) {
+        originalCmdBodyHtml = document.getElementById('cmdBody').innerHTML;
+    }
+
+    if (q.length === 0) {
+        document.getElementById('cmdBody').innerHTML = originalCmdBodyHtml;
+        cmdSelectedIdx = -1;
+        return;
+    }
+
     clearTimeout(searchTimeout);
 
     if (q.length < 2) {
@@ -445,7 +458,7 @@ function filterCmdItems(q) {
                 html += `<a href="${link}" class="cmd-item" style="display:flex; padding:0.75rem 1rem; color:var(--text-main); text-decoration:none; border-bottom:1px solid var(--border-color); align-items:center; gap:1rem;">
                     <i class="fa-solid ${icon}" style="color:var(--primary);"></i>
                     <div>
-                        <div style="font-weight:600;">${item.title}</div>
+                        <div class="cmd-item-text" style="font-weight:600;">${item.title}</div>
                         <div style="font-size:0.8rem;color:var(--text-muted);">${item._type.toUpperCase()}</div>
                     </div>
                 </a>`;
@@ -453,6 +466,7 @@ function filterCmdItems(q) {
             document.getElementById('cmdBody').innerHTML = html;
             cmdSelectedIdx = -1;
         } catch (e) {
+            console.error("Search error:", e);
             document.getElementById('cmdBody').innerHTML = '<div style="padding:1rem;color:var(--danger);text-align:center;">Błąd wyszukiwania</div>';
         }
     }, 300);

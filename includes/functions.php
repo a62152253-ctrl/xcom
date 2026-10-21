@@ -26,14 +26,20 @@ function validate_input($input, $type = 'string', $max_length = 255) {
 
 // CSRF check
 function validate_csrf($token) {
-    require_once __DIR__ . '/../security/Csrf.php';
-    return Csrf::validateToken($token);
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token ?? '');
 }
 
 // Log activity to database with security context
 function log_activity($user_id, $action, $details = null) {
-    require_once __DIR__ . '/../security/SecurityAudit.php';
-    SecurityAudit::logAction($user_id, $action, $details);
+    try {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("INSERT INTO activity_logs (user_id, action, details, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)");
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 255);
+        $stmt->execute([$user_id, $action, $details, $ip, $ua]);
+    } catch (PDOException $e) {
+        error_log("Activity log failed: " . $e->getMessage());
+    }
 }
 
 // Create notification
