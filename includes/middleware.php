@@ -32,12 +32,12 @@ function require_role($roles) {
         header("Location: /auth/login.php");
         exit;
     }
-    
+
     $user_role = $_SESSION['user_role'] ?? 'Member';
     if (!is_array($roles)) {
         $roles = [$roles];
     }
-    
+
     if (!in_array($user_role, $roles, true)) {
         http_response_code(403);
         header("Location: /pages/dashboard.php?error=unauthorized");
