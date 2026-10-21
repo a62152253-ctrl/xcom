@@ -11,5 +11,13 @@
     <!-- Global App JS (loads after page content) -->
     <script src="/assets/js/app.js"></script>
 
+
+    <script>
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker.register("/sw.js").catch(()=>{});
+        });
+    }
+    </script>
 </body>
 </html>

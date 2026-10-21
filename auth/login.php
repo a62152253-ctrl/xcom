@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/ratelimit.php';
+require_once __DIR__ . '/../security/Csrf.php';
 require_once __DIR__ . '/../config/env.php';
 
 start_secure_session();
@@ -28,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Zbyt wiele prób logowania. Spróbuj ponownie za 5 minut.';
     }
     
-    if (!$error && !validate_csrf($csrf_token)) {
+    if (!$error && !Csrf::validateToken($csrf_token)) {
         $error = 'Błąd weryfikacji tokenu CSRF.';
     } else if (
         !$error &&

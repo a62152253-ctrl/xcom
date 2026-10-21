@@ -408,23 +408,54 @@ function closeCommandPalette() {
     if (pal) pal.classList.remove('open');
 }
 
+let searchTimeout;
 function filterCmdItems(q) {
     q = q.trim().toLowerCase();
-    document.querySelectorAll('#cmdBody .cmd-item').forEach(item => {
-        const searchText = (item.dataset.search || '') + ' ' + (item.querySelector('.cmd-item-text')?.textContent || '');
-        item.style.display = (!q || searchText.toLowerCase().includes(q)) ? 'flex' : 'none';
-    });
-    // Hide empty sections
-    document.querySelectorAll('#cmdBody .cmd-section-label').forEach(label => {
-        let next = label.nextElementSibling;
-        let hasVisible = false;
-        while (next && !next.classList.contains('cmd-section-label')) {
-            if (next.style.display !== 'none') hasVisible = true;
-            next = next.nextElementSibling;
+    clearTimeout(searchTimeout);
+
+    if (q.length < 2) {
+        document.getElementById('cmdBody').innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Wpisz co najmniej 2 znaki...</div>';
+        return;
+    }
+
+    document.getElementById('cmdBody').innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Szukanie...</div>';
+
+    searchTimeout = setTimeout(async () => {
+        try {
+            const res = await fetch('/api/search.php?q=' + encodeURIComponent(q));
+            const data = await res.json();
+
+            if (!data.results || data.results.length === 0) {
+                document.getElementById('cmdBody').innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Brak wyników</div>';
+                return;
+            }
+
+            let html = "";
+            data.results.forEach(item => {
+                let icon = 'fa-file';
+                if (item._type === 'task') icon = 'fa-check-square';
+                if (item._type === 'project') icon = 'fa-folder';
+                if (item._type === 'note') icon = 'fa-sticky-note';
+
+                let link = '#';
+                if (item._type === 'task') link = '/pages/tasks.php?task_id=' + item.id;
+                if (item._type === 'project') link = '/pages/projects.php?project_id=' + item.id;
+                if (item._type === 'note') link = '/pages/notes.php?note_id=' + item.id;
+
+                html += `<a href="${link}" class="cmd-item" style="display:flex; padding:0.75rem 1rem; color:var(--text-main); text-decoration:none; border-bottom:1px solid var(--border-color); align-items:center; gap:1rem;">
+                    <i class="fa-solid ${icon}" style="color:var(--primary);"></i>
+                    <div>
+                        <div style="font-weight:600;">${item.title}</div>
+                        <div style="font-size:0.8rem;color:var(--text-muted);">${item._type.toUpperCase()}</div>
+                    </div>
+                </a>`;
+            });
+            document.getElementById('cmdBody').innerHTML = html;
+            cmdSelectedIdx = -1;
+        } catch (e) {
+            document.getElementById('cmdBody').innerHTML = '<div style="padding:1rem;color:var(--danger);text-align:center;">Błąd wyszukiwania</div>';
         }
-        label.style.display = hasVisible ? '' : 'none';
-    });
-    cmdSelectedIdx = -1;
+    }, 300);
 }
 
 function setThemeDark() {

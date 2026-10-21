@@ -19,7 +19,8 @@ function require_csrf_token() {
     $input = json_decode(file_get_contents('php://input'), true) ?? [];
     $token = $input['csrf_token'] ?? $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
     
-    if (!$token || !hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
+    require_once __DIR__ . '/../security/Csrf.php';
+    if (!$token || !Csrf::validateToken($token)) {
         http_response_code(403);
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode(['error' => 'CSRF token validation failed']);
@@ -28,21 +29,8 @@ function require_csrf_token() {
 }
 
 function require_role($roles) {
-    if (!is_logged_in()) {
-        header("Location: /auth/login.php");
-        exit;
-    }
-    
-    $user_role = $_SESSION['user_role'] ?? 'Member';
-    if (!is_array($roles)) {
-        $roles = [$roles];
-    }
-    
-    if (!in_array($user_role, $roles, true)) {
-        http_response_code(403);
-        header("Location: /pages/dashboard.php?error=unauthorized");
-        exit;
-    }
+    require_once __DIR__ . '/../security/Permissions.php';
+    Permissions::requireRole($roles);
 }
 
 function has_project_access($project_id, $minimum_role = 'Member') {
