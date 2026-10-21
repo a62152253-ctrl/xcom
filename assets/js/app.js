@@ -361,7 +361,7 @@ document.addEventListener('click', (e) => {
 
 // ─── Global Search handler (for header) ────────────────────────────────────
 function handleGlobalSearch(val) {
-    if (typeof GlobalSearch !== 'undefined' && typeof GlobalSearch.search === 'function') { GlobalSearch.search(val); }
+    if (typeof window.GlobalSearch !== 'undefined' && typeof window.GlobalSearch.search === 'function') { window.GlobalSearch.search(val); }
 }
 
 // ─── Input Auto-grow for textareas ───────────────────────────────────────────
