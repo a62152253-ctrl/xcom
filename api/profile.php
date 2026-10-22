@@ -13,7 +13,8 @@ header('Content-Type: application/json; charset=utf-8');
 $action = $_GET['action'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true) ?? [];
+    // When using multipart/form-data for file uploads, JSON payload might be empty
+    $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
 
     // UPDATE PROFILE
     if ($action === 'settings') {
@@ -53,6 +54,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Update settings
             $stmt = $db->prepare("UPDATE settings SET language=?, email_notifications=? WHERE user_id=?");
             $stmt->execute([$language, (int)($input['email_notifications'] ?? 1), $user_id]);
+
+            // Handle file upload securely
+            if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+                $file = $_FILES['avatar'];
+                $max_size = 2 * 1024 * 1024; // 2MB
+
+                if ($file['size'] > $max_size) {
+                    throw new Exception('Plik jest za duży (max 2MB).');
+                }
+
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mime_type = finfo_file($finfo, $file['tmp_name']);
+                finfo_close($finfo);
+
+                $allowed_mimes = ['image/jpeg', 'image/png', 'image/webp'];
+                if (!in_array($mime_type, $allowed_mimes)) {
+                    throw new Exception('Niedozwolony format pliku. Użyj JPG, PNG lub WEBP.');
+                }
+
+                $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                $allowed_exts = ['jpg', 'jpeg', 'png', 'webp'];
+                if (!in_array(strtolower($ext), $allowed_exts)) {
+                    throw new Exception('Niedozwolone rozszerzenie pliku.');
+                }
+
+                $filename = bin2hex(random_bytes(16)) . '.' . $ext;
+                $upload_dir = __DIR__ . '/../uploads/';
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
+                $destination = $upload_dir . $filename;
+
+                if (move_uploaded_file($file['tmp_name'], $destination)) {
+                    $avatar_url = '/uploads/' . $filename;
+                    $stmt = $db->prepare("UPDATE users SET avatar=? WHERE id=?");
+                    $stmt->execute([$avatar_url, $user_id]);
+                    $_SESSION['user_avatar'] = $avatar_url;
+                } else {
+                    throw new Exception('Błąd podczas zapisywania pliku.');
+                }
+            }
 
             $db->commit();
 
