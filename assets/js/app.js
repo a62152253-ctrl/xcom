@@ -5,74 +5,9 @@
 
 'use strict';
 
-// ─── Toast Notification System ────────────────────────────────────────────────
-const Toast = {
-    container: null,
 
-    init() {
-        this.container = document.getElementById('toast-container');
-        if (!this.container) {
-            this.container = document.createElement('div');
-            this.container.id = 'toast-container';
-            this.container.className = 'toast-container';
-            document.body.appendChild(this.container);
-        }
-    },
 
-    show(message, type = 'info', duration = 3500) {
-        if (!this.container) this.init();
 
-        const toast = document.createElement('div');
-        toast.className = `toast toast--${type}`;
-
-        const icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', warning: 'fa-triangle-exclamation', info: 'fa-circle-info' };
-        toast.innerHTML = `
-            <i class="fa-solid ${icons[type] || icons.info}"></i>
-            <span>${message}</span>
-            <button class="toast-close" onclick="this.parentElement.remove()">×</button>
-        `;
-
-        this.container.appendChild(toast);
-        requestAnimationFrame(() => toast.classList.add('toast--visible'));
-
-        setTimeout(() => {
-            toast.classList.remove('toast--visible');
-            setTimeout(() => toast.remove(), 350);
-        }, duration);
-
-        return toast;
-    },
-
-    success: (msg, dur) => Toast.show(msg, 'success', dur),
-    error:   (msg, dur) => Toast.show(msg, 'error', dur),
-    warning: (msg, dur) => Toast.show(msg, 'warning', dur),
-    info:    (msg, dur) => Toast.show(msg, 'info', dur),
-};
-
-// ─── AJAX Helper ──────────────────────────────────────────────────────────────
-async function apiPost(url, data = {}) {
-    try {
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        const json = await res.json();
-        return json;
-    } catch (e) {
-        console.error('API Error:', e);
-        return { success: false, error: 'Błąd połączenia z serwerem.' };
-    }
-}
-
-async function apiGet(url) {
-    try {
-        const res = await fetch(url);
-        return await res.json();
-    } catch (e) {
-        return null;
-    }
-}
 
 // ─── Animated Counter ─────────────────────────────────────────────────────────
 function animateCounter(el, target, duration = 800) {
@@ -308,7 +243,7 @@ function toggleTheme() {
     if (btn) btn.innerHTML = `<i class="fa-solid ${next === 'dark' ? 'fa-sun' : 'fa-moon'}"></i>`;
 
     // Persist via API
-    apiPost('/api/profile.php?action=theme', { theme: next });
+    apiPost('/api/profile.php?action=theme', { theme: next }).catch(console.error);
 }
 
 // ─── Notification Dropdown ────────────────────────────────────────────────────
@@ -361,7 +296,7 @@ document.addEventListener('click', (e) => {
 
 // ─── Global Search handler (for header) ────────────────────────────────────
 function handleGlobalSearch(val) {
-    GlobalSearch.search(val);
+    GlobalSearch.search(val).catch(console.error);
 }
 
 // ─── Input Auto-grow for textareas ───────────────────────────────────────────
