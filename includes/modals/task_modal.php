@@ -7,18 +7,18 @@
         <div class="modal-body">
             <input type="hidden" id="task-id">
             <div class="form-group">
-                <label class="form-label">Tytuł zadania *</label>
-                <input class="form-control" type="text" id="task-name" placeholder="Co trzeba zrobić?" maxlength="255">
+                <label class="form-label" for="task-name">Tytuł zadania *</label>
+                <input class="form-control" type="text" id="task-name" name="task_name" placeholder="Co trzeba zrobić?" maxlength="255">
             </div>
             <div class="form-group">
-                <label class="form-label">Opis</label>
-                <textarea class="form-control" id="task-desc" rows="3" placeholder="Szczegóły, wymagania..." maxlength="5000"></textarea>
+                <label class="form-label" for="task-desc">Opis</label>
+                <textarea class="form-control" id="task-desc" name="task_desc" rows="3" placeholder="Szczegóły, wymagania..." maxlength="5000"></textarea>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label class="form-label">Projekt *</label>
+                    <label class="form-label" for="task-project">Projekt *</label>
                     <div style="display: flex; gap: 0.5rem;">
-                        <select class="form-control" id="task-project" style="flex: 1;">
+                        <select class="form-control" id="task-project" name="task_project" style="flex: 1;">
                             <option value="">-- Wybierz projekt --</option>
                             <?php foreach ($user_projects as $p): ?>
                             <option value="<?= (int)$p['id'] ?>" <?= $filter_project == $p['id'] ? 'selected' : '' ?>><?= sanitize($p['name']) ?></option>
@@ -30,8 +30,8 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Przypisz do</label>
-                    <select class="form-control" id="task-assign">
+                    <label class="form-label" for="task-assign">Przypisz do</label>
+                    <select class="form-control" id="task-assign" name="task_assign">
                         <option value="">-- Nieprzypisany --</option>
                         <?php foreach ($all_users as $u): ?>
                         <option value="<?= (int)$u['id'] ?>"><?= sanitize($u['full_name']) ?></option>
@@ -41,8 +41,8 @@
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label class="form-label">Priorytet</label>
-                    <select class="form-control" id="task-priority">
+                    <label class="form-label" for="task-priority">Priorytet</label>
+                    <select class="form-control" id="task-priority" name="task_priority">
                         <option value="Low">🟢 Niski</option>
                         <option value="Medium" selected>🔵 Średni</option>
                         <option value="High">🟡 Wysoki</option>
@@ -50,8 +50,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Status</label>
-                    <select class="form-control" id="task-status">
+                    <label class="form-label" for="task-status">Status</label>
+                    <select class="form-control" id="task-status" name="task_status">
                         <option value="To Do">To Do</option>
                         <option value="In Progress">In Progress</option>
                         <option value="Review">Review</option>
@@ -60,8 +60,8 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="form-label">Termin (deadline)</label>
-                <input class="form-control" type="date" id="task-deadline">
+                <label class="form-label" for="task-deadline">Termin (deadline)</label>
+                <input class="form-control" type="date" id="task-deadline" name="task_deadline">
             </div>
         </div>
         <div class="modal-footer">
