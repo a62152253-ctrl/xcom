@@ -59,7 +59,7 @@ function send_email($to, $subject, $message, $headers = null) {
         $headers = "MIME-Version: 1.0\r\nContent-type: text/html; charset=UTF-8\r\n";
         $headers .= "From: " . (getenv('MAIL_FROM') ?: 'noreply@example.com') . "\r\n";
     }
-    return mail($to, $subject, $message, $headers);
+    return @mail($to, $subject, $message, $headers);
 }
 
 // Global translations dictionary
