@@ -5,6 +5,17 @@
 
 'use strict';
 
+// Escape HTML to prevent XSS
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 // ─── Toast Notification System ────────────────────────────────────────────────
 const Toast = {
     container: null,
@@ -234,18 +245,18 @@ const GlobalSearch = {
         if (!data) { this.hide(); return; }
 
         if (!data.results || data.results.length === 0) {
-            this.results.innerHTML = '<div class="search-empty">Brak wyników dla "<strong>' + q + '</strong>"</div>';
+            this.results.innerHTML = '<div class="search-empty">Brak wyników dla "<strong>' + escapeHTML(q) + '</strong>"</div>';
             return;
         }
 
         const html = data.results.map(r => `
-            <a href="${r.url}" class="search-result-item">
-                <div class="search-result-icon search-result-icon--${r.type}">
+            <a href="${escapeHTML(r.url)}" class="search-result-item">
+                <div class="search-result-icon search-result-icon--${escapeHTML(r.type)}">
                     <i class="fa-solid ${r.type === 'task' ? 'fa-list-check' : 'fa-folder'}"></i>
                 </div>
                 <div>
-                    <div class="search-result-title">${r.title}</div>
-                    <div class="search-result-sub">${r.subtitle || ''}</div>
+                    <div class="search-result-title">${escapeHTML(r.title)}</div>
+                    <div class="search-result-sub">${escapeHTML(r.subtitle || '')}</div>
                 </div>
             </a>
         `).join('');
@@ -329,8 +340,8 @@ async function toggleNotificationsDropdown() {
                 } else {
                     container.innerHTML = data.notifications.slice(0, 8).map(n => `
                         <div class="notif-item ${n.is_read == 0 ? 'unread' : ''}" onclick="markNotifRead(${n.id}, this)">
-                            <div style="font-weight:600;font-size:.8rem;margin-bottom:.2rem">${n.title}</div>
-                            <div style="color:var(--text-secondary);font-size:.75rem">${n.message}</div>
+                            <div style="font-weight:600;font-size:.8rem;margin-bottom:.2rem">${escapeHTML(n.title)}</div>
+                            <div style="color:var(--text-secondary);font-size:.75rem">${escapeHTML(n.message)}</div>
                         </div>
                     `).join('');
                 }
