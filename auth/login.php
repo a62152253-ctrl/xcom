@@ -48,6 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = $stmt->fetch();
             
             if ($user && password_verify($password, $user['password_hash'])) {
+                if (password_needs_rehash($user['password_hash'], PASSWORD_ARGON2ID, ['memory_cost' => 65536, 'time_cost' => 4, 'threads' => 3])) {
+                    $new_hash = password_hash($password, PASSWORD_ARGON2ID, ['memory_cost' => 65536, 'time_cost' => 4, 'threads' => 3]);
+                    $stmt_rehash = $db->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
+                    $stmt_rehash->execute([$new_hash, $user['id']]);
+                }
+
                 if ($user['status'] === 'Blocked') {
                     $error = 'Twoje konto zostało zablokowane. Skontaktuj się z administratorem.';
                 } else if ($user['status'] === 'Pending') {
