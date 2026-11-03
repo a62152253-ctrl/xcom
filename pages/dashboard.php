@@ -535,7 +535,9 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
         <?php else: ?>
         <div class="empty-inline">
             <div class="empty-inline-icon">🔔</div>
-            <span>Brak aktywności w workspace</span>
+            <div class="empty-inline-title">Brak aktywności</div>
+            <div class="empty-inline-sub">Brak aktywności w workspace.</div>
+            <a href="/pages/tasks.php">Przejdź do zadań</a>
         </div>
         <?php endif; ?>
     </div>
