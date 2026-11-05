@@ -1,11 +1,15 @@
-function escapeHTML(str) { return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+'use strict';
+
+function escapeHTML(str) {
+    var p = document.createElement('p');
+    p.textContent = str;
+    return p.innerHTML;
+}
 
 /**
  * TaskManager Pro — Global App JS
  * Toast system, AJAX helpers, microinteractions, mobile menu, notification polling
  */
-
-'use strict';
 
 // ─── Toast Notification System ────────────────────────────────────────────────
 const Toast = {
@@ -311,7 +315,7 @@ function toggleTheme() {
     if (btn) btn.innerHTML = `<i class="fa-solid ${next === 'dark' ? 'fa-sun' : 'fa-moon'}"></i>`;
 
     // Persist via API
-    apiPost('/api/profile.php?action=theme', { theme: next }).catch(e => console.error('Theme persist failed', e));
+    apiPost('/api/profile.php?action=theme', { theme: next }).catch((e) => console.error('Theme persist failed', e));
 }
 
 // ─── Notification Dropdown ────────────────────────────────────────────────────
@@ -364,7 +368,7 @@ document.addEventListener('click', (e) => {
 
 // ─── Global Search handler (for header) ────────────────────────────────────
 function handleGlobalSearch(val) {
-    GlobalSearch.search(val).catch(e => console.error('Search failed', e));
+    GlobalSearch.search(val).catch((e) => console.error('Search failed', e));
 }
 
 // ─── Input Auto-grow for textareas ───────────────────────────────────────────
