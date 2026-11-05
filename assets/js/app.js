@@ -1,8 +1,9 @@
 'use strict';
 
 function escapeHTML(str) {
-    var p = document.createElement('p');
-    p.textContent = str;
+    const text = document.createTextNode(str);
+    const p = document.createElement('p');
+    p.appendChild(text);
     return p.innerHTML;
 }
 
