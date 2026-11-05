@@ -234,7 +234,7 @@ const GlobalSearch = {
         if (!data) { this.hide(); return; }
 
         if (!data.results || data.results.length === 0) {
-            this.results.innerHTML = '<div class="search-empty">Brak wyników dla "<strong>' + q + '</strong>"</div>';
+            this.results.innerHTML = '<div class="empty-state-premium" style="padding: 2rem;"><div class="es-icon">🔍</div><div class="es-title">Brak wyników</div><div class="es-sub">Nie znaleziono wyników dla "<strong>' + q + '</strong>".</div></div>';
             return;
         }
 

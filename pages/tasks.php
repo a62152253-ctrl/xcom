@@ -371,6 +371,13 @@ foreach ($all_tasks as $t) {
             <span class="kanban-count" id="count-<?= str_replace(' ', '-', strtolower($status)) ?>"><?= count($cards) ?></span>
         </div>
 
+        <?php if (empty($cards)): ?>
+        <div class="empty-state-premium" style="padding: 1.5rem 1rem;">
+            <div class="es-icon" style="width: 48px; height: 48px; font-size: 20px;">📭</div>
+            <div class="es-title" style="font-size: 13px;">Brak zadań</div>
+            <div class="es-sub" style="font-size: 11px;">Przeciągnij zadanie tutaj lub dodaj nowe.</div>
+        </div>
+        <?php else: ?>
         <?php foreach ($cards as $c): ?>
         <div class="kanban-card" draggable="true" id="task-<?= (int)$c['id'] ?>"
              data-id="<?= (int)$c['id'] ?>" data-status="<?= sanitize($c['status']) ?>"
@@ -406,6 +413,7 @@ foreach ($all_tasks as $t) {
             </div>
         </div>
         <?php endforeach; ?>
+        <?php endif; ?>
 
         <button class="kanban-add-btn" onclick="openAddTaskModal('<?= sanitize($status) ?>')">
             <i class="fa-solid fa-plus"></i> Dodaj zadanie
