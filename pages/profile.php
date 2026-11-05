@@ -72,7 +72,7 @@ $max_heat = max(max($heat_days), 1);
         <div class="card profile-card">
             <!-- Avatar with progress ring -->
             <div class="profile-avatar-wrap">
-                <svg class="progress-ring-svg" width="120" height="120">
+                <svg class="progress-ring-svg" width="120" height="120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border-color)" stroke-width="6"/>
                     <circle cx="60" cy="60" r="52" fill="none" stroke="var(--primary)" stroke-width="6"
                         stroke-dasharray="<?= round(2 * M_PI * 52) ?>"
@@ -81,7 +81,7 @@ $max_heat = max(max($heat_days), 1);
                         style="transition:stroke-dashoffset 1s ease"/>
                 </svg>
                 <?php if (!empty($profile['avatar'])): ?>
-                    <img src="<?= sanitize($profile['avatar']) ?>" class="profile-avatar-img">
+                    <img src="<?= sanitize($profile['avatar']) ?>" class="profile-avatar-img" alt="User avatar">
                 <?php else: ?>
                     <div class="profile-avatar-circle"><?= strtoupper(substr($profile['full_name'], 0, 1)) ?></div>
                 <?php endif; ?>

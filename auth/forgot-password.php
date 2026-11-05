@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt_update->execute([$reset_token, $expires_at, $user['id']]);
                     
                     // TODO: Send email with reset link
-                    $app_url = env('APP_URL', 'http://' . $_SERVER['HTTP_HOST']);
+                    $app_url = env('APP_URL', 'http://' . sanitize($_SERVER['HTTP_HOST'] ?? 'localhost'));
                     $reset_link = $app_url . "/auth/forgot-password.php?step=reset&token=" . $reset_token;
                     send_email($email, 'Reset hasła', "Kliknij poniższy link, aby zresetować hasło:<br><a href='$reset_link'>$reset_link</a>");
                     
