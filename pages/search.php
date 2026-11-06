@@ -78,6 +78,7 @@ function highlight($text, $q) {
 <!-- Search form -->
 <div style="margin-bottom:1.5rem;max-width:600px">
     <form method="GET" style="display:flex;gap:.75rem">
+                        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
         <div style="position:relative;flex:1">
             <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted)"></i>
             <input name="q" value="<?= htmlspecialchars($q, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" class="form-control" style="padding-left:2.5rem" placeholder="Szukaj..." maxlength="255">
