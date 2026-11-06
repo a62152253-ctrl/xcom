@@ -13,6 +13,7 @@ header('Content-Type: application/json; charset=utf-8');
 $action = $_GET['action'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_csrf_token();
     $input = json_decode(file_get_contents('php://input'), true) ?? [];
 
     // CREATE
