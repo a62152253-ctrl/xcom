@@ -330,6 +330,18 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
     <div class="hero-left">
         <div class="hero-greeting"><?= $greeting ?>, 👋</div>
         <div class="hero-name"><?= sanitize($user_name) ?>!</div>
+
+        <!-- Dashboard Onboarding -->
+        <div class="onboarding-checklist" style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+            <div style="font-weight: bold; margin-bottom: 0.5rem;">Zacznijmy od konfiguracji:</div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
+                <div><i class="fa-solid <?= $projects_count > 0 ? 'fa-square-check' : 'fa-square' ?>"></i> Utwórz pierwszy projekt</div>
+                <div><i class="fa-solid <?= $done_count > 0 || $active_tasks_count > 0 ? 'fa-square-check' : 'fa-square' ?>"></i> Dodaj pierwsze zadanie</div>
+                <div><i class="fa-solid fa-square-check"></i> Ustaw profil</div>
+                <div><i class="fa-solid <?= $ws_members > 1 ? 'fa-square-check' : 'fa-square' ?>"></i> Zaproś członka zespołu</div>
+            </div>
+        </div>
+
         <div class="hero-stats">
             <span class="hero-stat"><i class="fa-solid fa-list-check"></i> <?= count($tasks_today) ?> zadań na dziś</span>
             <?php if ($overdue_count > 0): ?>
@@ -370,6 +382,21 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
 <!-- ═══ PREMIUM KPI CARDS ════════════════════════════════════════════════════════ -->
 <div class="pkpi-grid">
 
+    <!-- Analytics Dashboard stats -->
+    <div class="pkpi-card" style="--pkpi-color:#f59e0b;--pkpi-light:rgba(245,158,11,.1);--pkpi-grad:linear-gradient(90deg,#f59e0b,#fbbf24);--pkpi-glow:rgba(245,158,11,.1)">
+        <div class="pkpi-top">
+            <div class="pkpi-icon"><i class="fa-solid fa-bolt"></i></div>
+            <span class="pkpi-trend up"><i class="fa-solid fa-arrow-up"></i> live</span>
+        </div>
+        <div class="pkpi-value" data-counter="<?= $ws_pct ?>"><?= $ws_pct ?>%</div>
+        <div class="pkpi-label">Produktywność</div>
+        <div class="pkpi-sub">
+            <div class="progress-compact" style="margin-top: 0.5rem;">
+                <div class="progress-compact-bar" style="width: <?= $ws_pct ?>%; background: linear-gradient(90deg, #f59e0b, #fbbf24);"></div>
+            </div>
+        </div>
+    </div>
+
     <div class="pkpi-card" style="--pkpi-color:#6366f1;--pkpi-light:rgba(99,102,241,.1);--pkpi-grad:linear-gradient(90deg,#6366f1,#8b5cf6);--pkpi-glow:rgba(99,102,241,.1)"
          onclick="window.location.href='/pages/projects.php'">
         <div class="pkpi-top">
@@ -377,7 +404,7 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             <span class="pkpi-trend flat"><i class="fa-solid fa-minus"></i> aktywne</span>
         </div>
         <div class="pkpi-value" data-counter="<?= $projects_count ?>"><?= $projects_count ?></div>
-        <div class="pkpi-label">Projekty</div>
+        <div class="pkpi-label">Aktywne projekty</div>
         <div class="pkpi-sub">Kliknij aby zobaczyć wszystkie →</div>
     </div>
 

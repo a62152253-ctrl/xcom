@@ -48,6 +48,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js"></script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="manifest" href="/manifest.json">
     <style>
         .notification-dropdown {
             position: absolute;
@@ -229,6 +230,52 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </div>
                 <div id="notif-list-container"></div>
             </div>
+
+            <script>
+                document.addEventListener('keydown', function(e) {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                        e.preventDefault();
+                        openCommandPalette();
+                    }
+                });
+
+                async function handleGlobalSearch(query) {
+                    if (query.length < 2) {
+                        document.getElementById('search-results').style.display = 'none';
+                        return;
+                    }
+
+                    const res = await fetch(`/api/search.php?q=${encodeURIComponent(query)}`);
+                    const data = await res.json();
+
+                    const container = document.getElementById('search-results');
+                    container.innerHTML = '';
+
+                    if (data.results && data.results.length > 0) {
+                        data.results.forEach(item => {
+                            const div = document.createElement('div');
+                            div.style.padding = '0.5rem';
+                            div.style.cursor = 'pointer';
+                            div.style.borderBottom = '1px solid var(--border-color)';
+                            div.innerHTML = `<strong>${item.type === 'project' ? '📁' : (item.type === 'task' ? '✅' : '📝')} ${item.title}</strong>`;
+                            div.onclick = () => window.location.href = item.url;
+                            container.appendChild(div);
+                        });
+                        container.style.display = 'block';
+                    } else {
+                        container.style.display = 'none';
+                    }
+                }
+
+                let searchTimeout;
+                document.getElementById('cmdInput')?.addEventListener('input', function(e) {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        // The original command palette filtering logic remains here via inline event,
+                        // this just serves as an extension point if API search is needed inside the palette.
+                    }, 300);
+                });
+            </script>
 
             <!-- ═══ COMMAND PALETTE ═══════════════════════════════════════════ -->
             <div class="cmd-overlay" id="cmdPalette" onclick="closeCommandPalette()">
