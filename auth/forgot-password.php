@@ -147,7 +147,7 @@ if ($step === 'reset' && empty($reset_token)) {
 
             <?php if ($step === 'request'): ?>
             <form method="POST" action="forgot-password.php?step=request">
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(\Csrf::generateToken(), ENT_QUOTES, 'UTF-8'); ?>">
                 
                 <div class="form-group">
                     <label class="form-label" for="email">Adres e-mail</label>
@@ -161,7 +161,7 @@ if ($step === 'reset' && empty($reset_token)) {
 
             <?php elseif ($step === 'reset' && !empty($reset_token)): ?>
             <form method="POST" action="<?php echo htmlspecialchars('forgot-password.php?step=reset&token=' . $reset_token, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(\Csrf::generateToken(), ENT_QUOTES, 'UTF-8'); ?>">
                 <input type="hidden" name="token" value="<?php echo htmlspecialchars($reset_token, ENT_QUOTES, 'UTF-8'); ?>">
                 
                 <div class="form-group">

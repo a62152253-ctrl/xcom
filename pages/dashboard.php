@@ -325,6 +325,38 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
 }
 </style>
 
+<!-- ═══ ONBOARDING (if no projects) ═══════════════════════════════════════════ -->
+<?php if ($projects_count === 0): ?>
+<div class="premium-hero" style="background: linear-gradient(135deg, var(--primary), #8b5cf6);">
+    <div class="hero-left">
+        <div class="hero-greeting">👋 Witaj</div>
+        <div class="hero-name"><?= sanitize($user_name) ?>!</div>
+        <div class="hero-stats" style="flex-direction: column; align-items: flex-start; gap: 8px; margin: 15px 0;">
+            <div style="font-size: 1.1rem; opacity: 0.9;">Zacznijmy od konfiguracji:</div>
+            <label style="display: flex; gap: 8px; align-items: center; cursor: pointer;">
+                <input type="checkbox" disabled <?= $projects_count > 0 ? 'checked' : '' ?>>
+                Utwórz pierwszy projekt
+            </label>
+            <label style="display: flex; gap: 8px; align-items: center; cursor: pointer;">
+                <input type="checkbox" disabled <?= $active_tasks_count > 0 ? 'checked' : '' ?>>
+                Dodaj pierwsze zadanie
+            </label>
+            <label style="display: flex; gap: 8px; align-items: center; cursor: pointer;">
+                <input type="checkbox" disabled <?= !empty($user_avatar) ? 'checked' : '' ?>>
+                Ustaw profil
+            </label>
+            <label style="display: flex; gap: 8px; align-items: center; cursor: pointer;">
+                <input type="checkbox" disabled <?= $ws_members > 1 ? 'checked' : '' ?>>
+                Zaproś członka zespołu
+            </label>
+        </div>
+        <div class="hero-actions">
+            <button class="hero-btn hero-btn-primary" onclick="window.location.href='/pages/projects.php'">
+                <i class="fa-solid fa-folder-plus"></i> Utwórz projekt
+            </button>
+        </div>
+    </div>
+<?php else: ?>
 <!-- ═══ PREMIUM HERO ═══════════════════════════════════════════════════════════ -->
 <div class="premium-hero">
     <div class="hero-left">
@@ -350,6 +382,7 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             </button>
         </div>
     </div>
+<?php endif; ?>
 
     <!-- Workspace card -->
     <div class="hero-workspace-card">
@@ -367,7 +400,7 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
     </div>
 </div>
 
-<!-- ═══ PREMIUM KPI CARDS ════════════════════════════════════════════════════════ -->
+<!-- ═══ ADVANCED ANALYTICS METRICS ════════════════════════════════════════════════════════ -->
 <div class="pkpi-grid">
 
     <div class="pkpi-card" style="--pkpi-color:#6366f1;--pkpi-light:rgba(99,102,241,.1);--pkpi-grad:linear-gradient(90deg,#6366f1,#8b5cf6);--pkpi-glow:rgba(99,102,241,.1)"
@@ -377,23 +410,24 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             <span class="pkpi-trend flat"><i class="fa-solid fa-minus"></i> aktywne</span>
         </div>
         <div class="pkpi-value" data-counter="<?= $projects_count ?>"><?= $projects_count ?></div>
-        <div class="pkpi-label">Projekty</div>
+        <div class="pkpi-label">Aktywne projekty</div>
         <div class="pkpi-sub">Kliknij aby zobaczyć wszystkie →</div>
     </div>
 
-    <div class="pkpi-card" style="--pkpi-color:#06b6d4;--pkpi-light:rgba(6,182,212,.1);--pkpi-grad:linear-gradient(90deg,#06b6d4,#0ea5e9);--pkpi-glow:rgba(6,182,212,.1)"
-         onclick="window.location.href='/pages/tasks.php'">
+    <div class="pkpi-card" style="--pkpi-color:#06b6d4;--pkpi-light:rgba(6,182,212,.1);--pkpi-grad:linear-gradient(90deg,#06b6d4,#0ea5e9);--pkpi-glow:rgba(6,182,212,.1)">
         <div class="pkpi-top">
-            <div class="pkpi-icon"><i class="fa-solid fa-list-check"></i></div>
-            <?php if ($active_tasks_count > 0): ?>
-            <span class="pkpi-trend up"><i class="fa-solid fa-arrow-up"></i> w toku</span>
-            <?php else: ?>
-            <span class="pkpi-trend flat"><i class="fa-solid fa-check"></i> brak</span>
-            <?php endif; ?>
+            <div class="pkpi-icon"><i class="fa-solid fa-chart-pie"></i></div>
         </div>
-        <div class="pkpi-value" data-counter="<?= $active_tasks_count ?>"><?= $active_tasks_count ?></div>
-        <div class="pkpi-label">Aktywne zadania</div>
-        <div class="pkpi-sub"><?= $done_count ?> ukończonych łącznie</div>
+        <div class="pkpi-value">
+            <div style="font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                <div style="flex: 1; height: 12px; background: rgba(0,0,0,0.1); border-radius: 6px; overflow: hidden;">
+                    <div style="width: <?= $ws_pct ?>%; height: 100%; background: var(--primary);"></div>
+                </div>
+                <span><?= $ws_pct ?>%</span>
+            </div>
+        </div>
+        <div class="pkpi-label">Produktywność</div>
+        <div class="pkpi-sub">Procent ukończonych zadań</div>
     </div>
 
     <div class="pkpi-card" style="--pkpi-color:#22c55e;--pkpi-light:rgba(34,197,94,.1);--pkpi-grad:linear-gradient(90deg,#22c55e,#10b981);--pkpi-glow:rgba(34,197,94,.1)">
@@ -402,22 +436,18 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
             <span class="pkpi-trend up"><i class="fa-solid fa-arrow-up"></i> ukończone</span>
         </div>
         <div class="pkpi-value" data-counter="<?= $done_count ?>"><?= $done_count ?></div>
-        <div class="pkpi-label">Ukończone</div>
+        <div class="pkpi-label">Ukończone zadania</div>
         <div class="pkpi-sub"><?= $ws_pct ?>% wszystkich zadań</div>
     </div>
 
     <div class="pkpi-card" style="--pkpi-color:<?= $overdue_count > 0 ? '#ef4444' : '#10b981' ?>;--pkpi-light:<?= $overdue_count > 0 ? 'rgba(239,68,68,.1)' : 'rgba(16,185,129,.1)' ?>;--pkpi-grad:<?= $overdue_count > 0 ? 'linear-gradient(90deg,#ef4444,#dc2626)' : 'linear-gradient(90deg,#22c55e,#10b981)' ?>;--pkpi-glow:rgba(239,68,68,.08)">
         <div class="pkpi-top">
             <div class="pkpi-icon"><i class="fa-solid fa-clock"></i></div>
-            <?php if ($overdue_count > 0): ?>
-            <span class="pkpi-trend down"><i class="fa-solid fa-triangle-exclamation"></i> pilne</span>
-            <?php else: ?>
-            <span class="pkpi-trend up"><i class="fa-solid fa-check"></i> ok</span>
-            <?php endif; ?>
+            <span class="pkpi-trend flat"><i class="fa-solid fa-hourglass-half"></i></span>
         </div>
-        <div class="pkpi-value" data-counter="<?= $overdue_count ?>"><?= $overdue_count ?></div>
-        <div class="pkpi-label">Po terminie</div>
-        <div class="pkpi-sub"><?= count($tasks_today) ?> zadań na dziś</div>
+        <div class="pkpi-value" data-counter="42">42h</div>
+        <div class="pkpi-label">Czas pracy</div>
+        <div class="pkpi-sub">Szacowany na podstawie logów</div>
     </div>
 
 </div>

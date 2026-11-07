@@ -24,13 +24,20 @@ function validate_input($input, $type = 'string', $max_length = 255) {
     }
 }
 
+require_once __DIR__ . '/../security/Csrf.php';
+require_once __DIR__ . '/../security/SecurityAudit.php';
+
 // CSRF check
 function validate_csrf($token) {
-    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token ?? '');
+    return \Csrf::validateToken($token);
 }
 
 // Log activity to database with security context
 function log_activity($user_id, $action, $details = null) {
+    \SecurityAudit::log($user_id, $action, $details);
+}
+
+function legacy_log_activity($user_id, $action, $details = null) {
     try {
         $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("INSERT INTO activity_logs (user_id, action, details, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)");
