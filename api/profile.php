@@ -13,7 +13,13 @@ header('Content-Type: application/json; charset=utf-8');
 $action = $_GET['action'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_csrf_token();
     $input = json_decode(file_get_contents('php://input'), true) ?? [];
+
+    // Form fallback if not application/json
+    if (empty($input) && !empty($_POST)) {
+        $input = $_POST;
+    }
 
     // UPDATE PROFILE
     if ($action === 'settings') {
@@ -48,6 +54,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hash = password_hash($password, PASSWORD_ARGON2ID, ['memory_cost' => 65536, 'time_cost' => 4, 'threads' => 3]);
                 $stmt = $db->prepare("UPDATE users SET password_hash=? WHERE id=?");
                 $stmt->execute([$hash, $user_id]);
+            }
+
+            // Update avatar if provided
+            if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+                $file = $_FILES['avatar'];
+                $allowed_mimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mime = finfo_file($finfo, $file['tmp_name']);
+                finfo_close($finfo);
+
+                if (!in_array($mime, $allowed_mimes)) {
+                    throw new Exception('Nieprawidłowy typ pliku. Dozwolone: JPG, PNG, GIF, WEBP.');
+                }
+
+                if ($file['size'] > 2 * 1024 * 1024) { // 2MB
+                    throw new Exception('Plik jest za duży (max 2MB).');
+                }
+
+                $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                $filename = uniqid('avatar_') . '.' . $ext;
+                $upload_dir = __DIR__ . '/../uploads/avatars/';
+
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
+
+                $upload_path = $upload_dir . $filename;
+
+                if (move_uploaded_file($file['tmp_name'], $upload_path)) {
+                    $avatar_url = '/uploads/avatars/' . $filename;
+                    $stmt = $db->prepare("UPDATE users SET avatar=? WHERE id=?");
+                    $stmt->execute([$avatar_url, $user_id]);
+                    $_SESSION['user_avatar'] = $avatar_url;
+                } else {
+                    throw new Exception('Błąd podczas zapisywania pliku.');
+                }
             }
 
             // Update settings
