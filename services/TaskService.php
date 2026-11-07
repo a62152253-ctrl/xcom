@@ -81,7 +81,7 @@ class TaskService {
         ]);
 
         if ($assigned_to && $assigned_to != $user_id) {
-            legacy_log_activity($assigned_to, 'Przypisano nowe zadanie', "Zostałeś przypisany do zadania: $name", 'task_assign'); // TODO: switch to notification center
+            legacy_log_activity($assigned_to, 'Przypisano nowe zadanie', "Zostałeś przypisany do zadania: $name");
         }
 
         log_activity($user_id, 'task_create', "Created task '$name' in project $project_id");
@@ -108,7 +108,7 @@ class TaskService {
             Task::updateTaskStatus($db, $task_id, $status);
 
             if ($task['assigned_to'] && $task['assigned_to'] != $user_id) {
-                legacy_log_activity($task['assigned_to'], 'Status zmieniony', "Zadanie '{$task['name']}' zmieniono na: $status", 'status_change'); // TODO: switch to notification center
+                legacy_log_activity($task['assigned_to'], 'Status zmieniony', "Zadanie '{$task['name']}' zmieniono na: $status");
             }
 
             log_activity($user_id, 'task_status_update', "Task ID $task_id → $status");
@@ -135,7 +135,7 @@ class TaskService {
         Task::addComment($db, $task_id, $user_id, $comment);
 
         if ($task['assigned_to'] && $task['assigned_to'] != $user_id) {
-             legacy_log_activity($task['assigned_to'], 'Nowy komentarz', "Dodano komentarz do: {$task['name']}", 'comment'); // TODO: switch to notification center
+             legacy_log_activity($task['assigned_to'], 'Nowy komentarz', "Dodano komentarz do: {$task['name']}");
         }
 
         log_activity($user_id, 'task_comment', "Comment added to task ID $task_id");
