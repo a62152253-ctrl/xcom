@@ -15,7 +15,7 @@ class TaskService {
     }
 
     public static function listTasks($project_id) {
-        if (!$project_id || !Permissions::hasProjectAccess($project_id)) {
+        if (!$project_id || !\Permissions::hasProjectAccess($project_id)) {
             return ['status' => 403, 'error' => 'Brak dostępu do projektu.'];
         }
         $db = Database::getInstance()->getConnection();
@@ -38,7 +38,7 @@ class TaskService {
         $db = Database::getInstance()->getConnection();
         $task = Task::getTaskById($db, $task_id);
 
-        if (!$task || !Permissions::hasProjectAccess($task['project_id'])) {
+        if (!$task || !\Permissions::hasProjectAccess($task['project_id'])) {
             return ['status' => 403, 'error' => 'Brak dostępu.'];
         }
 
@@ -53,7 +53,7 @@ class TaskService {
         $priority = $input['priority'] ?? 'Medium';
         $assigned_to = (int)($input['assigned_to'] ?? 0) ?: null;
 
-        if (!$project_id || !Permissions::hasProjectAccess($project_id, 'Member')) {
+        if (!$project_id || !\Permissions::hasProjectAccess($project_id, 'Member')) {
             return ['status' => 403, 'error' => 'Brak uprawnień do dodawania zadań.'];
         }
 
@@ -81,7 +81,7 @@ class TaskService {
         ]);
 
         if ($assigned_to && $assigned_to != $user_id) {
-            create_notification($assigned_to, 'Przypisano nowe zadanie', "Zostałeś przypisany do zadania: $name", 'task_assign');
+            legacy_log_activity($assigned_to, 'Przypisano nowe zadanie', "Zostałeś przypisany do zadania: $name", 'task_assign'); // TODO: switch to notification center
         }
 
         log_activity($user_id, 'task_create', "Created task '$name' in project $project_id");
@@ -100,7 +100,7 @@ class TaskService {
         $db = Database::getInstance()->getConnection();
         $task = Task::getTaskById($db, $task_id);
 
-        if (!$task || !Permissions::hasProjectAccess($task['project_id'], 'Member')) {
+        if (!$task || !\Permissions::hasProjectAccess($task['project_id'], 'Member')) {
             return ['status' => 403, 'error' => 'Brak uprawnień.'];
         }
 
@@ -108,7 +108,7 @@ class TaskService {
             Task::updateTaskStatus($db, $task_id, $status);
 
             if ($task['assigned_to'] && $task['assigned_to'] != $user_id) {
-                create_notification($task['assigned_to'], 'Status zmieniony', "Zadanie '{$task['name']}' zmieniono na: $status", 'status_change');
+                legacy_log_activity($task['assigned_to'], 'Status zmieniony', "Zadanie '{$task['name']}' zmieniono na: $status", 'status_change'); // TODO: switch to notification center
             }
 
             log_activity($user_id, 'task_status_update', "Task ID $task_id → $status");
@@ -128,14 +128,14 @@ class TaskService {
         $db = Database::getInstance()->getConnection();
         $task = Task::getTaskById($db, $task_id);
 
-        if (!$task || !Permissions::hasProjectAccess($task['project_id'], 'Member')) {
+        if (!$task || !\Permissions::hasProjectAccess($task['project_id'], 'Member')) {
             return ['status' => 403, 'error' => 'Brak dostępu.'];
         }
 
         Task::addComment($db, $task_id, $user_id, $comment);
 
         if ($task['assigned_to'] && $task['assigned_to'] != $user_id) {
-            create_notification($task['assigned_to'], 'Nowy komentarz', "Dodano komentarz do: {$task['name']}", 'comment');
+             legacy_log_activity($task['assigned_to'], 'Nowy komentarz', "Dodano komentarz do: {$task['name']}", 'comment'); // TODO: switch to notification center
         }
 
         log_activity($user_id, 'task_comment', "Comment added to task ID $task_id");
@@ -151,7 +151,7 @@ class TaskService {
         $db = Database::getInstance()->getConnection();
         $task = Task::getTaskById($db, $task_id);
 
-        if (!$task || !Permissions::hasProjectAccess($task['project_id'], 'Administrator')) {
+        if (!$task || !\Permissions::hasProjectAccess($task['project_id'], 'Administrator')) {
             return ['status' => 403, 'error' => 'Brak uprawnień do usunięcia.'];
         }
 

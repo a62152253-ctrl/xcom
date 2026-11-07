@@ -10,7 +10,8 @@ function openCommandPalette() {
     const cmdPalette = document.getElementById('cmdPalette');
     if (cmdPalette) {
         cmdPalette.style.display = 'flex';
-        document.getElementById('cmdInput').focus();
+        const input = document.getElementById('cmdInput');
+        if (input) input.focus();
     }
 }
 
@@ -24,16 +25,18 @@ function closeCommandPalette() {
 let cmdTimeout;
 function filterCmdItems(q) {
     clearTimeout(cmdTimeout);
-    q = q.trim().toLowerCase();
+    q = (q || '').trim().toLowerCase();
 
     // Local static filtering
     document.querySelectorAll('.cmd-item').forEach(item => {
-        const searchTerms = item.getAttribute('data-search') || '';
-        const text = item.innerText.toLowerCase();
-        if (searchTerms.includes(q) || text.includes(q)) {
-            item.style.display = 'flex';
-        } else {
-            item.style.display = 'none';
+        if (!item.classList.contains('cmd-item-dynamic')) {
+            const searchTerms = item.getAttribute('data-search') || '';
+            const text = item.innerText.toLowerCase();
+            if (searchTerms.includes(q) || text.includes(q)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
         }
     });
 
@@ -50,6 +53,7 @@ function filterCmdItems(q) {
 
                 if (data.results && data.results.length > 0) {
                     const cmdBody = document.getElementById('cmdBody');
+                    if (!cmdBody) return;
 
                     // Add section label if not exists
                     let dynLabel = document.getElementById('cmd-dynamic-label');
@@ -64,8 +68,12 @@ function filterCmdItems(q) {
                     data.results.forEach(result => {
                         const div = document.createElement('div');
                         div.className = 'cmd-item cmd-item-dynamic';
+                        div.style.display = 'flex';
 
-                        let iconClass, url, typeLabel;
+                        let iconClass = 'fa-circle';
+                        let url = '#';
+                        let typeLabel = 'Inne';
+
                         if (result._type === 'task') {
                             iconClass = 'fa-list-check';
                             url = '/pages/tasks.php?task_id=' + result.id;
@@ -83,7 +91,7 @@ function filterCmdItems(q) {
                         div.onclick = () => window.location.href = url;
 
                         // Sanitize output
-                        const safeTitle = result.title.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                        const safeTitle = (result.title || '').replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
                         div.innerHTML = `
                             <div class="cmd-item-icon"><i class="fa-solid ${iconClass}"></i></div>
