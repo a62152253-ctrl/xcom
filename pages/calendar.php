@@ -220,18 +220,6 @@ foreach ($events as $e) {
     color: var(--primary);
 }
 
-.empty-events {
-    text-align: center;
-    color: var(--text-muted);
-    padding: 2rem 1rem;
-}
-
-.empty-events i {
-    font-size: 2.5rem;
-    opacity: 0.3;
-    margin-bottom: 0.75rem;
-}
-
 @media (max-width: 1024px) {
     .calendar-main {
         grid-template-columns: 1fr;
@@ -332,9 +320,11 @@ foreach ($events as $e) {
         usort($upcoming, function($a, $b) { return strtotime($a['event_date']) - strtotime($b['event_date']); });
 
         if (empty($upcoming)): ?>
-            <div class="empty-events">
-                <i class="fa-regular fa-calendar"></i>
-                <p>Brak zaplanowanych wydarzeń.</p>
+            <div class="empty-inline" style="padding: 2rem 1rem;">
+                <div class="empty-inline-icon">📅</div>
+                <div class="empty-inline-title" style="font-weight: 600; color: var(--text-primary);">Brak wydarzeń</div>
+                <div class="empty-inline-sub" style="margin-bottom: 0.5rem;">Nie masz zaplanowanych nadchodzących wydarzeń.</div>
+                <a href="#" onclick="openEventModal(); return false;" class="es-btn"><i class="fa-solid fa-plus"></i> Dodaj wydarzenie</a>
             </div>
         <?php else: ?>
             <?php foreach (array_slice($upcoming, 0, 10) as $e): ?>

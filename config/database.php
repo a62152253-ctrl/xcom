@@ -1,27 +1,8 @@
 <?php
-// config/database.php
-require_once __DIR__ . '/config.php';
-
+// Replace database instance to use SQLite
 class Database {
     private static $instance = null;
-    private $conn;
-
-    private function __construct() {
-        try {
-            $dsn = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4";
-            $options = [
-                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES   => false,
-            ];
-            $this->conn = new PDO($dsn, DB_USER, DB_PASS, $options);
-            $this->conn->exec("SET NAMES utf8mb4");
-            $this->conn->exec("SET CHARACTER SET utf8mb4");
-        } catch (PDOException $e) {
-            // In a production environment, log error instead of printing
-            die("Database connection failed: " . $e->getMessage());
-        }
-    }
+    private $conn = null;
 
     public static function getInstance() {
         if (self::$instance === null) {
@@ -31,12 +12,25 @@ class Database {
     }
 
     public function getConnection() {
-        return $this->conn;
-    }
+        if ($this->conn === null) {
+            $db_file = __DIR__ . '/mock_db.sqlite';
+            $this->conn = new PDO('sqlite:' . $db_file);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Prevent cloning and deserialization
-    private function __clone() {}
-    public function __wakeup() {
-        throw new \Exception("Cannot unserialize database singleton");
+            // Setup minimum schema
+            $this->conn->exec("
+                CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, email TEXT, status TEXT);
+                CREATE TABLE IF NOT EXISTS projects (id INTEGER PRIMARY KEY, name TEXT);
+                CREATE TABLE IF NOT EXISTS project_members (id INTEGER PRIMARY KEY, project_id INTEGER, user_id INTEGER);
+                CREATE TABLE IF NOT EXISTS notifications (id INTEGER PRIMARY KEY, user_id INTEGER, is_read INTEGER);
+            ");
+
+            // Insert mock user if not exists
+            $stmt = $this->conn->query("SELECT COUNT(*) FROM users");
+            if ($stmt->fetchColumn() == 0) {
+                $this->conn->exec("INSERT INTO users (id, email, status) VALUES (1, 'test@example.com', 'Active')");
+            }
+        }
+        return $this->conn;
     }
 }
