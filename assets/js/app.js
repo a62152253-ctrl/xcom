@@ -234,7 +234,11 @@ const GlobalSearch = {
         if (!data) { this.hide(); return; }
 
         if (!data.results || data.results.length === 0) {
-            this.results.innerHTML = '<div class="search-empty">Brak wyników dla "<strong>' + q + '</strong>"</div>';
+            this.results.innerHTML = `<div class="empty-inline" style="padding: 2rem 1rem;">
+                <div class="empty-inline-icon">🔍</div>
+                <div class="empty-inline-title">Brak wyników</div>
+                <div class="empty-inline-sub">Nie znaleziono wyników dla "<strong>${q}</strong>"</div>
+            </div>`;
             return;
         }
 
@@ -308,7 +312,7 @@ function toggleTheme() {
     if (btn) btn.innerHTML = `<i class="fa-solid ${next === 'dark' ? 'fa-sun' : 'fa-moon'}"></i>`;
 
     // Persist via API
-    apiPost('/api/profile.php?action=theme', { theme: next });
+    apiPost('/api/profile.php?action=theme', { theme: next }).catch(console.error);
 }
 
 // ─── Notification Dropdown ────────────────────────────────────────────────────
@@ -361,7 +365,7 @@ document.addEventListener('click', (e) => {
 
 // ─── Global Search handler (for header) ────────────────────────────────────
 function handleGlobalSearch(val) {
-    GlobalSearch.search(val);
+    GlobalSearch.search(val).catch(console.error);
 }
 
 // ─── Input Auto-grow for textareas ───────────────────────────────────────────

@@ -147,7 +147,12 @@ $pct_done = $total_tasks > 0 ? round($statuses['Done'] / $total_tasks * 100) : 0
         </div>
         <?php endforeach; ?>
         <?php if (empty($proj_progress)): ?>
-        <p style="color:var(--text-muted);text-align:center;padding:2rem">Brak projektów do wyświetlenia.</p>
+        <div class="empty-inline">
+            <div class="empty-inline-icon">📁</div>
+            <div class="empty-inline-title">Brak projektów</div>
+            <div class="empty-inline-sub">Stwórz nowy projekt, aby zobaczyć postępy.</div>
+            <a href="/pages/projects.php" class="es-btn"><i class="fa-solid fa-plus"></i> Dodaj projekt</a>
+        </div>
         <?php endif; ?>
     </div>
 </div>

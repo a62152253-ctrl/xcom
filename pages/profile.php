@@ -72,7 +72,7 @@ $max_heat = max(max($heat_days), 1);
         <div class="card profile-card">
             <!-- Avatar with progress ring -->
             <div class="profile-avatar-wrap">
-                <svg class="progress-ring-svg" width="120" height="120">
+                <svg class="progress-ring-svg" width="120" height="120" aria-hidden="true">
                     <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border-color)" stroke-width="6"/>
                     <circle cx="60" cy="60" r="52" fill="none" stroke="var(--primary)" stroke-width="6"
                         stroke-dasharray="<?= round(2 * M_PI * 52) ?>"
@@ -144,9 +144,10 @@ $max_heat = max(max($heat_days), 1);
         <h2 class="card-title"><i class="fa-solid fa-list-ul"></i> Historia aktywności</h2>
         <div style="display:flex;flex-direction:column;gap:0">
             <?php if (empty($logs)): ?>
-            <div class="empty-state" style="padding:2rem">
-                <i class="fa-solid fa-history"></i>
-                <p>Brak zapisanej aktywności.</p>
+            <div class="empty-inline" style="padding:2rem">
+                <div class="empty-inline-icon">📜</div>
+                <div class="empty-inline-title">Brak aktywności</div>
+                <div class="empty-inline-sub">Gdy zaczniesz działać, historia Twojej aktywności pojawi się tutaj.</div>
             </div>
             <?php else: ?>
             <?php foreach ($logs as $log): ?>
