@@ -324,7 +324,7 @@ foreach ($events as $e) {
                 <div class="empty-inline-icon">📅</div>
                 <div class="empty-inline-title" style="font-weight: 600; color: var(--text-primary);">Brak wydarzeń</div>
                 <div class="empty-inline-sub" style="margin-bottom: 0.5rem;">Nie masz zaplanowanych nadchodzących wydarzeń.</div>
-                <a href="#" onclick="openEventModal(); return false;" class="es-btn"><i class="fa-solid fa-plus"></i> Dodaj wydarzenie</a>
+                <button onclick="openEventModal()" class="es-btn"><i class="fa-solid fa-plus"></i> Dodaj wydarzenie</button>
             </div>
         <?php else: ?>
             <?php foreach (array_slice($upcoming, 0, 10) as $e): ?>

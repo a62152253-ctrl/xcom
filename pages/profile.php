@@ -72,7 +72,7 @@ $max_heat = max(max($heat_days), 1);
         <div class="card profile-card">
             <!-- Avatar with progress ring -->
             <div class="profile-avatar-wrap">
-                <svg class="progress-ring-svg" width="120" height="120">
+                <svg class="progress-ring-svg" width="120" height="120" aria-hidden="true">
                     <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border-color)" stroke-width="6"/>
                     <circle cx="60" cy="60" r="52" fill="none" stroke="var(--primary)" stroke-width="6"
                         stroke-dasharray="<?= round(2 * M_PI * 52) ?>"
