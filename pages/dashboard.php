@@ -284,18 +284,6 @@ $greeting = $hour < 12 ? 'Dzień dobry' : ($hour < 18 ? 'Cześć' : 'Dobry wiecz
     transition: width 0.4s ease;
 }
 
-.empty-state {
-    text-align: center;
-    padding: 2rem;
-    color: var(--text-muted);
-}
-
-.empty-state i {
-    font-size: 3rem;
-    opacity: 0.3;
-    margin-bottom: 0.75rem;
-}
-
 @media (max-width: 768px) {
     .dashboard-hero {
         padding: 2rem 1.5rem;

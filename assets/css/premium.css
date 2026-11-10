@@ -493,6 +493,8 @@
     font-size: 13px;
 }
 .empty-inline-icon { font-size: 28px; opacity: .5; }
+.empty-inline-title { font-weight: 600; color: var(--text-primary); font-size: 14px; }
+.empty-inline-sub { opacity: 0.8; }
 .empty-inline a    { color: var(--primary); font-weight: 600; font-size: 12px; text-decoration: none; }
 .empty-inline a:hover { text-decoration: underline; }
 
